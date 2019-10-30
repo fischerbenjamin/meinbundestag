@@ -1,0 +1,93 @@
+\documentclass{beamer}
+
+% Required packages 
+\usepackage{fontspec}
+\usepackage{fontawesome}
+\usepackage{hyperref}
+%\usepackage[ngerman]{babel}
+\usetheme{metropolis}           
+
+% TODO Change calendar week here
+\newcommand{\cw}{43}
+
+% Header
+\title{AMSE - Kalendarwoche \cw{}}
+\date{30. Oktober 2019}
+\author{Benjamin Fischer}
+\institute{benjamin.f.fischer@fau.de}
+
+% Document
+\begin{document}
+  \maketitle
+
+  % Structure (always the same)
+  \begin{frame}
+    \begin{itemize}
+      \item Zusammenfassung Kalendarwoche \cw{}
+      \begin{itemize}
+        \item Erreichte Ziele
+        \item Aufgetretene Probleme
+      \end{itemize}
+      \item Ausblick nächste Woche
+    \end{itemize}
+  \end{frame}
+
+  % TODO: Insert the achieved goals here and mention the problems that occured.
+  \begin{frame}
+    \frametitle{Zusammenfassung KW \cw{} - Allgemein}
+    \begin{itemize}
+      \item \textit{Hello World}-App erstellt.
+      \item Github + TravisCI
+      \item Makefile/Dockerfiles mit \textit{test} Targets
+      \item @Github: \texttt{fischerbenjamin/meinbundestag}
+    \end{itemize}
+  \end{frame}
+  
+  \begin{frame}
+    \frametitle{Zusammenfassung KW \cw{} - Mobile}
+    \begin{itemize}
+      \item Docker-Image für Tests (\texttt{echo 'Hello world!'})
+      \item Entwicklung lokal mithilfe des Expo Clients
+      \begin{itemize}
+        \item Expo-Sever auf \textit{localhost}
+        \item über \textit{adb} und/oder \textit{WebView}
+      \end{itemize}
+      \item Probleme bei Docker Image für Entwicklung (sinnvoll?)
+      \begin{itemize}
+        \item Abhängikeiten (\textit{sharp})
+        \item Networking/Ports
+      \end{itemize}
+      \item Auf dem Weg dahin: viel unnötige Software installiert
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Zusammenfassung KW \cw{} - Backend}
+    \begin{itemize}
+      \item Extrahieren der Links zu .xml-Dateien der Protokolle
+        \footnote{\url{https://www.bundestag.de/services/opendata}}
+      \item Tabelle wird über \textit{vor} bzw. \textit{zurück} dynamisch
+        nachgeladen
+        \begin{itemize}
+          \item Problem mit \textit{selenium} gelöst
+          \item Python-Skript, das alle verfügbaren Links extrahiert
+          \item in Docker Image integriert (für später)
+        \end{itemize}
+      \end{itemize}
+  \end{frame}
+
+  % TODO: Insert the goals for the new week.
+  \begin{frame}
+    \frametitle{Ausblick nächste Woche}
+      \begin{itemize}
+        \item ODS mit API von \textit{abgeordnetenwatch.de} konfigurieren
+        \item Backend 
+          \begin{itemize}
+            \item Protokolle parsen und Texte verarbeiten
+            \item API festlegen (könnte dann an den ODS angehängt werden)
+          \end{itemize}
+        \item Frontend muss wohl noch warten...
+      \end{itemize}
+  \end{frame}
+
+\end{document}

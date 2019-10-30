@@ -1,0 +1,9 @@
+src/mobile/meinbundestag-mobile/node_modules/
+src/mobile/meinbundestag-mobile/.expo/
+src/mobile/meinbundestag-mobile/.expo-shared/
+src/mobile/meinbundestag-mobile/assets/
+**/__pycache__
+.vscode/
+**/build
+main.pdf
+.yarnclean

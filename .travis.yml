@@ -1,0 +1,7 @@
+language: minimal
+
+service:
+  - docker
+
+script:
+  - make -C src test
