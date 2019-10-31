@@ -7,3 +7,4 @@ src/mobile/meinbundestag-mobile/assets/
 **/build
 main.pdf
 .yarnclean
+amse.code-workspace
