@@ -34,13 +34,35 @@
   % TODO: Insert the achieved goals here and mention the problems that occured.
   \begin{frame}
     \frametitle{Zusammenfassung Kalendarwoche \cw{}}
-
+    \begin{itemize}
+      \item Verarbeitung der Protokolldateien
+      \begin{itemize}
+        \item Bei DTD fehlte im Attribut \textit{herstellung} "KG"
+        \item Keyword-Analyse nicht so \textit{einfach} wie erhofft
+        \item Aktuelle Analyse mit \textit{textblob} (siehe Beispiel)
+      \end{itemize}
+      \item Struktur des Source-Codes
+      \begin{itemize}
+        \item Einteilung in \textit{src}, \textit{data} und \textit{test}
+        \item Kleinere Pfad-Probleme
+        \item Aktuell: gemeinsamer Einstiegspunkt \textit{main.py}
+      \end{itemize}
+      \item Keine Änderungen in Frontend
+    \end{itemize}
   \end{frame}
 
   % TODO: Insert the goals for the new week.
   \begin{frame}
     \frametitle{Ausblick nächste Woche}
-    
+    \begin{itemize}
+      \item \textit{Unittests} einbauen
+      \item \textit{Docker compose} um Services miteinander zu verbinden
+      \begin{itemize}
+        \item Datenbank (mongodb)
+        \item Flask Applikation (stellt REST API zur Verfügung)
+      \end{itemize}
+      \item Wünschenswert: Backend läuft schon als Prototyp
+    \end{itemize}
   \end{frame}
 
 \end{document}
