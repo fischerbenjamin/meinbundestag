@@ -8,3 +8,4 @@ src/mobile/meinbundestag-mobile/assets/
 main.pdf
 .yarnclean
 amse.code-workspace
+*.pyc
