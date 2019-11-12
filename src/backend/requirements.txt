@@ -4,3 +4,5 @@ pymongo
 lxml
 textblob_de
 wget
+nltk
+mockupdb
