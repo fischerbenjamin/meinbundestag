@@ -32,7 +32,7 @@ def init(host: str, port: int) -> bool:
         bool: True if initialization was successful, False otherwise
     """
     global client, database, speeches
-    client = pymongo.MongoClient(host, port)
+    client = pymongo.MongoClient(host=host, port=port)
     try:
         client.admin.command('ismaster')
     except pymongo.errors.ConnectionFailure:
@@ -107,3 +107,8 @@ def __speech_exists(speech: schema.Speech) -> bool:
     global speeches
     my_query = {"speech_id": speech.speech_id}
     return speeches.find(my_query).count() > 0
+
+
+def list_speeches() -> list:
+    global speeches
+    return [x for x in speeches.find({}, {"_id": 0})]
