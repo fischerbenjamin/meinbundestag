@@ -21,6 +21,8 @@ def __init_logging(log_lvl: str):
     Args:
         log_lvl (str): logging level
     """
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
     logging.basicConfig(
         format='%(levelname)s %(module)s@%(funcName)s %(asctime)s %(message)s',
         datefmt='%d.%m.%y-%H:%M:%S',
@@ -32,7 +34,7 @@ def run() -> None:
     """
     Runs the application after initializing the logging facility.
     """
-    __init_logging()
+    __init_logging(os.environ["LOGLEVEL"].upper())
     if database.init(os.environ["DB_HOST"], int(os.environ["DB_PORT"])):
         logging.info("Successfully connected to the database.")
     thread_updater = threading.Thread(target=updater.start)
