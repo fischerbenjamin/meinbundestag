@@ -9,3 +9,4 @@ main.pdf
 .yarnclean
 amse.code-workspace
 *.pyc
+ods/
