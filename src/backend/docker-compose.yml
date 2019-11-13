@@ -11,6 +11,7 @@ services:
       - DB_PORT=27017
       - API_PORT=3000
       - API_HOST=0.0.0.0
+      - LOGLEVEL=info
     depends_on:
       - database
     links:
