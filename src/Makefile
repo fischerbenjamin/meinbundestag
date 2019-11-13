@@ -1,13 +1,13 @@
-.PHONY: backend-app backend-test mobile-test mobile-dev
+.PHONY: backend backend-test mobile-test mobile-dev
 
 test: clean_container backend-test mobile-test
 
 clean_container:
-	docker container prune -f 
+	docker container prune -f
 
-backend-app:
-	docker build --rm -t backend-app --target app backend/
-	docker run backend-app 
+backend:
+	docker-compose -f backend/docker-compose.yml rm --force
+	docker-compose -f backend/docker-compose.yml up --build -d
 
 backend-test:
 	docker build --rm -t backend-test --target test backend/

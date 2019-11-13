@@ -17,7 +17,7 @@ import time
 
 
 def start(
-    is_test: bool = False, timeout: int = config.SCRAPER_DEFAULT_TIMEOUT,
+    timeout: int = config.SCRAPER_DEFAULT_TIMEOUT,
     interval: int = config.UPDATE_INTERVAL
 ):
     my_scraper = scraper.Scraper(timeout)
@@ -30,6 +30,6 @@ def start(
             speeches = parsing.get_speeches(config.TMP_FILE)
             for speech in speeches:
                 processing.analyze(speech)
-            database.insert_speeches(speeches, is_test)
+            database.insert_speeches(speeches)
         old_links = new_links.copy()
         time.sleep(interval)

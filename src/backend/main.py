@@ -1,8 +1,5 @@
 import argparse
 
-import src.app as app
-import test.test as test
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -13,7 +10,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.test:
         print("Running tests.")
+        import test.test as test
         test.run()
     else:
         print("Running app.")
+        import src.app as app
         app.run()

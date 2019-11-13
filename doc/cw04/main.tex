@@ -1,0 +1,59 @@
+\documentclass{beamer}
+
+% Required packages 
+\usepackage{fontspec}
+\usepackage{fontawesome}
+\usepackage{hyperref}
+%\usepackage[ngerman]{babel}
+\usetheme{metropolis}           
+
+\newcommand{\cw}{46}
+
+% Header
+\title{AMSE - Kalendarwoche \cw{}}
+\date{13. November 2019}
+\author{Benjamin Fischer}
+\institute{benjamin.f.fischer@fau.de}
+
+% Document
+\begin{document}
+  \maketitle
+
+  % Structure (always the same)
+  \begin{frame}
+    \begin{itemize}
+      \item Zusammenfassung Kalendarwoche \cw{}
+      \begin{itemize}
+        \item Erreichte Ziele
+        \item Aufgetretene Probleme
+      \end{itemize}
+      \item Ausblick nächste Woche
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Zusammenfassung Kalendarwoche \cw{}}
+    \begin{itemize}
+      \item \texttt{docker-compose} für Backend erstellt
+      \item Zugriff auf verarbeitete Reden über REST-API
+      \begin{itemize}
+        \item Verarbeitung und Einfügen der Protokolle im Hintergrund
+      \end{itemize}
+      \item Aktuell: Flask-App und \textit{Updater} in eigenem Thread
+      \item ODS versucht zu konfigurieren, leider erfolglos
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Ausblick nächste Woche}
+    \begin{itemize}
+      \item ODS mit neuem Image testen
+      \item Alternative: Route in REST-API einbauen
+      \item Verlagerung der einzelnen Funktionalitäten in Threads
+      \item Kommunikation dann über Datenbank
+      \item Verwaltung der DB über REST-API ermöglichen 
+              (\textit{clear}, \textit{update}, etc.)
+    \end{itemize}
+  \end{frame}
+
+\end{document}
