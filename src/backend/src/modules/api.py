@@ -17,6 +17,11 @@ import flask
 app = flask.Flask(__name__)
 
 
+@app.route("/list")
+def list() -> dict:
+    return flask.jsonify(database.list_speeches())
+
+
 @app.route("/profile/<name>")
 def profile(name: str) -> dict:
     raise NotImplementedError
@@ -30,4 +35,4 @@ def speeches(name: str) -> list:
 
 def start(host: str, port: int) -> None:
     global app
-    app.run(host, port)
+    app.run(host=host, port=port)
