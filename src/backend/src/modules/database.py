@@ -39,6 +39,7 @@ def init(host: str, port: int) -> bool:
         return False
     database = client["bundestag"]
     speeches = database["speeches"]
+    return True
 
 
 def get_speeches_for_user(name: str) -> list:
