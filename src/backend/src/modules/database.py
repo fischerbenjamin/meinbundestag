@@ -12,7 +12,9 @@ import src.modules.schema as schema
 
 
 # Global imports
+import logging
 import pymongo
+import threading
 
 
 # Global variables
@@ -20,9 +22,14 @@ client = None
 database = None
 speeches = None
 protocols = None
+updater_event = None
+scraper_event = None
 
 
-def init(host: str, port: int) -> bool:
+def init(
+    host: str, port: int,
+    event_updater: threading.Semaphore, event_sracper: threading.Semaphore
+) -> bool:
     """Initialize the module.
 
     Args:
@@ -33,6 +40,7 @@ def init(host: str, port: int) -> bool:
         bool: True if initialization was successful, False otherwise
     """
     global client, database, speeches, protocols
+    global updater_event, scraper_event
     client = pymongo.MongoClient(host=host, port=port)
     try:
         client.admin.command('ismaster')
@@ -41,6 +49,8 @@ def init(host: str, port: int) -> bool:
     database = client["bundestag"]
     speeches = database["speeches"]
     protocols = database["protocols"]
+    updater_event = event_updater
+    scraper_event = event_sracper
     return True
 
 
@@ -67,7 +77,7 @@ def insert_speech(speech: schema.Speech) -> bool:
     Returns:
         bool: True if speech wasn't in database before, False otherwise
     """
-    global speeches
+    global speeches, updater_event
     if __speech_exists(speech):
         return False
     speeches.insert(speech.__dict__)
@@ -87,15 +97,24 @@ def insert_speeches(speeches: list) -> bool:
     result = []
     for speech in speeches:
         result.append(insert_speech(speech))
-    return all(result)
+    failed = len([ret for ret in result if not ret])
+    if failed > 0:
+        logging.warning("Failed inserting {}/{} speeches.".format(
+            failed, len(result)
+        ))
+        return False
+    logging.info("Inserted {} speeches successfully.".format(len(result)))
+    return True
 
-
-def clear_speaches() -> None:
+def clear() -> None:
     """
-    Clears the collection, e.g removes all speeches.
+    Clears the database, e.g removes all collections.
     """
-    global speeches
-    speeches.drop()
+    global client, database, speeches, protocols
+    client.drop_database("bundestag")
+    database = client["bundestag"]
+    speeches = database["speeches"]
+    protocols = database["protocols"]
 
 
 def __speech_exists(speech: schema.Speech) -> bool:
@@ -112,15 +131,29 @@ def __speech_exists(speech: schema.Speech) -> bool:
     return speeches.find(my_query).count() > 0
 
 
-def list_speeches() -> list:
+def show() -> dict:
     """
     Returns all speeches in the database.
 
     Returns:
         list: speeches
     """
-    global speeches
-    return [x for x in speeches.find({}, {"_id": 0})]
+    global client, database, speeches, protocols
+    res = {
+        "databases": [],
+        "collections": [],
+        "speeches": [],
+        "protocols": []
+    }
+    for db in client.list_database_names():
+        res["databases"].append(db)
+    for col in database.collection_names():
+        res["collections"].append(col)
+    for speech in speeches.find({}, {"_id": 0}):
+        res["speeches"].append(speech)
+    for protocol in protocols.find({}, {"_id": 0}):
+        res["protocols"].append(protocol)
+    return res
 
 
 def insert_protocol(protocol: schema.Protocol) -> bool:
@@ -128,6 +161,8 @@ def insert_protocol(protocol: schema.Protocol) -> bool:
     if __protocol_exists(protocol):
         return False
     protocols.insert(protocol.__dict__)
+    logging.info("Inserted protocol '{}' successfully.".format(protocol.fname))
+    updater_event.release()
     return True
 
 
@@ -142,9 +177,11 @@ def protocol_is_done(protocol: schema.Protocol) -> bool:
     query = {"url": protocol.url}
     update = {"$set": {"done": True}}
     update_result = protocols.update_one(query, update)
-    if not update_result.acknowledged:
+    if not update_result.acknowledged or update_result.modified_count <= 0:
+        logging.warning("Failed updating protocol '{}'.".format(protocol.fname))
         return False
-    return update_result.modified_count > 0
+    logging.info("Updated protocol '{}' successfully.".format(protocol.fname))
+    return True
 
 
 def get_protocol_to_process() -> schema.Protocol:
@@ -153,12 +190,20 @@ def get_protocol_to_process() -> schema.Protocol:
     Returns:
         str: url of the procotol to process next
     """
-    global protocols
+    global protocols, scraper_event
     query = {"done": False}
     obj = protocols.find_one(query)
+    try:
+        name = obj["fname"]
+    except TypeError:
+        name = "None"
+    logging.info("Requested protocol '{}' to process.".format(name))
+    if obj is None:
+        scraper_event.release()
+        return None
     return schema.Protocol.init_from_dict(obj)
 
 
-def get_all_protocols(query: dict, view: dict) -> list:
+def get_all_protocols(query: dict) -> list:
     global protocols
-    return list(protocols.find(query, view))
+    return list(protocols.find(query))

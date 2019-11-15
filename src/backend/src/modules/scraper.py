@@ -13,6 +13,7 @@ import os
 import re
 import time
 import logging
+import threading
 import selenium.webdriver as webdriver
 
 
@@ -35,20 +36,21 @@ class Scraper:
     BTN_PREV_CSS = ".slick-prev"
     BTN_DISABLED_ATTR = "aria-disabled"
 
-    def __init__(self, timeout: int):
+    def __init__(self, timeout: int, sem: threading.Semaphore):
         self.links = self.__get_done_links_from_database()
         self.timeout = timeout
         self.driver = webdriver.Chrome(options=self.__get_driver_options())
         self.driver.fullscreen_window()
+        self.sem = sem
 
     def __del__(self):
         self.driver.close()
 
     def __get_done_links_from_database(self) -> list:
         processed_links = [
-            protocol_dict["url"]
+            schema.Protocol.init_from_dict(protocol_dict).url
             for protocol_dict in database.get_all_protocols(
-                query={"done": True}, view={"url": 1}
+                query={"done": True}
             )
         ]
         logging.info("Initialized with {} from database".format(
@@ -81,7 +83,6 @@ class Scraper:
                     protocol = schema.Protocol(url=link, fname=name)
                     database.insert_protocol(protocol)
                     self.links.append(link)
-                    logging.info("Inserted {} in visited links".format(name))
 
     def __move(self, forwards: bool = True) -> None:
         is_clickable = True
@@ -106,5 +107,6 @@ class Scraper:
     def run(self) -> None:
         self.driver.get(Scraper.URL_BUNDESTAG_OPENDATA)
         while True:
+            self.sem.acquire()
             self.__move(forwards=True)
             self.__move(forwards=False)

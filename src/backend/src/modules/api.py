@@ -15,13 +15,25 @@ import flask
 import logging
 
 
-app = flask.Flask(__name__)
+app = flask.Flask(__name__, template_folder="/usr/data")
 
 
-@app.route("/list")
-def list() -> dict:
-    logging.info("/list")
-    return flask.jsonify(database.list_speeches())
+@app.route("/")
+def home() -> None:
+    logging.info("/")
+    return flask.render_template("template.html")
+
+
+@app.route("/clear")
+def clear() -> dict:
+    logging.info("/clear")
+    database.clear()
+
+
+@app.route("/show")
+def show() -> dict:
+    logging.info("/show")
+    return flask.jsonify(database.show())
 
 
 @app.route("/profile/<name>")

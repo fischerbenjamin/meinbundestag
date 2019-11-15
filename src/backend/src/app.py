@@ -6,10 +6,12 @@
 import src.modules.api as api
 import src.modules.updater as updater
 import src.modules.database as database
+import src.modules.scraper as scraper
 
 
 # Global imports
 import os
+import sys
 import logging
 import threading
 
@@ -21,11 +23,11 @@ def __init_logging(log_lvl: str):
     Args:
         log_lvl (str): logging level
     """
-    log = logging.getLogger('werkzeug')
+    log = logging.getLogger("werkzeug")
     log.setLevel(logging.ERROR)
     logging.basicConfig(
-        format='%(levelname)s %(module)s@%(funcName)s %(asctime)s %(message)s',
-        datefmt='%d.%m.%y-%H:%M:%S',
+        format="%(asctime)s %(levelname)s %(module)s@%(funcName)s %(message)s",
+        datefmt="%H:%M:%S %d.%m.%y",
         level=log_lvl
     )
 
@@ -35,12 +37,27 @@ def run() -> None:
     Runs the application after initializing the logging facility.
     """
     __init_logging(os.environ["LOGLEVEL"].upper())
-    if database.init(os.environ["DB_HOST"], int(os.environ["DB_PORT"])):
+    scraper_sem = threading.Semaphore(1)
+    updater_sem = threading.Semaphore(0)
+    ret = database.init(
+        os.environ["DB_HOST"], int(os.environ["DB_PORT"]),
+        updater_sem, scraper_sem
+    )
+    if ret:
         logging.info("Successfully connected to the database.")
-    thread_updater = threading.Thread(target=updater.start)
+    else:
+        logging.error("Could not connect to the database.")
+        sys.exit(1)
+    for i in range(len(database.get_all_protocols(query={"done": False}))):
+        updater_sem.release()
+    scraper_obj = scraper.Scraper(2, scraper_sem)
+    updater_obj = updater.Updater(updater_sem)
+    thread_scraper = threading.Thread(target=scraper_obj.run)
+    thread_updater = threading.Thread(target=updater_obj.run)
     thread_api = threading.Thread(target=api.start, args=(
         os.environ["API_HOST"], os.environ["API_PORT"]
     ))
-    thread_updater.start()
     thread_api.start()
-    logging.info("Started updater and api thread.")
+    thread_scraper.start()
+    thread_updater.start()
+    logging.info("Started api-, scraper- and updater-thread.")

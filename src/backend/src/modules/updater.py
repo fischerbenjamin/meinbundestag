@@ -5,31 +5,29 @@
 
 # Local imports
 import src.modules.parsing as parsing
-import src.modules.processing as processing
 import src.modules.database as database
-import src.modules.config as config
-import src.modules.scraper as scraper
+import src.modules.processing as processing
 
 
 # Global imports
+import os
 import wget
-import time
+import threading
 
 
-def start(
-    timeout: int = config.SCRAPER_DEFAULT_TIMEOUT,
-    interval: int = config.UPDATE_INTERVAL
-):
-    my_scraper = scraper.Scraper(timeout)
-    old_links, new_links = ([], [])
-    while True:
-        new_links = my_scraper.run()
-        work = [link for link in new_links if link not in old_links]
-        for link in work:
-            wget.download(link, config.TMP_FILE)
-            speeches = parsing.get_speeches(config.TMP_FILE)
+class Updater(threading.Thread):
+
+    def __init__(self, semaphore: threading.Semaphore):
+        self.semaphore = semaphore
+
+    def run(self):
+        while True:
+            self.semaphore.acquire()
+            protocol = database.get_protocol_to_process()
+            fpath = os.path.join("/protocols", protocol.fname)
+            wget.download(protocol.url, fpath)
+            speeches = parsing.get_speeches(fpath)
             for speech in speeches:
                 processing.analyze(speech)
+            database.protocol_is_done(protocol)
             database.insert_speeches(speeches)
-        old_links = new_links.copy()
-        time.sleep(interval)
