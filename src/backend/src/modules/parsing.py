@@ -4,18 +4,17 @@
 
 
 # Local imports
+import src.modules.schema as schema
 import src.modules.myexceptions as myexceptions
 import src.modules.config as config
-import src.modules.schema as schema
-
 
 # Global imports
-from typing import Iterator
-from os import path
-from lxml import etree
+import os
+import logging
+import lxml.etree
 
 
-def get_speeches(filepath: str) -> Iterator[schema.Speech]:
+def get_speeches(filepath: str) -> list:
     """Parses given protocol and returns the single speeches.
 
     Args:
@@ -25,34 +24,32 @@ def get_speeches(filepath: str) -> Iterator[schema.Speech]:
         SpeechParsingException: parsing the speech failed
 
     Returns:
-        Iterator[Speech]: Speech elements
+        list: speech elements
     """
-    if filepath is None or filepath == "":
-        raise myexceptions.SpeechParsingException(
-            "Filepath is '{}'".format(filepath)
-        )
-    if not __check_protocol(filepath):
-        raise myexceptions.SpeechParsingException(
-            "Failed parsing/validating protocol '{}'".format(filepath)
-        )
-    tree = etree.parse(filepath)
+    if filepath is None or filepath == "" or not __check_protocol(filepath):
+        raise FileNotFoundError("Invalid filepath '{}'".format(filepath))
+    if not __validate_protocol(filepath):
+        logging.error("Failed validating '{}'".format(filepath))
+    tree = lxml.etree.parse(filepath)
     root = tree.getroot()
+    speeches = []
     for sp in root.iter("rede"):
         try:
-            speach = __parse_speech(root, sp)
+            speech = __parse_speech(root, sp)
+            speeches.append(speech)
         except:
             raise myexceptions.SpeechParsingException
-        yield speach
+    return speeches
 
 
 def __parse_speech(
-    root: etree._Element, speech: etree._Element
+    root: lxml.etree._Element, speech: lxml.etree._Element
 ) -> schema.Speech:
     """Parses a single speech given as a tree element. The structure of the
     result is declared in 'schema.py'.
 
     Args:
-        speech (etree._Element): speech element to parse
+        speech (lxml.etree._Element): speech element to parse
 
     Returns:
         Speech: result
@@ -66,11 +63,11 @@ def __parse_speech(
     )
 
 
-def __get_speech_meta(speech: etree._Element) -> tuple:
+def __get_speech_meta(speech: lxml.etree._Element) -> tuple:
     """Returns meta information about given speech such as IDs and names.
 
     Args:
-        speech (etree._Element): speech to parse
+        speech (lxml.etree._Element): speech to parse
 
     Returns:
         tuple: (ID(speech), ID(speaker), speaker's name, speaker's party)
@@ -91,33 +88,33 @@ def __get_speech_meta(speech: etree._Element) -> tuple:
     )
 
 
-def __get_speech_topic(root: etree._Element, speaker_id: str) -> str:
+def __get_speech_topic(root: lxml.etree._Element, speaker_id: str) -> str:
     """Returns the topic the search is related to.
 
     Args:
-        root (etree._Element): root element of xml tree
+        root (lxml.etree._Element): root element of xml tree
         speaker_id (str): unique if of desired speaker
 
     Returns:
         str: topic of the agenda item the speech is related to
     """
-    topic_text = root.find(
-        ".//ivz-block//redner[@id = '{}']/../../../{}/{}".format(
-            speaker_id, "ivz-eintrag", "ivz-eintrag-inhalt"
-        )
-    ).text
+    topic = root.find(".//ivz-block//redner[@id = '{}']/../../../{}/{}".format(
+        speaker_id, "ivz-eintrag", "ivz-eintrag-inhalt"
+    ))
     try:
-        topic = topic_text.split(":")[1].strip()
+        text = topic.text.split(":")[1].strip()
     except IndexError:
-        topic = topic_text
-    return topic
+        text = topic.text
+    except AttributeError:
+        text = "None"
+    return text
 
 
-def __get_speech_date(root: etree._Element) -> str:
+def __get_speech_date(root: lxml.etree._Element) -> str:
     """Simply returns the date the speech was held.
 
     Args:
-        root (etree._Element): root element
+        root (lxml.etree._Element): root element
 
     Returns:
         str: date
@@ -127,16 +124,21 @@ def __get_speech_date(root: etree._Element) -> str:
     ).attrib["date"]
 
 
-def __get_speech_contents(speech: etree._Element) -> tuple:
+def __get_speech_contents(speech: lxml.etree._Element) -> tuple:
     """Returns the actual contents of the speech and its comments.
 
     Args:
-        speech (etree._Element): speech
+        speech (lxml.etree._Element): speech
 
     Returns:
         tuple: (text, comments)
     """
-    text = " ".join([x.text for x in speech.findall("p")[1:]])
+    paragraphs = [
+        p.text for p in speech.findall("p")[1:]
+        if p.attrib["klasse"] == "J" or p.attrib["klasse"] == "J_1"
+        or p.attrib["klasse"] == "O"
+    ]
+    text = " ".join(paragraphs)
     comments = [str(x.text) for x in speech.findall("kommentar")]
     return (text, comments)
 
@@ -150,8 +152,7 @@ def __check_protocol(filepath: str) -> bool:
     Returns:
         bool: True if it exists, False otherwise
     """
-    return path.exists(filepath) and path.isfile(filepath) \
-        and __validate_protocol(filepath)
+    return os.path.exists(filepath) and os.path.isfile(filepath)
 
 
 def __validate_protocol(filepath: str) -> bool:
@@ -163,6 +164,6 @@ def __validate_protocol(filepath: str) -> bool:
     Returns:
         bool: True if it matches, False otherwise
     """
-    dtd = etree.DTD(config.DTD_FILE)
-    tree = etree.parse(filepath)
+    dtd = lxml.etree.DTD(config.DTD_FILE)
+    tree = lxml.etree.parse(filepath)
     return dtd.validate(tree)
