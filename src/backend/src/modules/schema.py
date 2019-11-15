@@ -61,3 +61,19 @@ class Speech:
         return json.dumps(
             self.__dict__, indent=4
         )
+
+
+class Protocol:
+
+    def __init__(self, url: str, fname: str, done: bool = False):
+        self.url = url
+        self.fname = fname
+        self.done = done
+
+    @classmethod
+    def init_from_dict(cls, obj: dict) -> "Protocol":
+        return cls(
+            url=obj["url"],
+            fname=obj["fname"],
+            done=obj["done"]
+        )

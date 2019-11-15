@@ -19,6 +19,7 @@ import pymongo
 client = None
 database = None
 speeches = None
+protocols = None
 
 
 def init(host: str, port: int) -> bool:
@@ -31,7 +32,7 @@ def init(host: str, port: int) -> bool:
     Returns:
         bool: True if initialization was successful, False otherwise
     """
-    global client, database, speeches
+    global client, database, speeches, protocols
     client = pymongo.MongoClient(host=host, port=port)
     try:
         client.admin.command('ismaster')
@@ -39,6 +40,7 @@ def init(host: str, port: int) -> bool:
         return False
     database = client["bundestag"]
     speeches = database["speeches"]
+    protocols = database["protocols"]
     return True
 
 
@@ -111,5 +113,52 @@ def __speech_exists(speech: schema.Speech) -> bool:
 
 
 def list_speeches() -> list:
+    """
+    Returns all speeches in the database.
+
+    Returns:
+        list: speeches
+    """
     global speeches
     return [x for x in speeches.find({}, {"_id": 0})]
+
+
+def insert_protocol(protocol: schema.Protocol) -> bool:
+    global protocols
+    if __protocol_exists(protocol):
+        return False
+    protocols.insert(protocol.__dict__)
+    return True
+
+
+def __protocol_exists(protocol: schema.Protocol) -> bool:
+    global protocols
+    my_query = {"url": protocol.url}
+    return protocols.find(my_query).count() > 0
+
+
+def protocol_is_done(protocol: schema.Protocol) -> bool:
+    global protocols
+    query = {"url": protocol.url}
+    update = {"$set": {"done": True}}
+    update_result = protocols.update_one(query, update)
+    if not update_result.acknowledged:
+        return False
+    return update_result.modified_count > 0
+
+
+def get_protocol_to_process() -> schema.Protocol:
+    """Retrieve the next work item.
+
+    Returns:
+        str: url of the procotol to process next
+    """
+    global protocols
+    query = {"done": False}
+    obj = protocols.find_one(query)
+    return schema.Protocol.init_from_dict(obj)
+
+
+def get_all_protocols(query: dict, view: dict) -> list:
+    global protocols
+    return list(protocols.find(query, view))
