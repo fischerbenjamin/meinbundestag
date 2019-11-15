@@ -1,6 +1,9 @@
 .PHONY: backend backend-test mobile-test mobile-dev
 
-test: clean_container backend-test mobile-test
+test:
+	@make clean_container
+	@make backend-test
+	@make mobile-test
 
 clean_container:
 	docker container prune -f

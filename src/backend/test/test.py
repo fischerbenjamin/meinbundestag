@@ -4,7 +4,7 @@
 Testsuite for unit tests.
 """
 
-
+import sys
 import unittest
 
 
@@ -37,4 +37,8 @@ def run():
     """
     all_suite = suite()
     runner = unittest.TextTestRunner(verbosity=3)
-    runner.run(all_suite)
+    result = runner.run(all_suite)
+    if result.wasSuccessful():
+        sys.exit(0)
+    else:
+        sys.exit(1)
