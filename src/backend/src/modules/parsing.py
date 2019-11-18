@@ -4,9 +4,10 @@
 
 
 # Local imports
+import src.modules.config as config
 import src.modules.schema as schema
 import src.modules.myexceptions as myexceptions
-import src.modules.config as config
+
 
 # Global imports
 import os
@@ -37,7 +38,7 @@ def get_speeches(filepath: str) -> list:
         try:
             speech = __parse_speech(root, sp)
             speeches.append(speech)
-        except:
+        except Exception:
             raise myexceptions.SpeechParsingException
     return speeches
 
@@ -57,9 +58,9 @@ def __parse_speech(
     speech_id, speaker_id, name, party = __get_speech_meta(speech)
     topic = __get_speech_topic(root, speaker_id)
     date = __get_speech_date(root)
-    text, comments = __get_speech_contents(speech)
+    content = __get_speech_contents(speech)
     return schema.Speech(
-        name, party, topic, date, text, comments, speaker_id, speech_id
+        name, party, topic, date, content, speaker_id, speech_id
     )
 
 
@@ -75,10 +76,15 @@ def __get_speech_meta(speech: lxml.etree._Element) -> tuple:
     speaker = speech.find(".//redner")
     speech_id = speech.attrib["id"]
     speaker_id = speaker.attrib["id"]
-    name = "{} {}".format(
-        speaker.find("./name/vorname").text,
-        speaker.find("./name/nachname").text
-    )
+    try:
+        firstname = speaker.find("./name/vorname").text
+    except AttributeError:
+        firstname = "n.a"
+    try:
+        lastname = speaker.find("./name/nachname").text
+    except AttributeError:
+        lastname = "n.a"
+    name = "{} {}".format(firstname, lastname)
     try:
         party = speaker.find("./name/fraktion").text
     except AttributeError:
@@ -124,23 +130,52 @@ def __get_speech_date(root: lxml.etree._Element) -> str:
     ).attrib["date"]
 
 
-def __get_speech_contents(speech: lxml.etree._Element) -> tuple:
-    """Returns the actual contents of the speech and its comments.
-
-    Args:
-        speech (lxml.etree._Element): speech
-
-    Returns:
-        tuple: (text, comments)
-    """
-    paragraphs = [
-        p.text for p in speech.findall("p")[1:]
-        if p.attrib["klasse"] == "J" or p.attrib["klasse"] == "J_1"
-        or p.attrib["klasse"] == "O"
+def __get_speech_contents(speech: lxml.etree._Element) -> schema.SpeechContent:
+    speech_content = schema.SpeechContent([])
+    name_flow = [
+        schema.SpeechIndex(speech.index(e), e.text.replace(":", ""))
+        for e in speech if e.tag == "name"
     ]
-    text = " ".join(paragraphs)
-    comments = [str(x.text) for x in speech.findall("kommentar")]
-    return (text, comments)
+    redner_flow = [
+        schema.SpeechIndex(speech.index(e), "{} {} ({})".format(
+            e.find(".//redner/name/vorname").text
+            if e.find(".//redner/name/vorname") is not None else "n.a",
+            e.find(".//redner/name/nachname").text
+            if e.find(".//redner/name/nachname") is not None else "n.a",
+            e.find(".//redner/name/fraktion").text
+            if e.find(".//redner/name/fraktion") is not None else ""
+        ))
+        for e in speech
+        if e.tag == "p" and "klasse" in e.attrib.keys()
+        and e.attrib["klasse"] == "redner"
+    ]
+    speech_flow = sorted(name_flow + redner_flow, key=lambda x: x.index)
+    speaker = speech_flow[0]
+    for i in range(0, len(speech_flow)):
+        try:
+            speech_index_start = speech_flow[i]
+            speech_index_end = speech_flow[i+1].index
+        except IndexError:
+            speech_index_end = len(speech)
+        is_speaker = (speech_index_start.name == speaker.name)
+        paragraphs = speech[(speech_index_start.index+1):speech_index_end]
+        speech_entry = schema.SpeechEntry(
+            speech_index_start.name, is_speaker, []
+        )
+        for para in paragraphs:
+            if para.tag == "kommentar":
+                speech_paragraph = schema.SpeechParagraph(
+                    schema.SpeechParagraph.TYPE_COMMENT,
+                    para.text.replace("(", "").replace(")", "")
+                )
+            if para.tag == "p" and para.attrib != "redner":
+                speech_paragraph = schema.SpeechParagraph(
+                    schema.SpeechParagraph.TYPE_SPEECH,
+                    para.text
+                )
+            speech_entry.add_paragraph(speech_paragraph)
+        speech_content.add_speech_entry(speech_entry)
+    return speech_content
 
 
 def __check_protocol(filepath: str) -> bool:
