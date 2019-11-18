@@ -15,7 +15,7 @@ import logging
 import lxml.etree
 
 
-def get_speeches(filepath: str) -> list:
+def get_speeches(filepath: str, dtd_file: str = config.DTD_FILE) -> list:
     """Parses given protocol and returns the single speeches.
 
     Args:
@@ -29,7 +29,7 @@ def get_speeches(filepath: str) -> list:
     """
     if filepath is None or filepath == "" or not __check_protocol(filepath):
         raise FileNotFoundError("Invalid filepath '{}'".format(filepath))
-    if not __validate_protocol(filepath):
+    if not __validate_protocol(filepath, dtd_file):
         logging.error("Failed validating '{}'".format(filepath))
     tree = lxml.etree.parse(filepath)
     root = tree.getroot()
@@ -190,7 +190,7 @@ def __check_protocol(filepath: str) -> bool:
     return os.path.exists(filepath) and os.path.isfile(filepath)
 
 
-def __validate_protocol(filepath: str) -> bool:
+def __validate_protocol(filepath: str, dtd_file: str) -> bool:
     """Checks if the given protocol matches the document type definition.
 
     Args:
@@ -199,6 +199,6 @@ def __validate_protocol(filepath: str) -> bool:
     Returns:
         bool: True if it matches, False otherwise
     """
-    dtd = lxml.etree.DTD(config.DTD_FILE)
+    dtd = lxml.etree.DTD(dtd_file)
     tree = lxml.etree.parse(filepath)
     return dtd.validate(tree)
