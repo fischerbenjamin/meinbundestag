@@ -106,11 +106,13 @@ class Database:
                 "total": 0
             }
         }
-        res["databases"] = list(client.list_database_names())
-        res["collections"] = list(database.collection_names())
-        res["speeches"] = len(list(speeches.find()))
-        res["protocols"]["total"] = len(list(protocols.find()))
-        res["protocols"]["done"] = len(list(protocols.find({"done": True})))
+        res["databases"] = list(self.client.list_database_names())
+        res["collections"] = list(self.database.collection_names())
+        res["speeches"] = len(list(self.speeches.find()))
+        res["protocols"]["total"] = len(list(self.protocols.find()))
+        res["protocols"]["done"] = len(
+            list(self.protocols.find({"done": True}))
+        )
         res["protocols"]["in_progress"] = res["protocols"]["total"] \
             - res["protocols"]["done"]
         return res
@@ -162,15 +164,45 @@ class Database:
             for protocol_dict in self.protocols.find(query)
         )
 
-    def get_all_speakers(
-        self, host: str = "localhost", port: int = 3000
-    ) -> dict:
+    def get_all_speakers(self) -> dict:
         speakers = set(
             x["name"] for x in self.speeches.find({}, {"_id": 0, "name": 1})
         )
         mapping = {}
         for speaker in speakers:
-            mapping[speaker] = "{}:{}/speeches/{}".format(
-                host, port, speaker.lower().replace(" ", "-")
+            mapping[speaker] = "/speeches/{}".format(
+                speaker.lower().replace(" ", "-")
             )
         return mapping
+
+    def get_analysis_limits(self) -> dict:
+        # Don't use objects here for speedup
+        speeches = list(self.speeches.find({}, {"_id": 0}))
+        if len(speeches) <= 0:
+            return None
+        polarity = [
+            speech["analysis"]["polarity"] for speech in speeches
+        ]
+        subjectivity = [
+            speech["analysis"]["subjectivity"] for speech in speeches
+        ]
+        comment = [
+            speech["analysis"]["number_of_comments"] for speech in speeches
+        ]
+        polarity_limits = dict(
+            desc="-1.0 (negative) ; 1.0 (positive)",
+            min=min(polarity), max=max(polarity))
+        subjectivity_limits = dict(
+            desc="0.0 (objective) ; 1.0 (subjective)",
+            min=min(subjectivity), max=max(subjectivity)
+        )
+        comment_limits = dict(
+            desc="Number of comments during a speech",
+            min=min(comment), max=max(comment)
+        )
+        return dict(
+            total=len(speeches),
+            polarity=polarity_limits,
+            subjectivity=subjectivity_limits,
+            number=comment_limits
+        )

@@ -25,18 +25,11 @@ def home() -> None:
     return flask.render_template("template.html")
 
 
-@app.route("/clear")
-def clear() -> dict:
+@app.route("/info")
+def info() -> dict:
     global db
-    logging.info("/clear")
-    return flask.jsonify(db.clear())
-
-
-@app.route("/show")
-def show() -> dict:
-    global db
-    logging.info("/show")
-    return flask.jsonify(db.show())
+    logging.info("/info")
+    return flask.jsonify(db.info())
 
 
 @app.route("/profile/<name>")
@@ -59,6 +52,14 @@ def speakers() -> list:
     logging.info("/speakers")
     speakers = db.get_all_speakers()
     return flask.jsonify(speakers)
+
+
+@app.route("/stats")
+def stats() -> dict:
+    global db
+    logging.info("/stats")
+    limits = db.get_analysis_limits()
+    return flask.jsonify(limits)
 
 
 def start(host: str, port: int, database: database.Database) -> None:
