@@ -64,8 +64,13 @@ def get_speeches_for_user(name: str) -> list:
         list: deputy's speeches (of type schema.Speech)
     """
     global speeches
-    my_query = {"name": name}
-    return list(speeches.find(my_query))
+    import re
+    regx = re.compile(
+        "(.)*".join(name.split("-")), re.IGNORECASE
+    )
+    query = {"name": regx}
+    view = {"_id": 0}
+    return list(speeches.find(query, view))
 
 
 def insert_speech(speech: schema.Speech) -> bool:
@@ -80,7 +85,7 @@ def insert_speech(speech: schema.Speech) -> bool:
     global speeches, updater_event
     if __speech_exists(speech):
         return False
-    speeches.insert(speech.__dict__)
+    speeches.insert(speech.to_json())
     return True
 
 
@@ -106,6 +111,7 @@ def insert_speeches(speeches: list) -> bool:
     logging.info("Inserted {} speeches successfully.".format(len(result)))
     return True
 
+
 def clear() -> None:
     """
     Clears the database, e.g removes all collections.
@@ -115,6 +121,7 @@ def clear() -> None:
     database = client["bundestag"]
     speeches = database["speeches"]
     protocols = database["protocols"]
+    return True
 
 
 def __speech_exists(speech: schema.Speech) -> bool:
@@ -142,17 +149,20 @@ def show() -> dict:
     res = {
         "databases": [],
         "collections": [],
-        "speeches": [],
-        "protocols": []
+        "speeches": 0,
+        "protocols": {
+            "done": 0,
+            "in_progress": 0,
+            "total": 0
+        }
     }
-    for db in client.list_database_names():
-        res["databases"].append(db)
-    for col in database.collection_names():
-        res["collections"].append(col)
-    for speech in speeches.find({}, {"_id": 0}):
-        res["speeches"].append(speech)
-    for protocol in protocols.find({}, {"_id": 0}):
-        res["protocols"].append(protocol)
+    res["databases"] = list(client.list_database_names())
+    res["collections"] = list(database.collection_names())
+    res["speeches"] = len(list(speeches.find()))
+    res["protocols"]["total"] = len(list(protocols.find()))
+    res["protocols"]["done"] = len(list(protocols.find({"done": True})))
+    res["protocols"]["in_progress"] = res["protocols"]["total"] \
+        - res["protocols"]["done"]
     return res
 
 
@@ -160,7 +170,7 @@ def insert_protocol(protocol: schema.Protocol) -> bool:
     global protocols
     if __protocol_exists(protocol):
         return False
-    protocols.insert(protocol.__dict__)
+    protocols.insert(protocol.to_json())
     logging.info("Inserted protocol '{}' successfully.".format(protocol.fname))
     updater_event.release()
     return True
@@ -178,7 +188,9 @@ def protocol_is_done(protocol: schema.Protocol) -> bool:
     update = {"$set": {"done": True}}
     update_result = protocols.update_one(query, update)
     if not update_result.acknowledged or update_result.modified_count <= 0:
-        logging.warning("Failed updating protocol '{}'.".format(protocol.fname))
+        logging.warning("Failed updating protocol '{}'.".format(
+            protocol.fname
+        ))
         return False
     logging.info("Updated protocol '{}' successfully.".format(protocol.fname))
     return True
@@ -201,9 +213,20 @@ def get_protocol_to_process() -> schema.Protocol:
     if obj is None:
         scraper_event.release()
         return None
-    return schema.Protocol.init_from_dict(obj)
+    return schema.Protocol.from_json(obj)
 
 
 def get_all_protocols(query: dict) -> list:
     global protocols
     return list(protocols.find(query))
+
+
+def get_all_speakers() -> list:
+    global speeches
+    speakers = set(x["name"] for x in speeches.find({}, {"_id": 0, "name": 1}))
+    mapping = {}
+    for speaker in speakers:
+        mapping[speaker] = "{}/speeches/{}".format(
+            "localhost:3000", speaker.lower().replace(" ", "-")
+        )
+    return mapping
