@@ -27,7 +27,7 @@ def home() -> None:
 @app.route("/clear")
 def clear() -> dict:
     logging.info("/clear")
-    database.clear()
+    return flask.jsonify(database.clear())
 
 
 @app.route("/show")
@@ -47,6 +47,13 @@ def speeches(name: str) -> list:
     logging.info("/speeches/{}".format(name))
     speeches = database.get_speeches_for_user(name)
     return flask.jsonify(speeches)
+
+
+@app.route("/speakers")
+def speakers() -> list:
+    logging.info("/speakers")
+    speakers = database.get_all_speakers()
+    return flask.jsonify(speakers)
 
 
 def start(host: str, port: int) -> None:
