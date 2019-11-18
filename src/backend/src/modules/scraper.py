@@ -48,7 +48,7 @@ class Scraper:
 
     def __get_done_links_from_database(self) -> list:
         processed_links = [
-            schema.Protocol.init_from_dict(protocol_dict).url
+            schema.Protocol.from_json(protocol_dict).url
             for protocol_dict in database.get_all_protocols(
                 query={"done": True}
             )
@@ -87,10 +87,10 @@ class Scraper:
     def __move(self, forwards: bool = True) -> None:
         is_clickable = True
         if forwards:
-            logging.info("Moving forwards.")
+            logging.info("Scraper moving forwards.")
             btn_css_sel = Scraper.BTN_NEXT_CSS
         else:
-            logging.info("Moving backwards.")
+            logging.info("Scraper moving backwards.")
             btn_css_sel = Scraper.BTN_PREV_CSS
         while is_clickable:
             self.__update_links()
@@ -107,6 +107,8 @@ class Scraper:
     def run(self) -> None:
         self.driver.get(Scraper.URL_BUNDESTAG_OPENDATA)
         while True:
+            logging.info("Scraper requests semaphore.")
             self.sem.acquire()
+            logging.info("Scraper obtained semaphore.")
             self.__move(forwards=True)
             self.__move(forwards=False)
