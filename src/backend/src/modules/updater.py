@@ -19,15 +19,16 @@ import threading
 
 class Updater(threading.Thread):
 
-    def __init__(self, sem: threading.Semaphore):
+    def __init__(self, sem: threading.Semaphore, database: database.Database):
         self.sem = sem
+        self.db = database
 
     def run(self):
         while True:
             logging.info("Updater requests semaphore.")
             self.sem.acquire()
             logging.info("Updater obtained semaphore.")
-            protocol = database.get_protocol_to_process()
+            protocol = self.db.get_protocol_to_process()
             fpath = os.path.join("/protocols", protocol.fname)
             wget.download(protocol.url, fpath)
             speeches = parsing.get_speeches(fpath)
@@ -39,5 +40,5 @@ class Updater(threading.Thread):
                         protocol.url
                     )
                 )
-            database.protocol_is_done(protocol)
-            database.insert_speeches(speeches)
+            self.db.protocol_is_done(protocol)
+            self.db.insert_speeches(speeches)

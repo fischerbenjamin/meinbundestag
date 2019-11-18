@@ -36,22 +36,24 @@ class Scraper:
     BTN_PREV_CSS = ".slick-prev"
     BTN_DISABLED_ATTR = "aria-disabled"
 
-    def __init__(self, timeout: int, sem: threading.Semaphore):
-        self.links = self.__get_done_links_from_database()
+    def __init__(
+        self, timeout: int, sem: threading.Semaphore,
+        database: database.Database
+    ):
+        self.sem = sem
+        self.db = database
         self.timeout = timeout
         self.driver = webdriver.Chrome(options=self.__get_driver_options())
         self.driver.fullscreen_window()
-        self.sem = sem
+        self.links = self.__get_done_links_from_database()
 
     def __del__(self):
         self.driver.close()
 
     def __get_done_links_from_database(self) -> list:
         processed_links = [
-            schema.Protocol.from_json(protocol_dict).url
-            for protocol_dict in database.get_all_protocols(
-                query={"done": True}
-            )
+            protocol.url
+            for protocol in self.db.get_all_protocols(query={"done": True})
         ]
         logging.info("Initialized with {} from database".format(
             len(processed_links)
@@ -81,7 +83,7 @@ class Scraper:
                 if link not in self.links:
                     name = os.path.basename(link)
                     protocol = schema.Protocol(url=link, fname=name)
-                    database.insert_protocol(protocol)
+                    self.db.insert_protocol(protocol)
                     self.links.append(link)
 
     def __move(self, forwards: bool = True) -> None:

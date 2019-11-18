@@ -16,6 +16,7 @@ import logging
 
 
 app = flask.Flask(__name__, template_folder="/usr/data")
+db = None
 
 
 @app.route("/")
@@ -26,14 +27,16 @@ def home() -> None:
 
 @app.route("/clear")
 def clear() -> dict:
+    global db
     logging.info("/clear")
-    return flask.jsonify(database.clear())
+    return flask.jsonify(db.clear())
 
 
 @app.route("/show")
 def show() -> dict:
+    global db
     logging.info("/show")
-    return flask.jsonify(database.show())
+    return flask.jsonify(db.show())
 
 
 @app.route("/profile/<name>")
@@ -44,18 +47,21 @@ def profile(name: str) -> dict:
 
 @app.route("/speeches/<name>")
 def speeches(name: str) -> list:
+    global db
     logging.info("/speeches/{}".format(name))
-    speeches = database.get_speeches_for_user(name)
+    speeches = db.get_speeches_for_user(name, want_json=True)
     return flask.jsonify(speeches)
 
 
 @app.route("/speakers")
 def speakers() -> list:
+    global db
     logging.info("/speakers")
-    speakers = database.get_all_speakers()
+    speakers = db.get_all_speakers()
     return flask.jsonify(speakers)
 
 
-def start(host: str, port: int) -> None:
-    global app
+def start(host: str, port: int, database: database.Database) -> None:
+    global app, db
+    db = database
     app.run(host=host, port=port)

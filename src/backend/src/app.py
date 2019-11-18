@@ -7,6 +7,7 @@ import src.modules.api as api
 import src.modules.updater as updater
 import src.modules.database as database
 import src.modules.scraper as scraper
+import src.modules.myexceptions as myexceptions
 
 
 # Global imports
@@ -39,26 +40,26 @@ def run() -> None:
     __init_logging(os.environ["LOGLEVEL"].upper())
     scraper_sem = threading.Semaphore(1)
     updater_sem = threading.Semaphore(0)
-    ret = database.init(
-        os.environ["DB_HOST"], int(os.environ["DB_PORT"]),
-        updater_sem, scraper_sem
-    )
-    if ret:
+    try:
+        db = database.Database(
+            os.environ["DB_HOST"], int(os.environ["DB_PORT"]),
+            updater_sem, scraper_sem
+        )
         logging.info("Successfully connected to the database.")
-    else:
+    except myexceptions.DatabaseInitException:
         logging.error("Could not connect to the database.")
         sys.exit(1)
     if os.environ["CLEAR_DB"].lower() == "true":
         logging.info("Clearing database before startup.")
-        database.clear()
-    for i in range(len(database.get_all_protocols(query={"done": False}))):
+        db.clear()
+    for i in range(len(db.get_all_protocols(query={"done": False}))):
         updater_sem.release()
-    scraper_obj = scraper.Scraper(2, scraper_sem)
-    updater_obj = updater.Updater(updater_sem)
+    scraper_obj = scraper.Scraper(2, scraper_sem, db)
+    updater_obj = updater.Updater(updater_sem, db)
     thread_scraper = threading.Thread(target=scraper_obj.run)
     thread_updater = threading.Thread(target=updater_obj.run)
     thread_api = threading.Thread(target=api.start, args=(
-        os.environ["API_HOST"], os.environ["API_PORT"]
+        os.environ["API_HOST"], os.environ["API_PORT"], db
     ))
     thread_api.start()
     thread_scraper.start()

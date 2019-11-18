@@ -15,3 +15,7 @@ class JSONInitializationException(Exception):
 
 class SpeechAnalysisException(Exception):
     pass
+
+
+class DatabaseInitException(Exception):
+    pass
