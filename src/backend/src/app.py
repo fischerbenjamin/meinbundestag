@@ -48,6 +48,9 @@ def run() -> None:
     else:
         logging.error("Could not connect to the database.")
         sys.exit(1)
+    if os.environ["CLEAR_DB"].lower() == "true":
+        logging.info("Clearing database before startup.")
+        database.clear()
     for i in range(len(database.get_all_protocols(query={"done": False}))):
         updater_sem.release()
     scraper_obj = scraper.Scraper(2, scraper_sem)
