@@ -19,7 +19,7 @@ class TestClass(unittest.TestCase):
     def setUpClass(cls):
         cls.server = mockupdb.MockupDB(auto_ismaster={"maxWireVersion": 3})
         cls.server.run()
-        database.init(
+        cls.db = database.Database(
             cls.server.uri, cls.server.port,
             threading.Semaphore(), threading.Semaphore()
         )
@@ -29,10 +29,10 @@ class TestClass(unittest.TestCase):
         cls.server.stop()
 
     def test_client_not_none(self):
-        self.assertIsNotNone(database.client)
+        self.assertIsNotNone(self.db.client)
 
     def test_database_not_none(self):
-        self.assertIsNotNone(database.database)
+        self.assertIsNotNone(self.db.database)
 
     def test_collection_not_none(self):
-        self.assertIsNotNone(database.speeches)
+        self.assertIsNotNone(self.db.speeches)
