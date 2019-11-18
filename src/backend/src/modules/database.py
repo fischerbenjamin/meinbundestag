@@ -9,107 +9,200 @@ requesting/inserting speeches.
 
 # Local imports
 import src.modules.schema as schema
+import src.modules.myexceptions as myexceptions
 
 
 # Global imports
+import re
+from typing import List, Union
+import logging
 import pymongo
+import threading
 
 
-# Global variables
-client = None
-database = None
-speeches = None
+class Database:
 
+    def __init__(
+        self, host: str, port: int,
+        event_updater: threading.Semaphore, event_sracper: threading.Semaphore
+    ):
+        global client, database, speeches, protocols
+        global updater_event, scraper_event
+        self.client = pymongo.MongoClient(host=host, port=port)
+        try:
+            self.client.admin.command('ismaster')
+        except pymongo.errors.ConnectionFailure:
+            raise myexceptions.DatabaseInitException
+        self.database = self.client["bundestag"]
+        self.speeches = self.database["speeches"]
+        self.protocols = self.database["protocols"]
+        self.updater_event = event_updater
+        self.scraper_event = event_sracper
 
-def init(host: str, port: int) -> bool:
-    """Initialize the module.
+    def __del__(self):
+        self.client.close()
 
-    Args:
-        host (str): host which is running the database
-        port (int): port the database is running on
+    def get_speeches_for_user(
+        self, name: str, want_json: bool = True
+    ) -> Union[List[schema.Speech], List[dict]]:
+        regx = re.compile(
+            "(.)*".join(name.split("-")), re.IGNORECASE
+        )
+        query = {"name": regx}
+        view = {"_id": 0}
+        speech_dicts = list(self.speeches.find(query, view))
+        if want_json:
+            return speech_dicts
+        return list(
+            schema.Speech.from_json(speech_dict)
+            for speech_dict in speech_dicts
+        )
 
-    Returns:
-        bool: True if initialization was successful, False otherwise
-    """
-    global client, database, speeches
-    client = pymongo.MongoClient(host=host, port=port)
-    try:
-        client.admin.command('ismaster')
-    except pymongo.errors.ConnectionFailure:
-        return False
-    database = client["bundestag"]
-    speeches = database["speeches"]
-    return True
+    def __insert_speech(self, speech: schema.Speech) -> bool:
+        if self.__speech_exists(speech):
+            return False
+        self.speeches.insert(speech.to_json())
+        return True
 
+    def insert_speeches(self, speeches: List[schema.Speech]) -> bool:
+        result = [
+            self.__insert_speech(speech) for speech in speeches
+        ]
+        failed = len([ret for ret in result if not ret])
+        if failed > 0:
+            logging.warning("Failed inserting {}/{} speeches.".format(
+                failed, len(result)
+            ))
+            return False
+        logging.info("Inserted {} speeches successfully.".format(len(result)))
+        return True
 
-def get_speeches_for_user(name: str) -> list:
-    """Return the speeches for a certain deputy.
+    def clear(self) -> None:
+        self.client.drop_database("bundestag")
+        self.database = self.client["bundestag"]
+        self.speeches = self.database["speeches"]
+        self.protocols = self.database["protocols"]
 
-    Args:
-        name (str): deputy's name
+    def __speech_exists(self, speech: schema.Speech) -> bool:
+        """Checks if the given speech is already in the database.
 
-    Returns:
-        list: deputy's speeches (of type schema.Speech)
-    """
-    global speeches
-    my_query = {"name": name}
-    return list(speeches.find(my_query))
+        Args:
+            speech (schema.Speech): speech to check
 
+        Returns:
+            bool: True if speech already exists, False otherwise
+        """
+        my_query = {"speech_id": speech.speech_id}
+        return self.speeches.find(my_query).count() > 0
 
-def insert_speech(speech: schema.Speech) -> bool:
-    """Insert a single speech into the database.
+    def info(self) -> dict:
+        res = {
+            "databases": [],
+            "collections": [],
+            "speeches": 0,
+            "protocols": {
+                "done": 0,
+                "in_progress": 0,
+                "total": 0
+            }
+        }
+        res["databases"] = list(self.client.list_database_names())
+        res["collections"] = list(self.database.collection_names())
+        res["speeches"] = len(list(self.speeches.find()))
+        res["protocols"]["total"] = len(list(self.protocols.find()))
+        res["protocols"]["done"] = len(
+            list(self.protocols.find({"done": True}))
+        )
+        res["protocols"]["in_progress"] = res["protocols"]["total"] \
+            - res["protocols"]["done"]
+        return res
 
-    Args:
-        speech (schema.Speech): speech object to insert
+    def insert_protocol(self, protocol: schema.Protocol) -> bool:
+        if self.__protocol_exists(protocol):
+            return False
+        self.protocols.insert(protocol.to_json())
+        logging.info(
+            "Inserted protocol '{}' successfully.".format(protocol.fname)
+        )
+        self.updater_event.release()
+        return True
 
-    Returns:
-        bool: True if speech wasn't in database before, False otherwise
-    """
-    global speeches
-    if __speech_exists(speech):
-        return False
-    speeches.insert(speech.__dict__)
-    return True
+    def __protocol_exists(self, protocol: schema.Protocol) -> bool:
+        my_query = {"url": protocol.url}
+        return self.protocols.find(my_query).count() > 0
 
+    def protocol_is_done(self, protocol: schema.Protocol) -> bool:
+        query = {"url": protocol.url}
+        update = {"$set": {"done": True}}
+        update_result = self.protocols.update_one(query, update)
+        if not update_result.acknowledged or update_result.modified_count <= 0:
+            logging.warning("Failed updating protocol '{}'.".format(
+                protocol.fname
+            ))
+            return False
+        logging.info(
+            "Updated protocol '{}' successfully.".format(protocol.fname)
+        )
+        return True
 
-def insert_speeches(speeches: list) -> bool:
-    """Insert multiple speeches of type schema.Speech into the database.
+    def get_protocol_to_process(self) -> schema.Protocol:
+        query = {"done": False}
+        obj = self.protocols.find_one(query)
+        try:
+            name = obj["fname"]
+        except TypeError:
+            name = "None"
+        logging.info("Requested protocol '{}' to process.".format(name))
+        if obj is None:
+            self.scraper_event.release()
+            return None
+        return schema.Protocol.from_json(obj)
 
-    Args:
-        speeches (list): list of speeches
+    def get_all_protocols(self, query: dict) -> List[schema.Protocol]:
+        return list(
+            schema.Protocol.from_json(protocol_dict)
+            for protocol_dict in self.protocols.find(query)
+        )
 
-    Returns:
-        bool:   True if no given speech was in the database before,
-                False otherwise
-    """
-    result = []
-    for speech in speeches:
-        result.append(insert_speech(speech))
-    return all(result)
+    def get_all_speakers(self) -> dict:
+        speakers = set(
+            x["name"] for x in self.speeches.find({}, {"_id": 0, "name": 1})
+        )
+        mapping = {}
+        for speaker in speakers:
+            mapping[speaker] = "/speeches/{}".format(
+                speaker.lower().replace(" ", "-")
+            )
+        return mapping
 
-
-def clear_speaches() -> None:
-    """
-    Clears the collection, e.g removes all speeches.
-    """
-    global speeches
-    speeches.drop()
-
-
-def __speech_exists(speech: schema.Speech) -> bool:
-    """Checks if the given speech is already in the database.
-
-    Args:
-        speech (schema.Speech): speech to check
-
-    Returns:
-        bool: True if speech already exists, False otherwise
-    """
-    global speeches
-    my_query = {"speech_id": speech.speech_id}
-    return speeches.find(my_query).count() > 0
-
-
-def list_speeches() -> list:
-    global speeches
-    return [x for x in speeches.find({}, {"_id": 0})]
+    def get_analysis_limits(self) -> dict:
+        # Don't use objects here for speedup
+        speeches = list(self.speeches.find({}, {"_id": 0}))
+        if len(speeches) <= 0:
+            return None
+        polarity = [
+            speech["analysis"]["polarity"] for speech in speeches
+        ]
+        subjectivity = [
+            speech["analysis"]["subjectivity"] for speech in speeches
+        ]
+        comment = [
+            speech["analysis"]["number_of_comments"] for speech in speeches
+        ]
+        polarity_limits = dict(
+            desc="-1.0 (negative) ; 1.0 (positive)",
+            min=min(polarity), max=max(polarity))
+        subjectivity_limits = dict(
+            desc="0.0 (objective) ; 1.0 (subjective)",
+            min=min(subjectivity), max=max(subjectivity)
+        )
+        comment_limits = dict(
+            desc="Number of comments during a speech",
+            min=min(comment), max=max(comment)
+        )
+        return dict(
+            total=len(speeches),
+            polarity=polarity_limits,
+            subjectivity=subjectivity_limits,
+            number=comment_limits
+        )

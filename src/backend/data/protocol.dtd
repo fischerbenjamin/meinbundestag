@@ -27,7 +27,7 @@ sitzung-ende-uhrzeit	CDATA		#REQUIRED
 sitzung-naechste-datum			CDATA		#REQUIRED		
 sitzung-ort					CDATA		#FIXED 	"Berlin"
 herausgeber				CDATA		#FIXED 	"Deutscher Bundestag"
-herstellung				CDATA		#FIXED 	"H. Heenemann GmbH  Co. KG, Buch- und Offsetdruckerei, Bessemerstraße 83–91, 12103 Berlin, www.heenemann-druck.de"
+herstellung				CDATA		#REQUIRED
 vertrieb						CDATA		#FIXED		"Bundesanzeiger Verlagsgesellschaft mbH, Postfach 1 0 05 34, 50445 Köln, Telefon (02 21) 97 66 83 40, Fax (02 21) 97 66 83 44, www.betrifft-gesetze.de"
 issn							CDATA		#FIXED		"0722-7980"
 start-seitennr				CDATA		#REQUIRED

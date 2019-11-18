@@ -1,0 +1,60 @@
+\documentclass{beamer}
+
+% Required packages 
+\usepackage{fontspec}
+\usepackage{fontawesome}
+\usepackage{hyperref}
+%\usepackage[ngerman]{babel}
+\usetheme{metropolis}           
+
+\newcommand{\cw}{47}
+
+% Header
+\title{AMSE - Kalendarwoche \cw{}}
+\date{20. November 2019}
+\author{Benjamin Fischer}
+\institute{benjamin.f.fischer@fau.de}
+
+% Document
+\begin{document}
+  \maketitle
+
+  % Structure (always the same)
+  \begin{frame}
+    \begin{itemize}
+      \item Zusammenfassung Kalendarwoche \cw{}
+      \begin{itemize}
+        \item Erreichte Ziele
+        \item Aufgetretene Probleme
+      \end{itemize}
+      \item Ausblick nächste Woche
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Zusammenfassung Kalendarwoche \cw{}}
+    \begin{itemize}
+      \item Quelle von \texttt{abgeordnetenwatch.de} funktioniert mit ODS
+      \item Backend funktioniert inzwischen größtenteils
+      \begin{itemize}
+        \item 3 Threads (REST-API, Link-Scraper, Protokoll-Processor)
+        \item Kommunikation über Datenbank und Semaphoren
+        \item \texttt{DEMO}
+      \end{itemize}
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Ausblick nächste Woche}
+    \begin{itemize}
+      \item Arbeit am Backend vorerst abschließen
+      \begin{itemize}
+        \item Refactoring
+        \item Dokumentation
+        \item Tests
+      \end{itemize}
+      \item optional: docker-compose für Frontend - Backend - ODS
+    \end{itemize}
+  \end{frame}
+
+\end{document}

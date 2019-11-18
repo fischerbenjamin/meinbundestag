@@ -17,6 +17,11 @@ ENV DISPLAY=:99
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 RUN python -m nltk.downloader punkt
+RUN mkdir /protocols
+RUN mkdir /usr/data/
+COPY data/protocol.dtd /usr/data/
+COPY data/protocol.xml /usr/data/
+COPY data/template.html /usr/data/
 # Working directory
 WORKDIR /usr/src/app
 
@@ -24,7 +29,6 @@ WORKDIR /usr/src/app
 ### Application build
 FROM base AS app
 COPY src/ src
-COPY data data
 COPY main.py .
 CMD [ "python", "-u", "main.py" ]
 
@@ -33,6 +37,5 @@ CMD [ "python", "-u", "main.py" ]
 FROM base AS test
 COPY src/ src
 COPY test/ test
-COPY data/ data
 COPY main.py .
 CMD [ "python", "-u", "main.py", "--test" ]

@@ -3,11 +3,14 @@
 """
 
 
+# Local imports
+import src.modules.database as database
+
+
+# Global imports
 import mockupdb
 import unittest
-
-
-import src.modules.database as database_src
+import threading
 
 
 class TestClass(unittest.TestCase):
@@ -16,17 +19,20 @@ class TestClass(unittest.TestCase):
     def setUpClass(cls):
         cls.server = mockupdb.MockupDB(auto_ismaster={"maxWireVersion": 3})
         cls.server.run()
-        database_src.init(cls.server.uri, cls.server.port)
+        cls.db = database.Database(
+            cls.server.uri, cls.server.port,
+            threading.Semaphore(), threading.Semaphore()
+        )
 
     @classmethod
     def tearDownClass(cls):
         cls.server.stop()
 
     def test_client_not_none(self):
-        self.assertIsNotNone(database_src.client)
+        self.assertIsNotNone(self.db.client)
 
     def test_database_not_none(self):
-        self.assertIsNotNone(database_src.database)
+        self.assertIsNotNone(self.db.database)
 
     def test_collection_not_none(self):
-        self.assertIsNotNone(database_src.speeches)
+        self.assertIsNotNone(self.db.speeches)

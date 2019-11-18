@@ -5,31 +5,40 @@
 
 # Local imports
 import src.modules.parsing as parsing
-import src.modules.processing as processing
 import src.modules.database as database
-import src.modules.config as config
-import src.modules.scraper as scraper
+import src.modules.processing as processing
+import src.modules.myexceptions as myexceptions
 
 
 # Global imports
+import os
 import wget
-import time
+import logging
+import threading
 
 
-def start(
-    timeout: int = config.SCRAPER_DEFAULT_TIMEOUT,
-    interval: int = config.UPDATE_INTERVAL
-):
-    my_scraper = scraper.Scraper(timeout)
-    old_links, new_links = ([], [])
-    while True:
-        new_links = my_scraper.run()
-        work = [link for link in new_links if link not in old_links]
-        for link in work:
-            wget.download(link, config.TMP_FILE)
-            speeches = parsing.get_speeches(config.TMP_FILE)
-            for speech in speeches:
-                processing.analyze(speech)
-            database.insert_speeches(speeches)
-        old_links = new_links.copy()
-        time.sleep(interval)
+class Updater(threading.Thread):
+
+    def __init__(self, sem: threading.Semaphore, database: database.Database):
+        self.sem = sem
+        self.db = database
+
+    def run(self):
+        while True:
+            logging.info("Updater requests semaphore.")
+            self.sem.acquire()
+            logging.info("Updater obtained semaphore.")
+            protocol = self.db.get_protocol_to_process()
+            fpath = os.path.join("/protocols", protocol.fname)
+            wget.download(protocol.url, fpath)
+            speeches = parsing.get_speeches(fpath)
+            try:
+                processing.analyze_speeches(speeches)
+            except myexceptions.SpeechAnalysisException:
+                logging.error(
+                    "Failed analyzing speech in protocol '{}'".format(
+                        protocol.url
+                    )
+                )
+            self.db.protocol_is_done(protocol)
+            self.db.insert_speeches(speeches)

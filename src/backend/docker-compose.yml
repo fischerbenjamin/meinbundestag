@@ -12,6 +12,7 @@ services:
       - API_PORT=3000
       - API_HOST=0.0.0.0
       - LOGLEVEL=info
+      - CLEAR_DB=false
     depends_on:
       - database
     links:
@@ -30,6 +31,8 @@ services:
       - 27017-27019:27017-27019
     networks:
       - backend
+    logging:
+      driver: none
 
 
 networks:
