@@ -6,7 +6,7 @@
 import src.modules.api as api
 import src.modules.updater as updater
 import src.modules.database as database
-import src.modules.scraper as scraper
+import src.modules.scraping as scraper
 import src.modules.myexceptions as myexceptions
 
 
@@ -27,7 +27,7 @@ def __init_logging(log_lvl: str):
     log = logging.getLogger("werkzeug")
     log.setLevel(logging.ERROR)
     logging.basicConfig(
-        format="%(asctime)s %(levelname)s %(module)s@%(funcName)s %(message)s",
+        format="%(asctime)s %(levelname)s %(message)s",
         datefmt="%H:%M:%S %d.%m.%y",
         level=log_lvl
     )
@@ -56,7 +56,9 @@ def run() -> None:
         updater_sem.release()
     scraper_obj = scraper.Scraper(2, scraper_sem, db)
     updater_obj = updater.Updater(updater_sem, db)
+    scraper_timer = scraper.ScraperTimer(60*60*24, scraper_sem)
     thread_scraper = threading.Thread(target=scraper_obj.run)
+    thread_scraper_timer = threading.Thread(target=scraper_timer.run)
     thread_updater = threading.Thread(target=updater_obj.run)
     thread_api = threading.Thread(target=api.start, args=(
         os.environ["API_HOST"], os.environ["API_PORT"], db
@@ -64,4 +66,5 @@ def run() -> None:
     thread_api.start()
     thread_scraper.start()
     thread_updater.start()
+    thread_scraper_timer.start()
     logging.info("Started api-, scraper- and updater-thread.")
