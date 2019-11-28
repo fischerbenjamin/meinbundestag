@@ -16,8 +16,9 @@ backend-down:
 	docker-compose -f backend/docker-compose.yml down
 
 backend-test:
-	docker build --rm -t backend-test --target test backend/
-	docker run backend-test 
+	cd backend && ./check
+	#docker build --rm -t backend-test --target test backend/
+	#docker run backend-test 
 
 mobile-dev:
 	docker build --rm -t mobile-dev --target dev mobile/
