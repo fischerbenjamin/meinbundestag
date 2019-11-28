@@ -1,18 +1,25 @@
+"""Entrypoint for running/testing backend."""
+
+
+# Global imports
 import argparse
 
 
+# Local imports
+import src.backend as backend
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
+    PARSER = argparse.ArgumentParser()
+    PARSER.add_argument(
         "-t", "--test", action="store_true", dest="test",
         help="Running tests instead of application."
     )
-    args = parser.parse_args()
-    if args.test:
-        print("Running tests.")
+    ARGS = PARSER.parse_args()
+    if ARGS.test:
         import test.test as test
+        print("Running tests.")
         test.run()
     else:
-        print("Running app.")
-        import src.app as app
-        app.run()
+        print("Running backend.")
+        backend.run()
