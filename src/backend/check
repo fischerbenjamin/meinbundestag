@@ -1,11 +1,15 @@
 #!/bin/bash
 
+
+set -e
 shopt -s globstar
 
-echo "Checking lint (using pylint & pydocstyle & pylama)" \
-    && pylint --extension-pkg-whitelist=lxml *.py \
-    && pylint --extension-pkg-whitelist=lxml src/**/*.py \
-    && pydocstyle *.py && pydocstyle src/**/*.py \
-    && pylama *.py && pylama src/**/*.py \
+echo "Checking lint (using pylint & pydocstyle & pylama)"
+pylint --extension-pkg-whitelist=lxml *.py
+pylint --extension-pkg-whitelist=lxml src/**/*.py
+pydocstyle *.py
+pydocstyle src/**/*.py
+pylama *.py
+pylama src/**/*.py
 
 shopt -u globstar

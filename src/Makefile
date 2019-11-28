@@ -1,9 +1,6 @@
 .PHONY: backend backend-test mobile-test mobile-dev
 
-test:
-	@make clean_container
-	@make backend-test
-	@make mobile-test
+test: clean_container backend-test mobile-test
 
 clean_container:
 	docker container prune -f
@@ -16,9 +13,8 @@ backend-down:
 	docker-compose -f backend/docker-compose.yml down
 
 backend-test:
-	cd backend && ./check
-	#docker build --rm -t backend-test --target test backend/
-	#docker run backend-test 
+	docker build --rm -t backend-test --target test backend/
+	(cd backend && ./check) || exit 1
 
 mobile-dev:
 	docker build --rm -t mobile-dev --target dev mobile/
