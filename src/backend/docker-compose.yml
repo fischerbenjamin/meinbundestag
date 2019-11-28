@@ -12,7 +12,11 @@ services:
       - API_PORT=3000
       - API_HOST=0.0.0.0
       - LOGLEVEL=info
-      - CLEAR_DB=false
+      - CLEAR_DB=
+      - SCRAPER_TIMEOUT=5
+      - SCRAPER_INTERVAL=86400
+      - PROTOCOL_DTD_FILE=/usr/data/protocol.dtd
+      - PROTOCOL_DIRECTORY=/protocols
     depends_on:
       - database
     links:
