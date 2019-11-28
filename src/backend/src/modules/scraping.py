@@ -1,8 +1,6 @@
-"""
-@author: Benjamin Fischer
+"""Scraping module for protocol links of the homepage of the Bundestag.
 
-This module is used for scraping the homepage of the German Bundestag in order
-to retrieve the document links of the protocol files.
+Retrieving the urls of the protocols of the Bundestag.
 """
 
 
@@ -12,15 +10,20 @@ import re
 import time
 import logging
 import threading
+from typing import Tuple
+
+
+# 3rd party modules
 import selenium.webdriver as webdriver
 
 
 # Local imports
-import src.modules.database as database
 import src.modules.schema as schema
+import src.modules.database as database
 
 
-class ScraperConfig:
+class Scraper(threading.Thread):
+    """Scraper that searches for xml files (protocols) of the Bundestag."""
 
     # URL of the homepage of the German Bundestag
     URL_BUNDESTAG_OPENDATA = "https://www.bundestag.de/services/opendata"
@@ -50,43 +53,45 @@ class ScraperConfig:
         "--disable-gpu"
     ]
 
-
-class Scraper(threading.Thread, ScraperConfig):
-
-    """This class implements the actual scraper that searches for new protocols
-    of the Bundestag.
-    """
-
     def __init__(
-        self, timeout: int, sem: threading.Semaphore,
-        database: database.Database
+            self, scraper_config: Tuple[int, int], sem: threading.Semaphore,
+            database_client: database.Database
     ):
+        """Init object.
+
+        Args:
+            scraper_config (Tuple[int, int]): (timeout, interval)
+            sem (threading.Semaphore): communication with database
+            database (database.Database): database
+
+        """
+        threading.Thread.__init__(self)
         self.sem = sem
-        self.db = database
-        self.timeout = timeout
+        self.db_client = database_client
+        self.timeout, _ = scraper_config
         self.__init_done_links_from_database()
         self.__init_webdriver()
 
     def __del__(self):
+        """Close driver on deletion."""
         self.driver.close()
 
     def __init_done_links_from_database(self) -> None:
-        """Loads already processed protocol links from the database on startup.
+        """Load already processed protocol links from the database on startup.
+
         These links are not required to be collected again.
         """
         processed_links = [
-            protocol.url
-            for protocol in self.db.get_all_protocols(query={"done": True})
+            prot.url
+            for prot in self.db_client.protocol_get_all(query={"done": True})
         ]
-        logging.info("Initialized with {} done links from database".format(
-            len(processed_links)
-        ))
+        logging.info(
+            "Initialized with %d done links from DB", len(processed_links)
+        )
         self.links = processed_links
 
     def __init_webdriver(self) -> None:
-        """This init function initializes the selenium chrome webdriver with
-        predefined options.
-        """
+        """Initialize the selenium chrome webdriver with predefined options."""
         chrome_options = webdriver.ChromeOptions()
         for opt in Scraper.WEBDRIVER_OPTIONS:
             chrome_options.add_argument(opt)
@@ -94,8 +99,10 @@ class Scraper(threading.Thread, ScraperConfig):
         self.driver.fullscreen_window()
 
     def __update_links(self) -> None:
-        """Collects the links of the current table page and inserts them into
-        the cache and database if they were not collected yet.
+        """Collect the links of the current table page.
+
+        Insert the collected links into the own list and the database if they
+        have not been collected yet.
         """
         document_links = self.driver.find_elements_by_class_name(
             Scraper.CLASS_OF_DOCUMENT_LINKS
@@ -106,30 +113,33 @@ class Scraper(threading.Thread, ScraperConfig):
                 if link not in self.links:
                     name = os.path.basename(link)
                     protocol = schema.Protocol(url=link, fname=name)
-                    self.db.insert_protocol(protocol)
+                    self.db_client.protocol_insert(protocol)
                     self.links.append(link)
 
     @staticmethod
     def __button_is_clickable(
-        button: webdriver.remote.webelement.WebElement
+            button: webdriver.remote.webelement.WebElement
     ) -> bool:
-        """Checks if the given button is clickable.
+        """Check if the given button is clickable.
 
         Args:
             button (webdriver.remote.webelement.WebElement): next/prev button
 
         Returns:
             bool: True if clickable, False otherwise
+
         """
         is_disabled = button.get_attribute(Scraper.BTN_DISABLED_ATTR)
         return Scraper.CLICKABLE[is_disabled]
 
     def __move(self, forwards: bool) -> None:
-        """Cycles through the table in the given direction. Stops when the
-        button of the given direction is not clickable anymore.
+        """Cycle through the table in the given direction.
+
+        Stop when the button of the given direction is not clickable anymore.
 
         Args:
             forwards (bool): forwards/backwards (using next/prev)
+
         """
         is_clickable = True
         if forwards:
@@ -150,6 +160,7 @@ class Scraper(threading.Thread, ScraperConfig):
 
     def run(self) -> None:
         """Infinetly cycles through the table and collects protocol links.
+
         Either the SraperTimer or the Updater restart this procedure.
         """
         self.driver.get(Scraper.URL_BUNDESTAG_OPENDATA)
@@ -162,20 +173,28 @@ class Scraper(threading.Thread, ScraperConfig):
 
 
 class ScraperTimer(threading.Thread):
+    """Simple wakeup thread for the Scraper class.
 
-    """This class implements a trivial wakeup thread for the Scraper class.
     It releases the scraper's semaphore in a pre-defined interval.
     """
 
-    def __init__(self, timeout: int, sem: threading.Semaphore):
-        self.timeout = timeout
+    def __init__(
+            self, scraper_config: Tuple[int, int], sem: threading.Semaphore
+    ):
+        """Init object.
+
+        Args:
+            scraper_config (Tuple[int, int]): (timeout, interval)
+            sem (threading.Semaphore): semaphore to release
+
+        """
+        threading.Thread.__init__(self)
+        _, self.interval = scraper_config
         self.sem = sem
 
     def run(self):
-        """Infinetly releases the semaphore of the actual scraper object after
-        a certain timeout.
-        """
+        """Release the semaphore of the scraper object endlessly."""
         while True:
-            time.sleep(self.timeout)
+            time.sleep(self.interval)
             self.sem.release()
             logging.info("ScraperTimer released the scraper's semaphore.")
