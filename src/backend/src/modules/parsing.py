@@ -1,77 +1,96 @@
+"""Parsing speeches from the procotols of the Bundestag.
+
+This module implements the parsing of the protocols provided by the Bundestag.
+It uses the lxml module in order to parse the xml structure correctly and
+coverts the content to predefined objects.
 """
-@author: Benjamin Fischer
-"""
+
+
+# Python imports
+import os
+import logging
+from typing import List, Tuple
+
+
+# 3rd party modules
+import lxml.etree
 
 
 # Local imports
-import src.modules.config as config
 import src.modules.schema as schema
 import src.modules.myexceptions as myexceptions
 
 
-# Global imports
-import os
-import logging
-import lxml.etree
+def get_speeches(filepath: str, dtd_file: str) -> List[schema.Speech]:
+    """Parse the given file according to the given DTD.
 
-
-def get_speeches(filepath: str, dtd_file: str = config.DTD_FILE) -> list:
-    """Parses given protocol and returns the single speeches.
+    Parses the protocol and returns the single speeches. This is the only
+    function in this module that is safe to be called from outside.
 
     Args:
-        filepath (str): absolute filepath of the .xml file.
+        filepath (str): absolute filepath of the protocol
 
     Raises:
-        SpeechParsingException: parsing the speech failed
+        SpeechParsingException: if parsing the speeches fail in any kind
 
     Returns:
-        list: speech elements
+        List[schema.Speech]: list of speech elements of the protocol
+
     """
     if filepath is None or filepath == "" or not __check_protocol(filepath):
         raise FileNotFoundError("Invalid filepath '{}'".format(filepath))
     if not __validate_protocol(filepath, dtd_file):
-        logging.error("Failed validating '{}'".format(filepath))
-    tree = lxml.etree.parse(filepath)
-    root = tree.getroot()
-    speeches = []
-    for sp in root.iter("rede"):
-        try:
-            speech = __parse_speech(root, sp)
+        logging.error("Failed validating %s", filepath)
+        raise myexceptions.SpeechParsingException
+    try:
+        tree = lxml.etree.parse(filepath)
+        root = tree.getroot()
+        speeches = []
+        for speech_elem in root.iter("rede"):
+            speech = __parse_speech(root, speech_elem)
             speeches.append(speech)
-        except Exception:
-            raise myexceptions.SpeechParsingException
+    except Exception:
+        raise myexceptions.SpeechParsingException
     return speeches
 
 
 def __parse_speech(
-    root: lxml.etree._Element, speech: lxml.etree._Element
+        root: lxml.etree.ElementBase, speech: lxml.etree.ElementBase
 ) -> schema.Speech:
-    """Parses a single speech given as a tree element. The structure of the
-    result is declared in 'schema.py'.
+    """Parse a single speech given as a tree element.
 
     Args:
-        speech (lxml.etree._Element): speech element to parse
+        speech (lxml.etree.ElementBase): speech element to parse
 
     Returns:
-        Speech: result
+        Speech: parsed speech
+
     """
     speech_id, speaker_id, name, party = __get_speech_meta(speech)
     topic = __get_speech_topic(root, speaker_id)
     date = __get_speech_date(root)
     content = __get_speech_contents(speech)
+    meta = dict(
+        name=name, party=party, topic=topic, date=date
+    )
     return schema.Speech(
-        name, party, topic, date, content, speaker_id, speech_id
+        meta, content, speaker_id, speech_id
     )
 
 
-def __get_speech_meta(speech: lxml.etree._Element) -> tuple:
-    """Returns meta information about given speech such as IDs and names.
+def __get_speech_meta(
+        speech: lxml.etree.ElementBase
+) -> Tuple[str, str, str, str]:
+    """Return the meta information about the speech.
+
+    Meta information are for example the name of speaker or the IDs.
 
     Args:
-        speech (lxml.etree._Element): speech to parse
+        speech (lxml.etree.ElementBase): speech to parse
 
     Returns:
-        tuple: (ID(speech), ID(speaker), speaker's name, speaker's party)
+        Tuple[str, str, str, str]: (ID(speech), ID(speaker), name, party)
+
     """
     speaker = speech.find(".//redner")
     speech_id = speech.attrib["id"]
@@ -89,20 +108,22 @@ def __get_speech_meta(speech: lxml.etree._Element) -> tuple:
         party = speaker.find("./name/fraktion").text
     except AttributeError:
         party = speaker.find("./name/rolle/rolle_kurz").text
-    return (
-        speech_id, speaker_id, name, party
-    )
+    return (speech_id, speaker_id, name, party)
 
 
-def __get_speech_topic(root: lxml.etree._Element, speaker_id: str) -> str:
-    """Returns the topic the search is related to.
+def __get_speech_topic(root: lxml.etree.ElementBase, speaker_id: str) -> str:
+    """Return the topic of the speaker's speech.
+
+    The layout of the topic's description is not defined so the result may not
+    always be satisfying.
 
     Args:
-        root (lxml.etree._Element): root element of xml tree
-        speaker_id (str): unique if of desired speaker
+        root (lxml.etree.ElementBase): root element of xml tree
+        speaker_id (str): unique ID of desired speaker
 
     Returns:
         str: topic of the agenda item the speech is related to
+
     """
     topic = root.find(".//ivz-block//redner[@id = '{}']/../../../{}/{}".format(
         speaker_id, "ivz-eintrag", "ivz-eintrag-inhalt"
@@ -116,21 +137,37 @@ def __get_speech_topic(root: lxml.etree._Element, speaker_id: str) -> str:
     return text
 
 
-def __get_speech_date(root: lxml.etree._Element) -> str:
-    """Simply returns the date the speech was held.
+def __get_speech_date(root: lxml.etree.ElementBase) -> str:
+    """Return the date the speech was held.
 
     Args:
-        root (lxml.etree._Element): root element
+        root (lxml.etree.ElementBase): root element
 
     Returns:
         str: date
+
     """
     return root.find(
         ".//veranstaltungsdaten/datum"
     ).attrib["date"]
 
 
-def __get_speech_contents(speech: lxml.etree._Element) -> schema.SpeechContent:
+def __get_speech_contents(
+        speech: lxml.etree.ElementBase
+) -> schema.SpeechContent:
+    """Return the content of the speech in a procedural manner.
+
+    This function is probably the most complex one. It creates the speech
+    content which requires to collect subsequent paragraphs of one speaker and
+    seperate them from the paragraphs of the other speakers.
+
+    Args:
+        speech (lxml.etree.ElementBase): speech to parse
+
+    Returns:
+        schema.SpeechContent: the sequential content of the speech
+
+    """
     speech_content = schema.SpeechContent([])
     name_flow = [
         schema.SpeechIndex(speech.index(e), e.text.replace(":", ""))
@@ -151,10 +188,10 @@ def __get_speech_contents(speech: lxml.etree._Element) -> schema.SpeechContent:
     ]
     speech_flow = sorted(name_flow + redner_flow, key=lambda x: x.index)
     speaker = speech_flow[0]
-    for i in range(0, len(speech_flow)):
+    for counter, curr_speech_index in enumerate(speech_flow):
         try:
-            speech_index_start = speech_flow[i]
-            speech_index_end = speech_flow[i+1].index
+            speech_index_start = curr_speech_index
+            speech_index_end = speech_flow[counter+1].index
         except IndexError:
             speech_index_end = len(speech)
         is_speaker = (speech_index_start.name == speaker.name)
@@ -179,25 +216,29 @@ def __get_speech_contents(speech: lxml.etree._Element) -> schema.SpeechContent:
 
 
 def __check_protocol(filepath: str) -> bool:
-    """Checks the existence and validity of the given protocol.
+    """Check the existence and validity of the given protocol.
+
+    This function simply checks if the path exists and if the path is a file.
 
     Args:
         filepath (str): absolute path of the .xml file
 
     Returns:
         bool: True if it exists, False otherwise
+
     """
     return os.path.exists(filepath) and os.path.isfile(filepath)
 
 
 def __validate_protocol(filepath: str, dtd_file: str) -> bool:
-    """Checks if the given protocol matches the document type definition.
+    """Check if the given protocol matches the document type definition.
 
     Args:
-        filename (str): absolute path of the .xml-file
+        filename (str): absolute path of the .xml file
 
     Returns:
         bool: True if it matches, False otherwise
+
     """
     dtd = lxml.etree.DTD(dtd_file)
     tree = lxml.etree.parse(filepath)
