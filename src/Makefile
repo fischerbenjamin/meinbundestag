@@ -25,12 +25,16 @@ mobile-test:
 	docker run mobile-test
 
 
+backend-test:
+	@make backend-test-unittests
+	@make backend-test-linting-source
+	@make backend-test-docker-build
 
 backend-test-unittests:
-	(cd backend && python3 main.py --test) || exit 1
+	(cd backend && python3 main.py --test)
 
 backend-test-linting-source:
-	(cd backend && ./check) || exit 1
+	cd backend && ./check
 
 backend-test-docker-build:
 	docker build --rm -t backend-test --target test backend/
