@@ -1,13 +1,16 @@
 matrix:
   include:
     - language: minimal
+      service:
+        - docker
+      script:
+        - make -C src backend-test-docker-build
     - language: python
       python: 3.8
       install:
         - pip install pylint
-
-service:
-  - docker
-
-script:
-  - make -C src test
+        - pip install pydocstyle
+        - pip install pylama
+        - pip install -r backend/requirements.txt
+      script:
+        - make -C src backend-test-linting-source

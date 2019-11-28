@@ -23,3 +23,11 @@ mobile-dev:
 mobile-test:
 	docker build --rm -t mobile-test --target test mobile/
 	docker run mobile-test
+
+
+
+backend-test-linting-source:
+	(cd backend && ./check) || exit 1
+
+backend-test-docker-build:
+	docker build --rm -t backend-test --target test backend/
