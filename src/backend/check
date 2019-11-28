@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-set -e
+set -ev
 shopt -s globstar
 
 echo "Checking lint (using pylint & pydocstyle & pylama)"

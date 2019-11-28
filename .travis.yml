@@ -11,6 +11,6 @@ matrix:
         - pip install pylint
         - pip install pydocstyle
         - pip install pylama
-        - pip install -r backend/requirements.txt
+        - pip install -r src/backend/requirements.txt
       script:
         - make -C src backend-test-linting-source
