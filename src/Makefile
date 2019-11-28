@@ -26,6 +26,9 @@ mobile-test:
 
 
 
+backend-test-unittests:
+	(cd backend && python3 main.py --test) || exit 1
+
 backend-test-linting-source:
 	(cd backend && ./check) || exit 1
 
