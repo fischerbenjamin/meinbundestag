@@ -1,21 +1,21 @@
+"""This module defines all custom exceptions.
+
+The custom exceptions are used to clarify the reason for an unexpected
+behaviour.
 """
-@author: Benjamin Fischer
-
-This module contains all user defined exceptions.
-"""
-
-
-class SpeechParsingException(Exception):
-    pass
-
-
-class JSONInitializationException(Exception):
-    pass
-
-
-class SpeechAnalysisException(Exception):
-    pass
 
 
 class DatabaseInitException(Exception):
-    pass
+    """Initializing the database connection fails."""
+
+
+class SpeechParsingException(Exception):
+    """Parsing a speech fails."""
+
+
+class SpeechAnalysisException(Exception):
+    """Analyzing a speech fails."""
+
+
+class JSONInitializationException(Exception):
+    """Initializing a custom python object from json data fails."""
