@@ -1,4 +1,10 @@
-language: minimal
+matrix:
+  include:
+    - language: minimal
+    - language: python
+      python: 3.8
+      install:
+        - pip install pylint
 
 service:
   - docker
