@@ -1,18 +1,26 @@
-"""
-@author: Benjamin Fischer
-"""
+"""Helper script to detect possible bugs during parsing/processing."""
+
+
+# Global imports
+import os
+import time
+import json
+import argparse
+from typing import Tuple
+
 
 # Local imports
 import src.modules.parsing as parsing
 import src.modules.processing as processing
 
-# Global imports
-import os
-import time
-import argparse
 
+def parse_arguments() -> Tuple[str, str]:
+    """Parse the command line arguments.
 
-def parse_arguments() -> tuple:
+    Returns:
+        Tuple[str, str]: paths of (protocol, dtd file)
+
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-p", "--protocol", dest="protocol",
@@ -27,10 +35,15 @@ def parse_arguments() -> tuple:
 
 
 if __name__ == "__main__":
-    protocol, dtd = parse_arguments()
-    t = time.time()
-    speeches = parsing.get_speeches(protocol, dtd)
-    print("Parsing speeches took {:3.2f} seconds".format(time.time()-t))
-    t = time.time()
-    processing.analyze_speeches(speeches)
-    print("Processing speeches took {:3.2f} seconds".format(time.time()-t))
+    PROTOCOL, DTD_FILE = parse_arguments()
+    TS_START = time.time()
+    SPEECHES = parsing.get_speeches(PROTOCOL, DTD_FILE)
+    print("Parsing speeches took {:3.2f} seconds".format(time.time()-TS_START))
+    TS_START = time.time()
+    processing.analyze_speeches(SPEECHES)
+    print("Processing speeches took {:3.2f} seconds".format(
+        time.time()-TS_START
+    ))
+    SPEECHES_JSON = [speech.to_json() for speech in SPEECHES]
+    with open("output.json", "w") as fp:
+        json.dump(SPEECHES_JSON, fp, indent=4)
