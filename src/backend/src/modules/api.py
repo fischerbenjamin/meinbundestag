@@ -102,7 +102,7 @@ def api_speeches(name: str) -> List[dict]:
 @APP.route("/speakers")
 def api_speakers() -> List[str]:
     """Return a list of all deputies with at least one speech in the database.
-    
+
     This route can be used to check if a certain deputy is already present in
     the database.
 
