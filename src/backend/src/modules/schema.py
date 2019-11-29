@@ -114,7 +114,7 @@ class SpeechParagraph(JSONSerializable):
 
         """
         return dict(
-            type=self.type_of_paragraph,
+            type_of_paragraph=self.type_of_paragraph,
             text=self.text
         )
 
@@ -193,7 +193,7 @@ class SpeechAnalysis(JSONSerializable):
     """Structure of the analysis of a speech."""
 
     def __init__(
-            self, polarity: float = 0.0, subjectivity: float = 0.0,
+            self, polarity: float = 0.0, subjectivity: float = 0.5,
             number_of_comments: int = 0
     ):
         """Init object.
@@ -422,14 +422,16 @@ class SpeechContent:
             if speech_paragraph.is_comment()
         ]
 
-    def to_json(self) -> List[Any]:
+    def to_json(self) -> Dict[str, List["SpeechEntry"]]:
         """Convert object to json data.
 
         Returns:
-            List[Any]: list containing json representation of speech entries
+            Dict[str, List["SpeechEntry"]]: mappin of attributes
 
         """
-        return list(speech_entry.to_json() for speech_entry in self.entries)
+        return dict(
+            entries=[speech_entry.to_json() for speech_entry in self.entries]
+        )
 
     @classmethod
     def from_json(cls, obj) -> "SpeechContent":
