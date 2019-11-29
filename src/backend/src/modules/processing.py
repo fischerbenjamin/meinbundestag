@@ -27,8 +27,11 @@ def analyze_speeches(speeches: List[schema.Speech]) -> None:
 
     Raises:
         myexceptions.SpeechAnalysisException: if processing of a speech fails
+            or None was passed as argument
 
     """
+    if speeches is None:
+        raise myexceptions.SpeechAnalysisException("Speeches were 'None'")
     for speech in speeches:
         try:
             __analyze_speech(speech)
@@ -68,6 +71,8 @@ def __analyze_sentiment(content: schema.SpeechContent) -> Tuple[float, float]:
 
     """
     text = content.get_speakers_text()
+    if not text:
+        return (0.0, 0.5)
     blob = TextBlob(text)
     polarity, subjectivity = (
         float("{0:.2f}".format(blob.sentiment.polarity)),
