@@ -31,10 +31,10 @@ backend-test:
 	@make backend-test-docker-build
 
 backend-test-unittests:
-	(cd backend && python3 main.py --test)
+	(cd backend/python && python3 main.py --test)
 
 backend-test-linting-source:
-	cd backend && ./check
+	cd backend/python && ./lint
 
 backend-test-docker-build:
 	docker build --rm -t backend-test --target test backend/
