@@ -12,8 +12,8 @@ import src.modules.parsing as parsing
 class TestClass(unittest.TestCase):
     """Unittest class."""
 
-    DTD_FILE = "../data/protocol.dtd"
-    PROTOCOL = "../data/protocol.xml"
+    DTD_FILE = "data/protocol.dtd"
+    PROTOCOL = "data/protocol.xml"
     PROTOCOL_NUMBER_OF_SPEECHES = 93
 
     def test_get_speeches_filepath_none(self):
