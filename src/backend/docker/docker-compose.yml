@@ -4,7 +4,8 @@ services:
   api:
     container_name: "backend.api"
     build:
-      context: .
+      dockerfile: $PWD/backend/docker/Dockerfile
+      context: ../python
       target: app
     environment:
       - DB_HOST=database

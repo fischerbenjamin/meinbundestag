@@ -14,7 +14,7 @@ RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`cu
 # Set display port to avoid crash
 ENV DISPLAY=:99
 # Install dependencies
-COPY requirements.txt .
+COPY requirements/base.txt ./requirements.txt
 RUN pip install -r requirements.txt
 RUN python -m nltk.downloader punkt
 RUN mkdir /protocols
