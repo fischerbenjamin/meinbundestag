@@ -6,7 +6,6 @@ services:
     build:
       dockerfile: $PWD/backend/docker/Dockerfile
       context: ../python
-      target: app
     environment:
       - DB_HOST=database
       - DB_PORT=27017

@@ -1,4 +1,3 @@
-### Base build
 FROM python AS base
 # Google Chrome
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
@@ -13,29 +12,17 @@ RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`cu
     && rm /tmp/chromedriver.zip
 # Set display port to avoid crash
 ENV DISPLAY=:99
+# Set working directory
+WORKDIR /usr/src/app
 # Install dependencies
 COPY requirements/base.txt ./requirements.txt
 RUN pip install -r requirements.txt
 RUN python -m nltk.downloader punkt
+# Copy data
 RUN mkdir /protocols
 RUN mkdir /usr/data/
 COPY data/protocol.dtd /usr/data/
-COPY data/protocol.xml /usr/data/
 COPY data/template.html /usr/data/
-# Working directory
-WORKDIR /usr/src/app
-
-
-### Application build
-FROM base AS app
 COPY src/ src
 COPY main.py .
 CMD [ "python", "-u", "main.py" ]
-
-
-### Test build
-FROM base AS test
-COPY src/ src
-COPY test/ test
-COPY main.py .
-CMD [ "python", "-u", "main.py", "--test" ]

@@ -37,4 +37,5 @@ backend-test-linting-source:
 	cd backend/python && ./lint
 
 backend-test-docker-build:
-	docker build --rm -t backend-test --target test backend/
+	docker build --rm -t backend-test backend/python \
+		-f backend/docker/Dockerfile

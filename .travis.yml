@@ -11,5 +11,6 @@ matrix:
         - pip install -r src/backend/python/requirements/base.txt
         - pip install -r src/backend/python/requirements/test.txt
       script:
+        - python -m nltk.downloader punkt
         - make -C src backend-test-linting-source
         - make -C src backend-test-unittests
