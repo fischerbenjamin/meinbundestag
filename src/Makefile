@@ -18,8 +18,8 @@ mobile-test:
 
 
 backend:
-	docker-compose -f backend/docker-compose.yml rm --force
-	docker-compose -f backend/docker-compose.yml up --build \
+	docker-compose -f backend/docker/docker-compose.yml rm --force
+	docker-compose -f backend/docker/docker-compose.yml up --build \
 		--abort-on-container-exit
 
 backend-down:
