@@ -125,7 +125,7 @@ class Database:
         return True
 
     def speech_get_speeches_for_name(
-            self, name: str, want_json: bool = True
+            self, name: re.Pattern, want_json: bool = True
     ) -> Union[List[schema.Speech], List[Dict[str, Any]]]:
         """Return all speeches of given deputy.
 
@@ -134,19 +134,16 @@ class Database:
         data.
 
         Args:
-            name (str): deputy's name
+            name (re.Pattern): regex pattern for name
             want_json (bool, optional): json or object data. Defaults to True.
 
         Returns:
             Union[List[schema.Speech], List[Dict[str, Any]]]: speeches
 
         """
-        regx = re.compile("(.)*".join(name.split("-")), re.IGNORECASE)
-        speeches_json = list(
-            self.speeches.find({"meta.name": regx}, {"_id": 0})
-        )
+        speeches_json = self.speeches.find({"meta.name": name}, {"_id": 0})
         if want_json:
-            return speeches_json
+            return list(speeches_json)
         return list(schema.Speech.from_json(sp) for sp in speeches_json)
 
     def protocol_insert(self, protocol: schema.Protocol) -> bool:
@@ -259,17 +256,18 @@ class Database:
             - res["protocols"]["done"]
         return res
 
-    def meta_get_all_speakers(self) -> List[str]:
+    def meta_get_all_speakers(self) -> Dict[str, Union[List[str], int]]:
         """Return the names of all speakers who are present in the database.
 
         Returns:
-            List[str]: names of deputies
+            Dict[str, Union[List[str], int]]: names of deputies
 
         """
-        return list(
+        speakers = list(set(
             x["meta"]["name"]
             for x in self.speeches.find({}, {"_id": 0, "meta": 1})
-        )
+        ))
+        return dict(names=speakers, total=len(speakers))
 
     def meta_get_analysis_limits(self) -> Dict[str, Any]:
         """Return the limits of the analysis of all speeches in the database.
