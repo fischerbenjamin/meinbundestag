@@ -49,7 +49,8 @@ class TestClass(unittest.TestCase):
             api_config=("doe", 4711),
             scraper_config=(47, 11),
             protocol_config=("42", "foobar"),
-            other_config=("ha", "ha", "funny", 10101)
+            ods_config=("ods", "pipeline"),
+            logging_config="info"
         )
 
     def test_speech_paragraph(self):
