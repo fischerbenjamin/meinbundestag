@@ -46,11 +46,11 @@ def get_speeches(filepath: str, dtd_file: str) -> List[schema.Speech]:
         tree = lxml.etree.parse(filepath)
         root = tree.getroot()
         speeches = []
-        for speech_elem in root.iter("rede"):
+        for speech_elem in root.findall(".//tagesordnungspunkt/rede"):
             speech = __parse_speech(root, speech_elem)
             speeches.append(speech)
-    except Exception:
-        raise myexceptions.SpeechParsingException
+    except Exception as exception:
+        raise myexceptions.SpeechParsingException from exception
     return speeches
 
 
@@ -70,6 +70,7 @@ def __parse_speech(
     topic = __get_speech_topic(root, speaker_id)
     date = __get_speech_date(root)
     content = __get_speech_contents(speech)
+    content.assert_valid()
     meta = dict(
         name=name, party=party, topic=topic, date=date
     )
@@ -200,6 +201,8 @@ def __get_speech_contents(
             speech_index_start.name, is_speaker, []
         )
         for para in paragraphs:
+            if para.text is None:
+                continue
             if para.tag == "kommentar":
                 speech_paragraph = schema.SpeechParagraph(
                     schema.SpeechParagraph.TYPE_COMMENT,
