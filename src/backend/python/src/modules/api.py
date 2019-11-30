@@ -20,11 +20,14 @@ import flask
 
 
 # Local imports
+import src.modules.schema as schema
 import src.modules.database as database
+import src.modules.ods_wrapper as ods_wrapper
 
 
 # Global variables
 DATABASE = None
+ODS_WRAPPER = None
 APP = flask.Flask(__name__, template_folder="/usr/data")
 
 
@@ -47,104 +50,85 @@ def api_home() -> str:
 def api_info() -> Dict[str, Any]:
     """Show some general information about the database.
 
-    Examples are the number of processed speeches and all existing collections.
-
     Returns:
         Dict[str, Any]: general key-value encoded information
 
     """
     global DATABASE
     logging.info("/info")
-    return flask.jsonify(DATABASE.meta_stats())
+    result = dict(
+        stats=DATABASE.meta_get_analysis_limits(),
+        speakers=DATABASE.meta_get_all_speakers(),
+        info=DATABASE.meta_stats()
+    )
+    return flask.jsonify(result)
+
+
+@APP.route("/deputies")
+def api_deputies_names() -> List[str]:
+    """Return a list containing all deputies of the bundestag.
+
+    This list can be used for an overview or search function in the
+    frontend.
+
+    Returns:
+        List[str]: names of all deputies
+
+    """
+    global ODS_WRAPPER
+    names = [
+        str(schema.Name.from_profile(profile))
+        for profile in ODS_WRAPPER.deputies()
+    ]
+    return flask.jsonify(names)
 
 
 @APP.route("/profile/<name>")
 def api_profile(name: str) -> Dict[str, Any]:
     """Display the profile of the given deputy.
 
-    This route retrieves the information about the given deputy by calling
-    the ODS.
+    This route retrieves the information about the given deputy. It uses the
+    overview provided by the ODS to get the username for the profile page
+    of abgeordnetenwatch.de. Returns the profile information and all speeches
+    of the given deputy.
 
     Args:
         name (str): deputy's name
-
-    Raises:
-        NotImplementedError: Currently not implemented
 
     Returns:
         Dict[str, Any]: deputy's profile
 
     """
+    global ODS_WRAPPER, DATABASE
     logging.info("/profile/%s", name)
-    raise NotImplementedError
+    my_name = schema.Name.from_url_string(name)
+    regex = my_name.get_regex()
+    profile = None
+    for tmp in ODS_WRAPPER.deputies():
+        tmp_name = schema.Name.from_profile(tmp)
+        if regex.match(str(tmp_name)):
+            profile = ODS_WRAPPER.get_full_profile(tmp)
+            break
+    profile["speeches"] = DATABASE.speech_get_speeches_for_name(regex)
+    return flask.jsonify(profile)
 
 
-@APP.route("/speeches/<name>")
-def api_speeches(name: str) -> List[dict]:
-    """Return all speeches of given deputy.
-
-    This route is thought to be used by the frontend to display the profile
-    of a single deputy. The given name is required to be seperated by dashes.
-
-    Args:
-        name (str): deputy's name
-
-    Returns:
-        List[Dict[str, Any]]: list of all speeches of given deputy
-
-    """
-    global DATABASE
-    logging.info("/speeches/%s", name)
-    speeches = DATABASE.speech_get_speeches_for_name(name, want_json=True)
-    return flask.jsonify(speeches)
-
-
-@APP.route("/speakers")
-def api_speakers() -> List[str]:
-    """Return a list of all deputies with at least one speech in the database.
-
-    This route can be used to check if a certain deputy is already present in
-    the database.
-
-    Returns:
-        List[str]: list of names (single name is seperated by dashes)
-
-    """
-    global DATABASE
-    logging.info("/speakers")
-    speakers = DATABASE.meta_get_all_speakers()
-    return flask.jsonify(speakers)
-
-
-@APP.route("/stats")
-def api_stats() -> Dict[str, Any]:
-    """Return statistics about the analysis of the speeches.
-
-    This route is supposed to give an overview what are the limits of the
-    analysis of the speeches. It can be used to classify a single speech
-    by comparing it to the min/max values.
-
-    Returns:
-        Dict[str, Any]: mapping from keyword to (description, min, max)
-
-    """
-    global DATABASE
-    logging.info("/stats")
-    limits = DATABASE.meta_get_analysis_limits()
-    return flask.jsonify(limits)
-
-
-def start(api_config: Tuple[str, int], db_client: database.Database) -> None:
+def start(
+        api_config: Tuple[str, int], ods_config: Tuple[str, str],
+        db_client: database.Database
+) -> None:
     """Start the flask application.
 
     This function starts the flask application and is supposed to never return.
 
     Args:
         api_config (Tuple[str, int]): (host, port)
+        ods_config (Tuple[str, str]): (host, pipeline, fallback, profile)
         db_client (database.Database): database client
 
     """
-    global APP, DATABASE
+    global APP, DATABASE, ODS_WRAPPER
     DATABASE = db_client
+    ODS_WRAPPER = ods_wrapper.ODS(ods_config)
     host, port = api_config
     APP.run(host=host, port=port)
