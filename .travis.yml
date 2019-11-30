@@ -4,7 +4,7 @@ matrix:
       service:
         - docker
       script:
-        - make -C src backend-test-docker-build
+        - make -C src backend-test-docker
     - language: python
       python: 3.8
       install:
@@ -12,5 +12,4 @@ matrix:
         - pip install -r src/backend/python/requirements/test.txt
       script:
         - python -m nltk.downloader punkt
-        - make -C src backend-test-linting-source
-        - make -C src backend-test-unittests
+        - make -C src backend-test-source

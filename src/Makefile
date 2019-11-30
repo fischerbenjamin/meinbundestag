@@ -1,12 +1,12 @@
-.PHONY: backend backend-test mobile-test mobile-dev
-
-test: clean_container backend-test mobile-test
-
-clean_container:
-	docker container prune -f
+################################################################################
+###                                APPLICATION                              ###
+################################################################################
 
 
 
+################################################################################
+###                              MOBILE FRONTEND                             ###
+################################################################################
 
 mobile-dev:
 	docker build --rm -t mobile-dev --target dev mobile/
@@ -17,25 +17,31 @@ mobile-test:
 	docker run mobile-test
 
 
+################################################################################
+###                              PYTHON BACKEND                              ###
+################################################################################
+
+.PHONY: backend
 backend:
-	docker-compose -f backend/docker/docker-compose.yml rm --force
-	docker-compose -f backend/docker/docker-compose.yml up --build \
-		--abort-on-container-exit
+	docker-compose -f backend/docker/docker-compose.yml up --build
+	# docker-compose -f backend/ods/amse-ws1920-ods-app/docker-compose.yml up -d
 
+.PHONY: backend-down
 backend-down:
-	docker-compose -f backend/docker-compose.yml down
+	docker-compose -f backend/docker/docker-compose.yml down
+	# docker-compose -f backend/ods/amse-ws1920-ods-app/docker-compose.yml down
 
-backend-test:
-	@make backend-test-unittests
-	@make backend-test-linting-source
-	@make backend-test-docker-build
+.PHONY: backend-test-docker
+backend-test-docker:
+	# Running docker build
+	docker build -f backend/docker/Dockerfile -t backend-test backend/python
 
-backend-test-unittests:
+.PHONY: backend-test-source
+backend-test-source:
+	# Running linting
+	(cd backend/python && ./lint)
+	# Running unittest
 	(cd backend/python && python3 main.py --test)
 
-backend-test-linting-source:
-	cd backend/python && ./lint
-
-backend-test-docker-build:
-	docker build --rm -t backend-test backend/python \
-		-f backend/docker/Dockerfile
+.PHONY: backend-restart
+backend-restart: backend-down backend
