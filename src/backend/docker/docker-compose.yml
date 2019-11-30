@@ -1,8 +1,8 @@
-version: "3.4"
+version: "3.7"
 
 services:
   api:
-    container_name: "backend.api"
+    container_name: "meinbundestag.api"
     build:
       dockerfile: $PWD/backend/docker/Dockerfile
       context: ../python
@@ -12,11 +12,15 @@ services:
       - API_PORT=3000
       - API_HOST=0.0.0.0
       - LOGLEVEL=info
-      - CLEAR_DB=
+      - CLEAR_DB=yes
       - SCRAPER_TIMEOUT=5
       - SCRAPER_INTERVAL=86400
       - PROTOCOL_DTD_FILE=/usr/data/protocol.dtd
       - PROTOCOL_DIRECTORY=/protocols
+      - ODS_HOST=edge-server
+      - ODS_PIPELINE_DEPUTIES=storage/1?order=id.desc&limit=1
+      - ODS_FALLBACK_DEPUTIES=https://www.abgeordnetenwatch.de/api/parliament/bundestag/deputies.json
+      - ODS_PROFILE_URL=https://www.abgeordnetenwatch.de/api/parliament/bundestag/profile/{}/profile.json
     depends_on:
       - database
     links:
@@ -24,22 +28,23 @@ services:
     ports:
       - 3000:3000
     networks:
-      - backend
+      - meinbundestag-backend
 
   database:
     image: mongo:latest
-    container_name: "backend.database"
+    container_name: "meinbundestag.database"
     volumes:
       - ~/database:/data/db
     ports:
       - 27017-27019:27017-27019
     networks:
-      - backend
+      - meinbundestag-backend
     logging:
       driver: none
-
+  
 
 networks:
-  backend:
+  meinbundestag-backend:
     driver: bridge
+    external: true
  
