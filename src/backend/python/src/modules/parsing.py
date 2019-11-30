@@ -48,7 +48,12 @@ def get_speeches(filepath: str, dtd_file: str) -> List[schema.Speech]:
         speeches = []
         for speech_elem in root.findall(".//tagesordnungspunkt/rede"):
             speech = __parse_speech(root, speech_elem)
-            speeches.append(speech)
+            if speech is None:
+                logging.warning(
+                    "Skipping speech in {}. Invalid content".format(filepath)
+                )
+            else:
+                speeches.append(speech)
     except Exception as exception:
         raise myexceptions.SpeechParsingException from exception
     return speeches
@@ -70,7 +75,8 @@ def __parse_speech(
     topic = __get_speech_topic(root, speaker_id)
     date = __get_speech_date(root)
     content = __get_speech_contents(speech)
-    content.assert_valid()
+    if not content.assert_valid():
+        return None
     meta = dict(
         name=name, party=party, topic=topic, date=date
     )
@@ -214,7 +220,8 @@ def __get_speech_contents(
                     para.text
                 )
             speech_entry.add_paragraph(speech_paragraph)
-        speech_content.add_speech_entry(speech_entry)
+        if len(speech_entry.paragraphs) != 0:
+            speech_content.add_speech_entry(speech_entry)
     return speech_content
 
 

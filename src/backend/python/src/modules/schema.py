@@ -450,25 +450,22 @@ class SpeechContent:
             )
         )
 
-    def assert_valid(self):
+    def assert_valid(self) -> bool:
         """Assert that the content contains text.
 
-        Raises:
-            myexceptions.SpeechParsingException: if no text is present
+        Returns:
+            bool: True if content is valid, False otherwise
 
         """
         if len(self.entries) == 0:
-            raise myexceptions.SpeechParsingException("Content has no entries")
+            return False
         for entry in self.entries:
             if len(entry.paragraphs) == 0:
-                raise myexceptions.SpeechParsingException(
-                    "No paragraphs in this entry"
-                )
+                return False
             for para in entry.paragraphs:
                 if not para.text:
-                    raise myexceptions.SpeechParsingException(
-                        "Created speech with empty paragraphs."
-                    )
+                    return False
+        return True
 
 
 class SpeechIndex(JSONSerializable):

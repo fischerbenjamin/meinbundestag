@@ -27,8 +27,8 @@ if __name__ == "__main__":
         help="Check implementation of parsing and processing."
     )
     PARSER.add_argument(
-        "-p", type=str, dest="protocol", metavar="protocol.xml",
-        help="Example protocol to check."
+        "-p", type=str, dest="protocol", metavar="protocol.xml or protocols/",
+        help="Example protocol to check or directory with multiple protocols."
     )
     PARSER.add_argument(
         "-d", type=str, dest="dtd", metavar="protocol.dtd",
@@ -38,6 +38,10 @@ if __name__ == "__main__":
         "-o", type=str, dest="output", metavar="output.json",
         help="Destination of output file."
     )
+    PARSER.add_argument(
+        "--parse-only", action="store_true", dest="parse_only",
+        help="Only parse speeches when checking."
+    )
     ARGS = PARSER.parse_args()
     if ARGS.test:
         import test.test as test
@@ -46,12 +50,22 @@ if __name__ == "__main__":
     if ARGS.check:
         import test.check as check
         print("Running check.")
-        PROTOCOL, DTD, OUTPUT = (
+        PROTOCOL, DTD, OUTPUT, PARSE_ONLY = (
             os.path.abspath(ARGS.protocol),
             os.path.abspath(ARGS.dtd),
-            ARGS.output
+            ARGS.output,
+            ARGS.parse_only
         )
-        check.run(PROTOCOL, DTD, OUTPUT)
+        if os.path.isdir(PROTOCOL):
+            files = [
+                os.path.join(PROTOCOL, protocol)
+                for protocol in os.listdir(PROTOCOL)
+            ]
+            for tmp in files:
+                print("Checking file {}".format(tmp))
+                check.run(tmp, DTD, OUTPUT, PARSE_ONLY)
+        else:
+            check.run(PROTOCOL, DTD, OUTPUT, PARSE_ONLY)
     else:
         print("Running backend.")
         backend.run()
