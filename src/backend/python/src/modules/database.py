@@ -39,14 +39,15 @@ class Database:
     """
 
     def __init__(
-            self, database_config: Tuple[str, int, bool],
+            self, database_config: Tuple[str, int, bool, str, str],
             updater_event: threading.Semaphore,
-            scraper_event: threading.Semaphore
+            scraper_event: threading.Semaphore,
     ):
         """Initialize an Database object.
 
         Args:
-            database_config (Tuple[str, int, bool]): (host, port, clear)
+            database_config (Tuple[str, int, bool]):
+                (host, port, clear, user, password)
             updater_event (threading.Semaphore): signaling updater thread
             scraper_event (threading.Semaphore): signaling scraper thread
 
@@ -54,8 +55,10 @@ class Database:
             myexceptions.DatabaseInitException: failed connection to database
 
         """
-        host, port, clear_db = database_config
-        self.client = pymongo.MongoClient(host=host, port=port)
+        host, port, clear_db, user, password = database_config
+        self.client = pymongo.MongoClient(
+            host=host, port=port, username=user, password=password
+        )
         try:
             self.client.admin.command('ismaster')
         except pymongo.errors.ConnectionFailure:

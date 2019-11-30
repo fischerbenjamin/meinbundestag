@@ -29,6 +29,7 @@ import src.modules.ods_wrapper as ods_wrapper
 DATABASE = None
 ODS_WRAPPER = None
 APP = flask.Flask(__name__, template_folder="/usr/data")
+API_AUTHOR, API_VERSION, API_CONTACT = (None, None, None)
 
 
 @APP.route("/")
@@ -42,8 +43,28 @@ def api_home() -> str:
         str: rendered template file
 
     """
+    global API_AUTHOR, API_VERSION, API_CONTACT
     logging.info("/")
-    return flask.render_template("template.html")
+    descr = dict(
+        author=API_AUTHOR,
+        name="MeinBundestag",
+        version=API_VERSION,
+        routes=[
+            dict(route="/", descr="Overview about this application"),
+            dict(route="/info", descr="General information about stored data"),
+            dict(route="/deputies", descr="Names of all deputies"),
+            dict(route="/profile/{deputy}", descr=(
+                "Profile of given deputy"
+                "(pass the name as an dash seperated string, e.g. john-doe)"
+            ))
+        ],
+        description=(
+            "This is some further description of the api."
+            "Have fun & enjoy :)"
+        ),
+        contact=API_CONTACT
+    )
+    return flask.jsonify(descr)
 
 
 @APP.route("/info")
@@ -127,8 +148,8 @@ def start(
         db_client (database.Database): database client
 
     """
-    global APP, DATABASE, ODS_WRAPPER
+    global APP, DATABASE, ODS_WRAPPER, API_AUTHOR, API_VERSION, API_CONTACT
     DATABASE = db_client
     ODS_WRAPPER = ods_wrapper.ODS(ods_config)
-    host, port = api_config
+    host, port, API_AUTHOR, API_VERSION, API_CONTACT = api_config
     APP.run(host=host, port=port)

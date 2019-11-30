@@ -49,10 +49,13 @@ def __parse_env_variables() -> schema.EnvVars:
         logging_config = os.environ["LOGLEVEL"].upper()
         database_config = (
             os.environ["DB_HOST"], int(os.environ["DB_PORT"]),
-            "CLEAR_DB" in os.environ.keys()
+            os.environ["CLEAR_DB"].lower() == "yes",
+            os.environ["DB_USER"], os.environ["DB_PASSWORD"]
         )
         api_config = (
-            os.environ["API_HOST"], int(os.environ["API_PORT"])
+            os.environ["API_HOST"], int(os.environ["API_PORT"]),
+            os.environ["API_AUTHOR"], os.environ["API_VERSION"],
+            os.environ["API_CONTACT"]
         )
         scraper_config = (
             int(os.environ["SCRAPER_TIMEOUT"]),
