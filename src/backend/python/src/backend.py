@@ -10,7 +10,7 @@ import os
 import sys
 import logging
 import threading
-from typing import List, Tuple, Any
+from typing import List
 
 
 # Local imports
@@ -22,7 +22,7 @@ import src.modules.scraping as scraping
 import src.modules.myexceptions as myexceptions
 
 
-def __init_logging(other_config: Tuple[Any, ...]) -> None:
+def __init_logging(logging_level: str) -> None:
     """Configure the logging facility.
 
     Args:
@@ -34,7 +34,7 @@ def __init_logging(other_config: Tuple[Any, ...]) -> None:
     logging.basicConfig(
         format="%(asctime)s %(levelname)s %(message)s",
         datefmt="%H:%M:%S %d.%m.%y",
-        level=other_config
+        level=logging_level
     )
 
 
@@ -46,16 +46,25 @@ def __parse_env_variables() -> schema.EnvVars:
 
     """
     try:
-        env_logging_level = os.environ["LOGLEVEL"].upper()
-        env_database_host = os.environ["DB_HOST"]
-        env_database_port = int(os.environ["DB_PORT"])
-        env_database_del = "CLEAR_DB" in os.environ.keys()
-        env_api_host = os.environ["API_HOST"]
-        env_api_port = int(os.environ["API_PORT"])
-        env_scraper_interval = int(os.environ["SCRAPER_INTERVAL"])
-        env_scraper_timeout = int(os.environ["SCRAPER_TIMEOUT"])
-        env_protocol_dtd_file = os.environ["PROTOCOL_DTD_FILE"]
-        env_protocol_directory = os.environ["PROTOCOL_DIRECTORY"]
+        logging_config = os.environ["LOGLEVEL"].upper()
+        database_config = (
+            os.environ["DB_HOST"], int(os.environ["DB_PORT"]),
+            "CLEAR_DB" in os.environ.keys()
+        )
+        api_config = (
+            os.environ["API_HOST"], int(os.environ["API_PORT"])
+        )
+        scraper_config = (
+            int(os.environ["SCRAPER_TIMEOUT"]),
+            int(os.environ["SCRAPER_INTERVAL"])
+        )
+        protocol_config = (
+            os.environ["PROTOCOL_DTD_FILE"], os.environ["PROTOCOL_DIRECTORY"]
+        )
+        ods_config = (
+            os.environ["ODS_HOST"], os.environ["ODS_PIPELINE_DEPUTIES"],
+            os.environ["ODS_FALLBACK_DEPUTIES"], os.environ["ODS_PROFILE_URL"]
+        )
     except KeyError as key_error:
         print("Missing required environment variable: %s", str(key_error))
         sys.exit(1)
@@ -63,13 +72,9 @@ def __parse_env_variables() -> schema.EnvVars:
         print("Unable to convert port: %s", str(value_error))
         sys.exit(1)
     return schema.EnvVars(
-        database_config=(
-            env_database_host, env_database_port, env_database_del
-        ),
-        api_config=(env_api_host, env_api_port),
-        scraper_config=(env_scraper_timeout, env_scraper_interval),
-        protocol_config=(env_protocol_dtd_file, env_protocol_directory),
-        other_config=(env_logging_level)
+        database_config=database_config, api_config=api_config,
+        scraper_config=scraper_config, protocol_config=protocol_config,
+        ods_config=ods_config, logging_config=logging_config
     )
 
 
@@ -105,7 +110,7 @@ def __create_threads(
         scraper_config=env_vars.scraper_config
     )
     t_api = threading.Thread(target=api.start, args=(
-        env_vars.api_config, db_client
+        env_vars.api_config, env_vars.ods_config, db_client
     ))
     return [t_api, t_scraper_timer, t_scraper, t_updater]
 
@@ -113,7 +118,7 @@ def __create_threads(
 def run() -> None:
     """Run the backend."""
     env_vars = __parse_env_variables()
-    __init_logging(env_vars.other_config)
+    __init_logging(env_vars.logging_config)
     sem_scraper = threading.Semaphore(1)
     sem_updater = threading.Semaphore(0)
     try:
