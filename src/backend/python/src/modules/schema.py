@@ -5,7 +5,8 @@ no python built-in types.
 """
 
 
-# Global imports
+# Python imports
+import re
 from typing import Dict, Any, Union, List, Tuple
 
 
@@ -449,6 +450,26 @@ class SpeechContent:
             )
         )
 
+    def assert_valid(self):
+        """Assert that the content contains text.
+
+        Raises:
+            myexceptions.SpeechParsingException: if no text is present
+
+        """
+        if len(self.entries) == 0:
+            raise myexceptions.SpeechParsingException("Content has no entries")
+        for entry in self.entries:
+            if len(entry.paragraphs) == 0:
+                raise myexceptions.SpeechParsingException(
+                    "No paragraphs in this entry"
+                )
+            for para in entry.paragraphs:
+                if not para.text:
+                    raise myexceptions.SpeechParsingException(
+                        "Created speech with empty paragraphs."
+                    )
+
 
 class SpeechIndex(JSONSerializable):
     """Structure of an speech index object.
@@ -499,7 +520,8 @@ class EnvVars(JSONSerializable):
             api_config: Tuple[str, int],
             scraper_config: Tuple[int, int],
             protocol_config: Tuple[str, str],
-            other_config: Tuple[Any, ...]
+            ods_config: Tuple[str, str, str, str],
+            logging_config: str
     ):
         """Init object.
 
@@ -508,14 +530,17 @@ class EnvVars(JSONSerializable):
             api_config (Tuple[str, int]): (host, port)
             scraper_config (Tuple[int, int]): (timeout, interval)
             protocol_config (Tuple[str, str]): (dtd file, destination)
-            other_config (Tuple[Any, ...]): (logging level)
+            ods_config (Tuple[str, str]):
+                (ods host, deputies pipeline, fallback deputies, profile url)
+            logging_config (str): logging level
 
         """
         self.database_config = database_config
         self.api_config = api_config
         self.scraper_config = scraper_config
         self.protocol_config = protocol_config
-        self.other_config = other_config
+        self.ods_config = ods_config
+        self.logging_config = logging_config
     # pylint: enable=too-many-arguments
 
     def to_json(self) -> Dict[str, Any]:
@@ -530,7 +555,8 @@ class EnvVars(JSONSerializable):
             api_config=self.api_config,
             scraper_config=self.scraper_config,
             protocol_config=self.protocol_config,
-            other_config=self.other_config
+            ods_config=self.ods_config,
+            logging_config=self.logging_config
         )
 
     @classmethod
@@ -543,12 +569,99 @@ class EnvVars(JSONSerializable):
         """
         EnvVars.assert_keys([
             "database_config", "api_config", "scraper_config",
-            "protocol_config", "other_config"
+            "protocol_config", "ods_config", "logging_config"
         ], obj)
         return cls(
             database_config=obj["database_config"],
             api_config=obj["api_config"],
             scraper_config=obj["scraper_config"],
             protocol_config=obj["protocol_config"],
-            other_config=obj["other_config"]
+            ods_config=obj["ods_config"],
+            logging_config=obj["logging_config"]
         )
+
+
+class Name(JSONSerializable):
+    """Structure of a deputy's name."""
+
+    def __init__(self, components: List[str]):
+        """Initialize object.
+
+        Args:
+            components (List[str]): name components
+
+        """
+        self.components = components
+
+    def __str__(self) -> str:
+        """Override string representation.
+
+        Returns:
+            str: string representation
+
+        """
+        return " ".join([comp.capitalize() for comp in self.components])
+
+    @classmethod
+    def from_json(cls, obj: Dict[str, str]) -> "Name":
+        """Initialize object from json data.
+
+        Returns:
+            Name: object
+
+        """
+        Name.assert_keys(["components"], obj)
+        return cls(components=obj["components"])
+
+    @classmethod
+    def from_url_string(cls, name: str) -> "Name":
+        """Initialize object from url name.
+
+        Returns:
+            Name: object
+
+        """
+        parts = name.split("-")
+        return cls(components=[part.capitalize() for part in parts])
+
+    @classmethod
+    def from_profile(cls, profile: Dict[str, Any]) -> "Name":
+        """Initialize object from first and last name in profile of overview.
+
+        Returns:
+            Name: object
+
+        """
+        first_name, last_name = (
+            profile["personal"]["first_name"], profile["personal"]["last_name"]
+        )
+        return cls(components=[first_name, last_name])
+
+    def to_json(self) -> Dict[str, str]:
+        """Convert object to json data.
+
+        Returns:
+            Dict[str, str]: mapping of attributes
+
+        """
+        return dict(components=self.components)
+
+    def get_regex(self) -> re.Pattern:
+        """Return the regular expression of the name.
+
+        The regex is used for searches in the database.
+
+        Returns:
+            re.Pattern: pattern of regular expression
+
+        """
+        return re.compile("(.)*".join(self.components), re.IGNORECASE)
+
+    def to_url_string(self) -> str:
+        """Convert the name to url styled string.
+
+        Returns:
+            str: name in url format
+
+        """
+        return " ".join(self.components).lower()
