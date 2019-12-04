@@ -57,11 +57,11 @@ if __name__ == "__main__":
             ARGS.parse_only
         )
         if os.path.isdir(PROTOCOL):
-            files = [
+            FILES = [
                 os.path.join(PROTOCOL, protocol)
                 for protocol in os.listdir(PROTOCOL)
             ]
-            for tmp in files:
+            for tmp in FILES:
                 print("Checking file {}".format(tmp))
                 check.run(tmp, DTD, OUTPUT, PARSE_ONLY)
         else:
