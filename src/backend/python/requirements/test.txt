@@ -1,0 +1,4 @@
+nltk
+pylint
+pydocstyle
+pylama

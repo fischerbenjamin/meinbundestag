@@ -1,28 +1,41 @@
-.PHONY: backend backend-test mobile-test mobile-dev
+################################################################################
+###                              WEB FRONTEND                             ###
+################################################################################
 
-test:
-	@make clean_container
-	@make backend-test
-	@make mobile-test
+.PHONY: frontend
+frontend:
+	(cd mobile/meinbundestag-mobile/ && yarn web) & \
+	chromium-browser http://localhost:19002 http://localhost:19006 \
+		--auto-open-devtools-for-tabs \
+		--disable-web-security \
+		--user-data-dir="/tmp/chromium-unsafe-dev"
 
-clean_container:
-	docker container prune -f
 
+################################################################################
+###                              PYTHON BACKEND                              ###
+################################################################################
+
+.PHONY: backend
 backend:
-	docker-compose -f backend/docker-compose.yml rm --force
-	docker-compose -f backend/docker-compose.yml up --build
+	docker-compose up --build
+	# docker-compose -f backend/ods/amse-ws1920-ods-app/docker-compose.yml up -d
 
+.PHONY: backend-down
 backend-down:
-	docker-compose -f backend/docker-compose.yml down
+	docker-compose down
+	# docker-compose -f backend/ods/amse-ws1920-ods-app/docker-compose.yml down
 
-backend-test:
-	docker build --rm -t backend-test --target test backend/
-	docker run backend-test 
+.PHONY: backend-test-docker
+backend-test-docker:
+	# Running docker build
+	docker build -f backend/docker/Dockerfile -t backend-test backend/python
 
-mobile-dev:
-	docker build --rm -t mobile-dev --target dev mobile/
-	docker run mobile-dev	
+.PHONY: backend-test-source
+backend-test-source:
+	# Running linting
+	(cd backend/python && ./lint)
+	# Running unittest
+	(cd backend/python && python3 main.py --test)
 
-mobile-test:
-	docker build --rm -t mobile-test --target test mobile/
-	docker run mobile-test
+.PHONY: backend-restart
+backend-restart: backend-down backend

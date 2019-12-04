@@ -1,0 +1,108 @@
+\documentclass{beamer}
+
+% Required packages 
+\usepackage{fontspec}
+\usepackage{fontawesome}
+\usepackage{hyperref}
+%\usepackage[ngerman]{babel}
+\usetheme{metropolis}           
+
+\newcommand{\cw}{49}
+
+% Header
+\title{AMSE - Kalendarwoche \cw{}}
+\date{04. Dezember 2019}
+\author{Benjamin Fischer}
+\institute{benjamin.f.fischer@fau.de}
+
+% Document
+\begin{document}
+  \maketitle
+
+  % Structure (always the same)
+  \begin{frame}
+    \begin{itemize}
+      \item Zusammenfassung Kalendarwoche \cw{}
+      \begin{itemize}
+        \item Erreichte Ziele
+        \item Aufgetretene Probleme
+      \end{itemize}
+      \item Ausblick nächste Woche
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Zusammenfassung Kalendarwoche \cw{} (Backend)}
+    \begin{itemize}
+      \item Arbeit an Backend vorerst abgeschlossen
+      \item Backend stellt vier Routes zur Verfügung
+      \begin{itemize}
+        \item \texttt{home}: Allgemeine Informationen über API
+        \item \texttt{info}: Allgemeine Informationen über Daten
+        \item \texttt{deputies}: Liste der Abgeordneten des Bundestags
+        \item \texttt{profile/\{name\}}: Profil des Arbgeordneten \texttt{name}
+      \end{itemize}
+      \item Wrapper für ODS ($\rightarrow$ Route \texttt{deputies})
+      \begin{itemize}
+        \item Wenn ODS erreichbar, werden Daten von ihm bezogen
+        \item Ansonsten Fallback auf \texttt{abgeordnetenwatch.de}
+      \end{itemize}
+      \item Linting \& Unittests
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Zusammenfassung Kalendarwoche \cw{} (Backend) (2)}
+    \begin{itemize}
+      \item Test-Skripte für folgende Zwecke:
+      \begin{itemize}
+        \item Parsen der aktuell verfügbaren Protokolle
+        \item Linten des Quellcodes innerhalb des Backends
+      \end{itemize}
+      \item Sentiment-Analyse für die deutsche Sprache unvollständig
+      \begin{itemize}
+        \item Verwendete Bibliothek: \texttt{textblod\_de}
+        \item Nur wenige Wörter besitzen passende \textit{subjectivity}
+        \item Wesentlich besseres Ergebnis mit Übersetzung ins Englische
+        \item Benutzt intern Google NLP API (Limit: 1000 Wörter/Tag)
+        \item In Zukunft vielleicht mit anderer Library übersetzen
+      \end{itemize}
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Zusammenfassung Kalendarwoche \cw{} (Frontend)}
+    \begin{itemize}
+      \item Entwicklung hauptsächlich innerhalb des WebViews
+      \begin{itemize}
+        \item einfacher \& schneller
+        \item zum Testen aber auch über \texttt{adb} und Smartphone möglich
+      \end{itemize}
+      \item Problem hierbei: \texttt{Same Origin Policy} des Browsers
+      \begin{itemize}
+        \item[\tiny\faClose] CORS (Server) aktivieren
+        \item[\tiny\faClose] Entwicklung nur auf Device
+        \item[\tiny\faClose] Verwendung von Proxies
+        \item[\tiny\faCheck] Für WebView Chromium mit deaktivierter \texttt{SOP}
+                          verwenden 
+      \end{itemize}
+      \item Frontend im Gegensatz zu Backend auf Host (kein Docker)
+      \begin{itemize}
+        \item eher mehr Probleme durch \texttt{adb}, \texttt{volumes} und
+                Netzwerke
+        \item Expo-Client stellt bereits \textit{Hot-Reloading} zur Verfügung
+      \end{itemize}
+      \item Frontend und Backend über Makefile getrennt
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Ausblick nächste Woche}
+    \begin{itemize}
+      \item In React Native einarbeiten (hauptsächlich)
+      \item Nach Möglichkeiten für Unittests \& Linting suchen
+      \item Einfaches Layout für Applikation überlegen
+    \end{itemize}
+  \end{frame}
+
+\end{document}

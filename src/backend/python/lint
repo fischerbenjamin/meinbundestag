@@ -1,0 +1,12 @@
+#!/bin/bash
+
+
+set -ev
+shopt -s globstar
+
+echo "Checking lint (using pylint & pydocstyle & pylama)"
+pylint --extension-pkg-whitelist=lxml **/*.py
+pydocstyle **/*.py
+pylama **/*.py
+
+shopt -u globstar

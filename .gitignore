@@ -10,3 +10,5 @@ main.pdf
 amse.code-workspace
 *.pyc
 ods/
+meinbundestag-database
+.env

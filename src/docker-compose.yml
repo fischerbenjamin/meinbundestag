@@ -1,0 +1,43 @@
+version: "3.7"
+
+services:
+  api:
+    container_name: "meinbundestag.api"
+    image: "meinbundestag.api"
+    build:
+      dockerfile: $PWD/backend/docker/Dockerfile
+      context: $PWD/backend/python
+    env_file:
+      - .env
+    environment:
+      - LOGLEVEL=info
+    depends_on:
+      - database
+    links:
+      - database
+    ports:
+      - 3000:3000
+    networks:
+      - meinbundestag-backend
+
+  database:
+    image: mongo:latest
+    container_name: "meinbundestag.database"
+    volumes:
+      - ./backend/meinbundestag-database:/data/db
+    ports:
+      - 27017-27019:27017-27019
+    networks:
+      - meinbundestag-backend
+    env_file:
+      - ./.env
+    environment: 
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+    logging:
+      driver: none
+  
+networks:
+  meinbundestag-backend:
+    driver: bridge
+    external: true

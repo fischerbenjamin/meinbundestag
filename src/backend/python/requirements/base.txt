@@ -1,0 +1,8 @@
+selenium
+flask
+pymongo
+lxml
+textblob_de
+wget
+nltk
+requests
