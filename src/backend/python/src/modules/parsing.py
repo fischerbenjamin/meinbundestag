@@ -50,7 +50,7 @@ def get_speeches(filepath: str, dtd_file: str) -> List[schema.Speech]:
             speech = __parse_speech(root, speech_elem)
             if speech is None:
                 logging.warning(
-                    "Skipping speech in {}. Invalid content".format(filepath)
+                    "Skipping speech in %s. Invalid content", filepath
                 )
             else:
                 speeches.append(speech)
