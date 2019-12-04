@@ -18,7 +18,6 @@ services:
     ports:
       - 3000:3000
     networks:
-      - meinbundestag-backend-api
       - meinbundestag-backend
 
   database:
@@ -31,37 +30,14 @@ services:
     networks:
       - meinbundestag-backend
     env_file:
-      - .env
+      - ./.env
     environment: 
       - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
     logging:
       driver: none
   
-  mobile:
-    container_name: "meinbundestag.mobile"
-    image: "meinbundestag.mobile"
-    build:
-      dockerfile: $PWD/mobile/docker/Dockerfile
-      context: $PWD/mobile/meinbundestag-mobile
-    #volumes:
-    #  - '$PWD/mobile/meinbundestag-mobile:/usr/src/app'
-      #- /dev/null:/usr/src/app/.expo
-      #- /usr/src/app/.expo-shared
-      #- /usr/src/app/.node_modules
-      #- /usr/src/app/.yarnclean
-    ports:
-      - 19000:19000
-      - 19002:19002
-      - 19001:19001
-      - 19006:19006
-    networks:
-      - meinbundestag-backend-api
-
 networks:
   meinbundestag-backend:
-    driver: bridge
-    external: true
-  meinbundestag-backend-api:
     driver: bridge
     external: true
