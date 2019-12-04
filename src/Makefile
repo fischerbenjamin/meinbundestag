@@ -1,20 +1,14 @@
 ################################################################################
-###                                APPLICATION                              ###
+###                              WEB FRONTEND                             ###
 ################################################################################
 
-
-
-################################################################################
-###                              MOBILE FRONTEND                             ###
-################################################################################
-
-mobile-dev:
-	docker build --rm -t mobile-dev --target dev mobile/
-	docker run mobile-dev	
-
-mobile-test:
-	docker build --rm -t mobile-test --target test mobile/
-	docker run mobile-test
+.PHONY: frontend
+frontend:
+	(cd mobile/meinbundestag-mobile/ && yarn web) & \
+	chromium-browser http://localhost:19002 http://localhost:19006 \
+		--auto-open-devtools-for-tabs \
+		--disable-web-security \
+		--user-data-dir="/tmp/chromium-unsafe-dev"
 
 
 ################################################################################
@@ -23,12 +17,12 @@ mobile-test:
 
 .PHONY: backend
 backend:
-	docker-compose -f backend/docker/docker-compose.yml up --build
+	docker-compose up --build
 	# docker-compose -f backend/ods/amse-ws1920-ods-app/docker-compose.yml up -d
 
 .PHONY: backend-down
 backend-down:
-	docker-compose -f backend/docker/docker-compose.yml down
+	docker-compose down
 	# docker-compose -f backend/ods/amse-ws1920-ods-app/docker-compose.yml down
 
 .PHONY: backend-test-docker
