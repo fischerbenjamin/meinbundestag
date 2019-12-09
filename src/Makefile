@@ -10,6 +10,10 @@ frontend:
 		--disable-web-security \
 		--user-data-dir="/tmp/chromium-unsafe-dev"
 
+.PHONY: frontend-test
+frontend-test:
+	(cd mobile/meinbundestag-mobile/scripts && ./lint)
+
 
 ################################################################################
 ###                              PYTHON BACKEND                              ###
