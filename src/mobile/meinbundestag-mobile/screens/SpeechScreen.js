@@ -1,22 +1,28 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { NavIconSpeech } from "../style/Icons";
-import Basic from "../style/Views";
+import PropTypes from 'prop-types';
+import { View } from 'react-native';
+
+import styles from '../style/Views';
+import { NavIconSpeech } from '../style/Icons';
 import ScreenName from '../components/ScreenName';
 
 
-
 export default class SpeechScreen extends React.Component {
-  
   static navigationOptions = {
-    tabBarIcon: NavIconSpeech
+    tabBarIcon: NavIconSpeech,
   };
 
   render() {
+    // const { profile } = this.props;
     return (
-      <View style={Basic.container}>
+      <View style={styles.container.basic}>
         <ScreenName name="Speech" />
       </View>
     );
   }
 }
+
+
+SpeechScreen.propTypes = {
+  profile: PropTypes.shape.isRequired,
+};

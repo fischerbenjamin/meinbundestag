@@ -1,124 +1,71 @@
+import {
+  View,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 import React from 'react';
-import { View, TextInput, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { NavIconHome } from "../style/Icons";
-import Basic from "../style/Views";
-import ScreenName from '../components/ScreenName';
-
-//import all the components we are going to use.
 import Autocomplete from 'react-native-autocomplete-input';
-//import Autocomplete component
+
+import styles from '../style/Views';
+import storage from '../storage/Store';
+import { NavIconHome } from '../style/Icons';
+import api from '../resources/Api';
+
 
 export default class HomeScreen extends React.Component {
-  
-  static navigationOptions = {
-    tabBarIcon: NavIconHome
-  };
-  
   constructor(props) {
     super(props);
     this.state = {
-      profiles: [],
-      query: "",
-      wasSet: false,
+      deputies: [],
+      query: '',
     };
   }
 
-  componentDidMount(){
-    return (
-      this.setState({
-        profiles: [
-          "Albert",
-          "Berta",
-          "Christoph",
-          "David",
-          "Devid",
-          "devud"
-        ],
-      })
-    )
+  async componentDidMount() {
+    const allNames = await api.deputies();
+    this.setState({ deputies: allNames });
   }
+
+  static navigationOptions = {
+    tabBarIcon: NavIconHome,
+  };
 
   findProfile(query) {
     if (query === '') {
       return [];
     }
-    const { profiles } = this.state;
+    const { deputies } = this.state;
     const regex = new RegExp(`${query.trim()}`, 'i');
-    return profiles.filter(profile => profile.search(regex) >= 0);
+    return deputies.filter((profile) => profile.search(regex) >= 0).slice(0, 10);
   }
 
   render() {
     const { query } = this.state;
-    console.log("Got called with query " + query);
-    console.log(this.state.wasSet);
-    const {navigate} = this.props.navigation;
-    const profiles = this.findProfile(query);
+    const { navigate } = this.props.navigation;
+    const deputies = this.findProfile(query);
     const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
     return (
-      <View style={styles.container}>
+      <View style={styles.container.basic}>
         <Autocomplete
+          value={query}
           autoCapitalize="none"
           autoCorrect={false}
-          containerStyle={styles.autocompleteContainer}
-          //data to show in suggestion
-          data={profiles.length === 1 && comp(query, profiles[0]) ? [] : profiles}
-          //default value if you want to set something in input
-          defaultValue={query}
-          /*onchange of the text changing the state of the query which will trigger
-          the findFilm method to show the suggestions*/
-          onChangeText={(text) => {
-            if (this.state.wasSet) {
-              console.log("oooo");
-              this.setState({query: "BOOOM"})
-            } else {
-              this.setState({query: text})
-            }
-          }}
-          placeholder="Enter the film title"
+          data={deputies.length === 1 && comp(query, deputies[0]) ? [] : deputies}
+          onChangeText={(text) => { this.setState({ query: text }); }}
+          placeholder="Name des Abgeordneten"
           renderItem={({ item }) => (
-            //you can change the view you want to show in suggestion from here
-            <TouchableOpacity onPress={() => {
-              console.log("HITME")
-              console.log(item);
-              navigate('profile', {name: item})
-            }}>
-              <Text style={styles.itemText}>
-                {item}
-              </Text>
+            <TouchableOpacity
+              onPress={async () => {
+                const profile = await api.profile(item);
+                this.setState({ query: item });
+                console.log(profile.speeches.length);
+              }}
+            >
+              <Text>{item}</Text>
             </TouchableOpacity>
           )}
         />
       </View>
     );
   }
-
-  
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F5FCFF',
-    flex: 1,
-    padding: 16,
-    marginTop: 40,
-  },
-  autocompleteContainer: {
-    backgroundColor: '#ffffff',
-    borderWidth: 0,
-  },
-  descriptionContainer: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  itemText: {
-    fontSize: 15,
-    paddingTop: 5,
-    paddingBottom: 5,
-    margin: 2,
-  },
-  infoText: {
-    textAlign: 'center',
-    fontSize: 16,
-  },
-});
