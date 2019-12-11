@@ -6,7 +6,7 @@ import { actions } from './Actions';
 const initialState = {
   profile: {},
   speech: {},
-  cache: {},
+  cache: [],
 };
 
 const appStore = createStore(store, initialState);
