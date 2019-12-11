@@ -5,7 +5,7 @@ const styles = {
   container: {
 
     basic: StyleSheet.create({
-      container: {
+      centerAll: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
