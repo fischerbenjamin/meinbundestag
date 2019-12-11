@@ -1,0 +1,66 @@
+\documentclass{beamer}
+
+% Required packages 
+\usepackage{fontspec}
+\usepackage{fontawesome}
+\usepackage{hyperref}
+%\usepackage[ngerman]{babel}
+\usetheme{metropolis}           
+
+\newcommand{\cw}{50}
+
+% Header
+\title{AMSE - Kalendarwoche \cw{}}
+\date{11. Dezember 2019}
+\author{Benjamin Fischer}
+\institute{benjamin.f.fischer@fau.de}
+
+% Document
+\begin{document}
+  \maketitle
+
+  % Structure (always the same)
+  \begin{frame}
+    \begin{itemize}
+      \item Zusammenfassung Kalendarwoche \cw{}
+      \begin{itemize}
+        \item Erreichte Ziele
+        \item Aufgetretene Probleme
+      \end{itemize}
+      \item Ausblick nächste Woche
+    \end{itemize}
+  \end{frame}
+
+
+  \begin{frame}
+    \frametitle{Zusammenfassung Kalendarwoche \cw{} (Frontend)}
+    \begin{itemize}
+      \item Arbeit an Frontend begonnen (nun auch mit Docker)
+      \begin{itemize}
+        \item Zugriff nur von localhost (ohne \textit{iptables})
+      \end{itemize}
+      \item Minimales Setup: App mit TabNavigator und 4 \textit{Screens}
+      \begin{itemize}
+        \item \texttt{Home}: Suche nach Abgeordneten
+        \item \texttt{Profile}: Übersicht des Profils
+        \item \texttt{Personal}: Darstellung von Nebenjobs, Abstimmungen, etc.
+        \item \texttt{Speech}: Anzeige einer zuvor ausgewählten Rede
+      \end{itemize}
+      \item Verwendung von \texttt{redux} um internen Zustand zu verwalten
+      \item Linter eingebunden (eslint)
+      \item \texttt{DEMO}
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Ausblick nächste Woche}
+    \begin{itemize}
+      \item Funktionalitäten der anderen Tabs implementieren
+      \begin{itemize}
+        \item Darstellung in einzelne Komponenten verlagern
+        \item Layout (v.a \textit{Buttons} und \textit{Dropdowns})
+      \end{itemize}
+    \end{itemize}
+  \end{frame}
+
+\end{document}
