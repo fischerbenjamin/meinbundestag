@@ -1,11 +1,12 @@
+import {
+  View,
+  Text,
+} from 'react-native';
 import React from 'react';
-import PropTypes from 'prop-types';
-import { View } from 'react-native';
 
 import styles from '../style/Views';
 import { NavIconProfile } from '../style/Icons';
-import ScreenName from '../components/ScreenName';
-
+import storage from '../storage/Store';
 
 export default class ProfileScreen extends React.Component {
   static navigationOptions = {
@@ -13,16 +14,15 @@ export default class ProfileScreen extends React.Component {
   };
 
   render() {
-    // const { profile } = this.props;
+    const { personal } = storage.appStore.getState().profile.profile;
     return (
-      <View style={styles.container.basic}>
-        <ScreenName name="Profile" />
+      <View style={styles.container.basic.centerAll}>
+        <Text>
+          {personal.first_name}
+          {personal.last_name}
+          {personal.birthyear}
+        </Text>
       </View>
     );
   }
 }
-
-
-ProfileScreen.propTypes = {
-  profile: PropTypes.shape.isRequired,
-};

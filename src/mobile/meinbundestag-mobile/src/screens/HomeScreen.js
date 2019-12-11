@@ -2,6 +2,7 @@ import {
   View,
   Text,
   TouchableOpacity,
+  Button,
 } from 'react-native';
 import React from 'react';
 import Autocomplete from 'react-native-autocomplete-input';
@@ -39,13 +40,19 @@ export default class HomeScreen extends React.Component {
     return deputies.filter((profile) => profile.search(regex) >= 0).slice(0, 10);
   }
 
+  async updateProfile() {
+    const { query } = this.state;
+    const profile = await api.profile(query);
+    storage.setProfile(profile);
+  }
+
   render() {
     const { query } = this.state;
     const { navigate } = this.props.navigation;
     const deputies = this.findProfile(query);
     const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
     return (
-      <View style={styles.container.basic}>
+      <View style={styles.container.basic.centerAll}>
         <Autocomplete
           value={query}
           autoCapitalize="none"
@@ -56,14 +63,19 @@ export default class HomeScreen extends React.Component {
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={async () => {
-                const profile = await api.profile(item);
                 this.setState({ query: item });
-                console.log(profile.speeches.length);
               }}
             >
               <Text>{item}</Text>
             </TouchableOpacity>
           )}
+        />
+        <Button
+          title="Submit"
+          onPress={async () => {
+            await this.updateProfile();
+            navigate('profile');
+          }}
         />
       </View>
     );

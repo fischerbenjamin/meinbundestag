@@ -10,7 +10,7 @@ const api = {
       .then((names) => names);
   },
 
-  profile: function getProfile(name) {
+  profile: async function getProfile(name) {
     const urlName = name.replace(/ /g, '-').toLowerCase();
     const route = `${URL}/profile/${urlName}`;
     return fetch(route)
