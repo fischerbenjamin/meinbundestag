@@ -3,7 +3,7 @@
     "name": "meinbundestag-mobile",
     "slug": "meinbundestag-mobile",
     "privacy": "public",
-    "sdkVersion": "35.0.0",
+    "sdkVersion": "36.0.0",
     "platforms": [
       "ios",
       "android",
@@ -25,6 +25,10 @@
     ],
     "ios": {
       "supportsTablet": true
-    }
+    },
+    "packagerOpts": {
+      "sourceExts":  [ "js", "json", "ts", "tsx", "jsx", "vue"]
+    },
+    "entryPoint": "./src/App.js"
   }
 }
