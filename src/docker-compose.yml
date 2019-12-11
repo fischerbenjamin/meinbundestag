@@ -5,7 +5,7 @@ services:
     container_name: "meinbundestag.api"
     image: "meinbundestag.api"
     build:
-      dockerfile: $PWD/backend/docker/Dockerfile
+      dockerfile: $PWD/backend/Dockerfile
       context: $PWD/backend/python
     env_file:
       - .env
@@ -13,10 +13,8 @@ services:
       - LOGLEVEL=info
     depends_on:
       - database
-    links:
-      - database
     ports:
-      - 3000:3000
+      - 127.0.0.1:3000:3000
     networks:
       - meinbundestag-backend
 
@@ -25,8 +23,6 @@ services:
     container_name: "meinbundestag.database"
     volumes:
       - ./backend/meinbundestag-database:/data/db
-    ports:
-      - 27017-27019:27017-27019
     networks:
       - meinbundestag-backend
     env_file:
@@ -37,6 +33,24 @@ services:
     logging:
       driver: none
   
+  frontend:
+    container_name: "meinbundestag.frontend"
+    image: "meinbundestag.frontend"
+    build:
+      dockerfile: $PWD/mobile/Dockerfile
+      context: $PWD/mobile/meinbundestag-mobile
+    env_file:
+      - .env
+    environment:
+      - LOGLEVEL=info
+    volumes:
+      - $PWD/mobile/meinbundestag-mobile/src:/usr/src/app/src
+    depends_on:
+      - api
+    ports:
+      - 127.0.0.1:19000-19006:19000-19006
+      
+
 networks:
   meinbundestag-backend:
     driver: bridge
