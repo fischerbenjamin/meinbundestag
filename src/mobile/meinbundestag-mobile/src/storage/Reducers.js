@@ -19,14 +19,16 @@ function speech(state = {}, action) {
   }
 }
 
-// FIXME: limit cache size
 function cache(state = [], action) {
+  const CACHE_SIZE = 10;
   switch (action.type) {
-    case actionTypes.updateCache:
-      return [
-        ...state,
-        action.profile,
-      ];
+    case actionTypes.updateCache: {
+      const newCache = state.concat([action.profile]);
+      if (newCache.length === (CACHE_SIZE + 1)) {
+        newCache.shift();
+      }
+      return newCache;
+    }
     default:
       return state;
   }
