@@ -1,11 +1,13 @@
+import {
+  View,
+  Text,
+} from 'react-native';
 import React from 'react';
-import PropTypes from 'prop-types';
-import { View } from 'react-native';
 
 import styles from '../style/Views';
 import { NavIconSpeech } from '../style/Icons';
-import ScreenName from '../components/ScreenName';
-
+import storage from '../storage/Store';
+import BaseScreen from './BaseScreen';
 
 export default class SpeechScreen extends React.Component {
   static navigationOptions = {
@@ -13,16 +15,18 @@ export default class SpeechScreen extends React.Component {
   };
 
   render() {
-    // const { profile } = this.props;
+    const { speech } = storage.getProfile();
+    if (speech === undefined) {
+      return BaseScreen.renderDefault(
+        'Bitte wählen Sie zuerst eine Rede aus.',
+      );
+    }
     return (
-      <View style={styles.container.basic}>
-        <ScreenName name="Speech" />
+      <View style={styles.container.basic.centerAll}>
+        <Text>
+          Rede wurde ausgewählt.
+        </Text>
       </View>
     );
   }
 }
-
-
-SpeechScreen.propTypes = {
-  profile: PropTypes.shape.isRequired,
-};

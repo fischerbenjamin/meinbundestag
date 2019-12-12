@@ -7,6 +7,7 @@ import React from 'react';
 import styles from '../style/Views';
 import { NavIconProfile } from '../style/Icons';
 import storage from '../storage/Store';
+import BaseScreen from './BaseScreen';
 
 export default class ProfileScreen extends React.Component {
   static navigationOptions = {
@@ -14,7 +15,13 @@ export default class ProfileScreen extends React.Component {
   };
 
   render() {
-    const { personal } = storage.appStore.getState().profile.profile;
+    const { profile } = storage.getProfile();
+    if (profile === undefined) {
+      return BaseScreen.renderDefault(
+        'Bitte wählen Sie zuerst ein Profil aus.',
+      );
+    }
+    const { personal } = profile;
     return (
       <View style={styles.container.basic.centerAll}>
         <Text>

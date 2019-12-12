@@ -1,10 +1,13 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { View } from 'react-native';
+import {
+  View,
+  Text,
+} from 'react-native';
 
 import styles from '../style/Views';
 import { NavIconPersonal } from '../style/Icons';
-import ScreenName from '../components/ScreenName';
+import storage from '../storage/Store';
+import BaseScreen from './BaseScreen';
 
 
 export default class PersonalScreen extends React.Component {
@@ -13,16 +16,18 @@ export default class PersonalScreen extends React.Component {
   };
 
   render() {
-    // const { profile } = this.props;
+    const { profile } = storage.getProfile();
+    if (profile === undefined) {
+      return BaseScreen.renderDefault(
+        'Bitte wählen Sie zuerst ein Profil aus.',
+      );
+    }
     return (
-      <View style={styles.container.basic}>
-        <ScreenName name="Personal" />
+      <View style={styles.container.basic.centerAll}>
+        <Text>
+          Profil wurde ausgewählt.
+        </Text>
       </View>
     );
   }
 }
-
-
-PersonalScreen.propTypes = {
-  profile: PropTypes.shape.isRequired,
-};
