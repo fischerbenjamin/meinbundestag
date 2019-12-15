@@ -16,7 +16,7 @@ const home = StyleSheet.create({
 
   input: {
     borderBottomColor: colorMain,
-    borderBottomWidthWidth: 3,
+    borderBottomWidth: 3,
     borderRadius: 5,
     fontSize: 20,
     alignSelf: 'center',
@@ -47,15 +47,16 @@ const home = StyleSheet.create({
     borderColor: colorMain,
     padding: 10,
     margin: 10,
-    width: '33%',
+    width: '66%',
     alignItems: 'center',
   },
 
   buttonText: {
     color: '#fff',
-    fontSize: 24,
-    padding: 10,
-  }
+    fontSize: 28,
+    padding: 5,
+    fontWeight: 'bold',
+  },
 
 });
 

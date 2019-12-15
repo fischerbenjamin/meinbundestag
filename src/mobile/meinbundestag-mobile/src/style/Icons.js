@@ -1,39 +1,72 @@
 import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
-import styles from '../style/Views';
+
+import PropTypes from 'prop-types';
+import { colorMain, colorLight } from './Colors';
 
 
-const NavIconHome = (props) => (
-  <MaterialIcons
-    name="home"
-    size={20}
-    color={props.focused ? styles.colors.focus : styles.colors.unfocus }
-  />
-);
+const ICON_SIZE = 24;
 
-const NavIconProfile = (props) => (
-  <MaterialIcons
-    name="person"
-    size={20}
-    color={props.focused ? styles.colors.focus : styles.colors.unfocus }
-  />
-);
 
-const NavIconPersonal = (props) => (
-  <MaterialIcons
-    name="info-outline"
-    size={20}
-    color={props.focused ? styles.colors.focus : styles.colors.unfocus }
-  />
-);
+const NavIconHome = (props) => {
+  const { focused } = props;
+  return (
+    <MaterialIcons
+      name="home"
+      size={ICON_SIZE}
+      color={focused ? colorMain : colorLight}
+    />
+  );
+};
+NavIconHome.propTypes = {
+  focused: PropTypes.bool.isRequired,
+};
 
-const NavIconSpeech = (props) => (
-  <MaterialIcons
-    name="message"
-    size={20}
-    color={props.focused ? styles.colors.focus : styles.colors.unfocus }
-  />
-);
+
+const NavIconProfile = (props) => {
+  const { focused } = props;
+  return (
+    <MaterialIcons
+      name="person"
+      size={ICON_SIZE}
+      color={focused ? colorMain : colorLight}
+    />
+  );
+};
+NavIconProfile.propTypes = {
+  focused: PropTypes.bool.isRequired,
+};
+
+
+const NavIconPersonal = (props) => {
+  const { focused } = props;
+  return (
+    <MaterialIcons
+      name="info-outline"
+      size={ICON_SIZE}
+      color={focused ? colorMain : colorLight}
+    />
+  );
+};
+NavIconPersonal.propTypes = {
+  focused: PropTypes.bool.isRequired,
+};
+
+
+const NavIconSpeech = (props) => {
+  const { focused } = props;
+  return (
+    <MaterialIcons
+      name="message"
+      size={ICON_SIZE}
+      color={focused ? colorMain : colorLight}
+    />
+  );
+};
+NavIconSpeech.propTypes = {
+  focused: PropTypes.bool.isRequired,
+};
+
 
 export {
   NavIconHome,
