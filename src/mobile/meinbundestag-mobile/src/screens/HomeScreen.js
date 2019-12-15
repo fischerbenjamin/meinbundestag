@@ -2,7 +2,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Button,
 } from 'react-native';
 import React from 'react';
 import Autocomplete from 'react-native-autocomplete-input';
@@ -37,9 +36,11 @@ export default class HomeScreen extends React.Component {
     }
     const { deputies } = this.state;
     const regex = new RegExp(`${query.trim()}`, 'i');
-    return deputies.filter((profile) => profile.search(regex) >= 0).slice(0, 10).sort(function(a, b){
-      return a.length - b.length;
-    });
+    const matches = deputies.filter((profile) => profile.search(regex) >= 0);
+    const suggestions = matches.slice(0, 10).sort(
+      (a, b) => (a.length - b.length),
+    );
+    return suggestions;
   }
 
   async updateProfile() {
@@ -48,10 +49,28 @@ export default class HomeScreen extends React.Component {
     storage.setProfile(profile);
   }
 
+  renderSearchButton() {
+    const { navigate } = this.props.navigation;
+    return (
+      <View style={style.buttonView}>
+        <TouchableOpacity
+          style={style.button}
+          onPress={async () => {
+            await this.updateProfile();
+            storage.setSpeech({});
+            navigate('profile');
+          }}
+        >
+          <Text style={style.buttonText}>
+            Suchen
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   render() {
     const { query } = this.state;
-    const { navigation } = this.props;
-    const navigate = navigation.navigate;
     const deputies = this.findProfile(query);
     const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
     return (
@@ -64,7 +83,10 @@ export default class HomeScreen extends React.Component {
             autoCapitalize="none"
             autoCorrect={false}
             placeholder="Name des Abgeordneten"
-            data={deputies.length === 1 && comp(query, deputies[0]) ? [] : deputies}
+            data={
+              deputies.length === 1
+              && comp(query, deputies[0]) ? [] : deputies
+            }
             onChangeText={(text) => { this.setState({ query: text }); }}
             renderItem={({ item }) => (
               <TouchableOpacity
@@ -79,19 +101,7 @@ export default class HomeScreen extends React.Component {
             )}
           />
         </View>
-        <View style={style.buttonView}>
-          <TouchableOpacity
-            style={style.button}
-            onPress={async () => {
-              await this.updateProfile();
-              navigate('profile');
-            }}
-          >
-            <Text style={style.buttonText}>
-              Suchen
-            </Text>
-          </TouchableOpacity>
-        </View>
+        {this.renderSearchButton()}
       </View>
     );
   }
