@@ -130,7 +130,7 @@ def api_profile(name: str) -> Dict[str, Any]:
         if regex.match(str(tmp_name)):
             profile = ODS_WRAPPER.get_full_profile(tmp)
             break
-    profile["speeches"] = DATABASE.speech_get_speeches_for_name(regex)
+    profile["profile"]["speeches"] = DATABASE.speech_get_speeches_for_name(regex)
     return flask.jsonify(profile)
 
 
