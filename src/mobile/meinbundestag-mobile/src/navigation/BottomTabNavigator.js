@@ -6,6 +6,8 @@ import SpeechScreen from '../screens/SpeechScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import PersonalScreen from '../screens/PersonalScreen';
 
+import { colorMain } from '../style/Colors';
+
 
 const HomeScreenConnected = connect((state) => (
   { profile: state.profile }
@@ -20,9 +22,8 @@ const PersonalScreenConnected = connect((state) => (
 ))(PersonalScreen);
 
 const SpeechScreenConnected = connect((state) => (
-  { profile: state.profile }
+  { profile: state.speech }
 ))(SpeechScreen);
-
 
 const BottomTabNavigator = createBottomTabNavigator(
   {
@@ -34,6 +35,10 @@ const BottomTabNavigator = createBottomTabNavigator(
   {
     tabBarOptions: {
       showLabel: false,
+      style: {
+        borderTopWidth: 2,
+        borderTopColor: colorMain,
+      },
     },
   },
 );
