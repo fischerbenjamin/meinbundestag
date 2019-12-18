@@ -15,17 +15,30 @@ const storage = {
 
   setProfile: function setProfile(profile) {
     appStore.dispatch(actions.setProfile(profile));
+    appStore.dispatch(actions.cacheProfile(profile));
   },
 
   setSpeech: function setSpeech(speech) {
     appStore.dispatch(actions.setSpeech(speech));
   },
 
-  updateCache: function updateCache(profile) {
-    appStore.dispatch(actions.cacheProfile(profile));
+  getProfile: function getProfile() {
+    const { profile } = appStore.getState();
+    return profile;
   },
 
-  appStore,
+  getSpeech: function getSpeech() {
+    const { speech } = appStore.getState();
+    return speech;
+  },
+
+  subscribeToConsole: function subscribeToConsole() {
+    appStore.subscribe(() => console.log(appStore.getState()));
+  },
+
+  getStore: function getStore() {
+    return appStore;
+  },
 
 };
 

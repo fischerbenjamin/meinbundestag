@@ -7,9 +7,9 @@ import AppNavigator from './navigation/AppNavigator';
 
 
 function App() {
-  storage.appStore.subscribe(() => console.log(storage.appStore.getState()));
+  storage.subscribeToConsole();
   return (
-    <Provider store={storage.appStore}>
+    <Provider store={storage.getStore()}>
       <AppNavigator />
     </Provider>
   );
