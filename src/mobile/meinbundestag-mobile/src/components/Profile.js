@@ -11,7 +11,7 @@ import { profile } from '../style/Profile';
 
 class Profile extends React.PureComponent {
   getHeader() {
-    const { imageUrl, name } = this.props;
+    const { imageUrl } = this.props;
     let source = { uri: imageUrl };
     if (imageUrl === undefined) {
       source = require('../../assets/icon.png'); // eslint-disable-line global-require
@@ -24,9 +24,6 @@ class Profile extends React.PureComponent {
             source={source}
           />
         </View>
-        <View style={profile.headerNameView}>
-          <Text style={profile.headerName}>{name}</Text>
-        </View>
       </View>
     );
   }
@@ -34,11 +31,13 @@ class Profile extends React.PureComponent {
   render() {
     const {
       name, party, gender, birthYear, state, education, profession,
+      questions, speeches, committees,
     } = this.props;
     const header = this.getHeader();
     return (
       <View style={profile.container}>
         {header}
+        <View style={profile.headerSeparator} />
         <View style={profile.body}>
           <ProfileEntry description="Name" value={name} />
           <ProfileEntry description="Partei" value={party} />
@@ -47,6 +46,9 @@ class Profile extends React.PureComponent {
           <ProfileEntry description="Bundesland" value={state} />
           <ProfileEntry description="Abschluss" value={education} />
           <ProfileEntry description="Amt" value={profession} />
+          <ProfileEntry description="Fragen" value={questions} />
+          <ProfileEntry description="Reden" value={speeches} />
+          <ProfileEntry description="Aussschüsse" value={committees} />
         </View>
       </View>
     );
@@ -62,6 +64,9 @@ Profile.propTypes = {
   birthYear: PropTypes.string,
   education: PropTypes.string,
   profession: PropTypes.string,
+  questions: PropTypes.string,
+  speeches: PropTypes.number,
+  committees: PropTypes.number,
 };
 
 Profile.defaultProps = {
@@ -73,6 +78,9 @@ Profile.defaultProps = {
   birthYear: 'keine Angabe',
   education: 'keine Angabe',
   profession: 'keine Angabe',
+  questions: 'keine Angabe',
+  speeches: 0,
+  committees: 0,
 };
 
 export default Profile;

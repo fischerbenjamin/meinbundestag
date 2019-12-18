@@ -19,6 +19,18 @@ export default class ProfileScreen extends React.Component {
       if (gender === 'male') return 'männlich';
       return 'n.a';
     })();
+    const { speeches, questions, committees} = profile;
+    const numberSpeeches = speeches.length;
+    const numberCommittees = committees.length;
+    const questionsAnswered = questions.map((question) => {
+      const { answers } = question;
+      return answers.length !== 0;
+    }).filter((answered) => answered);
+    const displayQuestions = (() => {
+      const answered = questionsAnswered.length;
+      const all = questions.length;
+      return `${answered} von ${all} Fragen beantwortet`;
+    })();
     return {
       imageUrl: personal.picture.url || undefined,
       name: name || undefined,
@@ -28,6 +40,9 @@ export default class ProfileScreen extends React.Component {
       birthYear: personal.birthyear || undefined,
       education: personal.education || undefined,
       profession: personal.profession || undefined,
+      questions: displayQuestions || undefined,
+      speeches: numberSpeeches || undefined,
+      committees: numberCommittees || undefined,
     };
   }
 
@@ -54,6 +69,9 @@ export default class ProfileScreen extends React.Component {
           birthYear={data.birthYear}
           education={data.education}
           profession={data.profession}
+          questions={data.questions}
+          speeches={data.speeches}
+          committees={data.committees}
         />
       </View>
     );
