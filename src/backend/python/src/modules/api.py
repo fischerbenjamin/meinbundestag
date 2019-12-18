@@ -98,8 +98,7 @@ def api_deputies_names() -> List[str]:
     """
     global ODS_WRAPPER
     names = [
-        str(schema.Name.from_profile(profile))
-        for profile in ODS_WRAPPER.deputies()
+        schema.Name.from_profile(profile) for profile in ODS_WRAPPER.deputies()
     ]
     return flask.jsonify(names)
 
@@ -130,7 +129,9 @@ def api_profile(name: str) -> Dict[str, Any]:
         if regex.match(str(tmp_name)):
             profile = ODS_WRAPPER.get_full_profile(tmp)
             break
-    profile["profile"]["speeches"] = DATABASE.speech_get_speeches_for_name(regex)
+    profile["profile"]["speeches"] = DATABASE.speech_get_speeches_for_name(
+        regex
+    )
     return flask.jsonify(profile)
 
 

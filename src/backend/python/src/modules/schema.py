@@ -621,18 +621,22 @@ class Name(JSONSerializable):
         parts = name.split("-")
         return cls(components=[part.capitalize() for part in parts])
 
-    @classmethod
-    def from_profile(cls, profile: Dict[str, Any]) -> "Name":
-        """Initialize object from first and last name in profile of overview.
+    @staticmethod
+    def from_profile(profile: Dict[str, Any]) -> str:
+        """Return the full name of an single profile of abgeordnetenwatch
+
+        Args:
+            profile (Dict[str, Any]): profile of api call
 
         Returns:
-            Name: object
+            str: full name
 
         """
         first_name, last_name = (
             profile["personal"]["first_name"], profile["personal"]["last_name"]
         )
-        return cls(components=[first_name, last_name])
+        full_name = "{} {}".format(first_name, last_name)
+        return full_name
 
     def to_json(self) -> Dict[str, str]:
         """Convert object to json data.
