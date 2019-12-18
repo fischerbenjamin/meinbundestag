@@ -623,7 +623,7 @@ class Name(JSONSerializable):
 
     @staticmethod
     def from_profile(profile: Dict[str, Any]) -> str:
-        """Return the full name of an single profile of abgeordnetenwatch
+        """Return the full name of an single profile of abgeordnetenwatch.
 
         Args:
             profile (Dict[str, Any]): profile of api call
