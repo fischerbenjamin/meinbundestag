@@ -36,7 +36,7 @@ const BottomTabNavigator = createBottomTabNavigator(
     tabBarOptions: {
       showLabel: false,
       style: {
-        borderTopWidth: 2,
+        borderTopWidth: 3,
         borderTopColor: colorMain,
       },
     },

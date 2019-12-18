@@ -5,22 +5,102 @@ import {
   TouchableOpacity,
   ScrollView,
   Clipboard,
+  StyleSheet,
 } from 'react-native';
-
-import { NavIconPersonal } from '../style/Icons';
+import {
+  NavIconPersonal,
+  OverviewItemSidejobs,
+  OverviewItemSpeeches,
+  OverviewItemVotes,
+  OverviewItemQuestions,
+} from '../style/Icons';
 import storage from '../storage/Store';
 import BaseScreen from './BaseScreen';
 import PersonalCollapsable from '../components/PersonalCollapsable';
 import {
   renderSpeech, renderQuestion, renderSidejob, renderVote,
 } from '../components/PersonalEntries';
-import { colorMain } from '../style/Colors';
+import { colorMain, colorWhite } from '../style/Colors';
 
 
 const SIDEJOBS = 'sidejobs';
 const SPEECHES = 'speeches';
 const QUESTIONS = 'questions';
 const VOTES = 'votes';
+
+
+const style = StyleSheet.create({
+
+  overviewContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    justifyContent: 'space-around',
+  },
+
+  overviewItemContainer: {
+    flex: 1,
+    backgroundColor: colorMain,
+    borderRadius: 30,
+    margin: 25,
+  },
+
+  overviewItemText: {
+    fontWeight: 'bold',
+    fontSize: 22,
+    color: colorWhite,
+  },
+
+  overviewItemTextContainer: {
+    flex: 8,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+
+  overviewSeparatorContainer: {
+    flex: 1,
+  },
+
+  overviewIconContainer: {
+    flex: 2,
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+
+  overviewTouchableContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'stretch',
+  },
+
+  backToOverviewButton: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: colorMain,
+    borderRadius: 20,
+    margin: 10,
+    marginTop: 20,
+    width: '50%',
+  },
+
+  backToOverviewText: {
+    color: colorWhite,
+    fontWeight: '700',
+  },
+
+  backToOverviewSep: {
+    borderRadius: 10,
+    borderBottomColor: colorMain,
+    borderBottomWidth: 3,
+    width: '90%',
+    marginLeft: '5%',
+    marginRight: '5%',
+    margin: 10,
+  },
+
+});
+
 
 export default class PersonalScreen extends React.Component {
   constructor(props) {
@@ -36,51 +116,36 @@ export default class PersonalScreen extends React.Component {
 
   showOverview() {
     return (
-      <View
-        style={{
-          flex: 1,
-          flexDirection: 'column',
-          alignItems: 'stretch',
-          justifyContent: 'space-around',
-        }}
-      >
-        {this.renderOverviewItem(SIDEJOBS, 'Nebentätigkeiten')}
-        {this.renderOverviewItem(SPEECHES, 'Reden')}
-        {this.renderOverviewItem(QUESTIONS, 'Fragen')}
-        {this.renderOverviewItem(VOTES, 'Abstimmungen')}
+      <View style={style.overviewContainer}>
+        {this.renderOverviewItem(SPEECHES, 'Reden', OverviewItemSpeeches)}
+        {this.renderOverviewItem(QUESTIONS, 'Fragen', OverviewItemQuestions)}
+        {this.renderOverviewItem(VOTES, 'Abstimmungen', OverviewItemVotes)}
+        {this.renderOverviewItem(SIDEJOBS, 'Nebentätigkeiten', OverviewItemSidejobs)}
       </View>
     );
   }
 
-  renderOverviewItem(content, text) {
+  renderOverviewItem(content, text, icon) {
     return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: colorMain,
-          borderRadius: 30,
-          margin: 20,
-        }}
-      >
+      <View style={style.overviewItemContainer}>
         <TouchableOpacity
+          style={style.overviewTouchableContainer}
           onPress={() => this.setState({
             showContent: content,
           })}
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
         >
-          <Text
-            style={{
-              fontWeight: 900,
-              fontSize: 22,
-              color: '#fff',
-            }}
-          >
-            {text}
-          </Text>
+          <View style={{ flexDirection: 'row' }}>
+            <View style={style.overviewSeparatorContainer} />
+            <View style={style.overviewIconContainer}>
+              {icon}
+            </View>
+            <View style={style.overviewSeparatorContainer} />
+            <View style={style.overviewItemTextContainer}>
+              <Text style={style.overviewItemText}>
+                {text}
+              </Text>
+            </View>
+          </View>
         </TouchableOpacity>
       </View>
     );
@@ -94,20 +159,13 @@ export default class PersonalScreen extends React.Component {
         <TouchableOpacity
           onPress={() => this.setState({ showContent: false })}
         >
-          <View
-            style={{
-              alignSelf: 'center',
-              alignItems: 'center',
-              padding: 10,
-              backgroundColor: colorMain,
-              borderRadius: 20,
-              margin: 10,
-              width: '50%',
-            }}
-          >
-            <Text>Zurück zur Übersicht</Text>
+          <View style={style.backToOverviewButton}>
+            <Text style={style.backToOverviewText}>
+              Zurück zur Übersicht
+            </Text>
           </View>
         </TouchableOpacity>
+        <View style={style.backToOverviewSep} />
         <PersonalCollapsable
           data={data}
           renderListItem={renderListItem}

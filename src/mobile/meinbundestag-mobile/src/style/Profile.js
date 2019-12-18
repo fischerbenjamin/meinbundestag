@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { colorGray, colorLight } from './Colors';
+import { colorLight, colorMain, colorWhite, colorBlack, colorBlackLight } from './Colors';
 
 const profile = StyleSheet.create({
 
@@ -11,8 +11,6 @@ const profile = StyleSheet.create({
 
   header: {
     flex: 1,
-    borderBottomColor: colorGray,
-    borderBottomWidth: 2,
   },
 
   headerImageView: {
@@ -29,16 +27,25 @@ const profile = StyleSheet.create({
   },
 
   headerImage: {
-    borderRadius: 63,
-    borderWidth: 3,
-    borderColor: colorLight,
-    height: 140,
-    width: 140,
+    marginTop: 5,
+    borderRadius: 96,
+    height: 192,
+    width: 192,
   },
 
   headerName: {
     fontStyle: 'italic',
     fontWeight: 'bold',
+  },
+
+  headerSeparator: {
+    borderRadius: 10,
+    borderBottomColor: colorMain,
+    borderBottomWidth: 3,
+    width: '90%',
+    marginLeft: '5%',
+    marginRight: '5%',
+    margin: 10,
   },
 
   body: {
@@ -63,8 +70,9 @@ const entry = StyleSheet.create({
   descriptionText: {
     flex: 1,
     textAlign: 'left',
-    fontWeight: 'bold',
+    fontWeight: '600',
     paddingLeft: 20,
+    color: colorBlackLight,
   },
 
   valueView: {

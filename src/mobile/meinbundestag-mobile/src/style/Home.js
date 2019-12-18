@@ -15,9 +15,6 @@ const home = StyleSheet.create({
   },
 
   input: {
-    borderBottomColor: colorMain,
-    borderBottomWidth: 3,
-    borderRadius: 5,
     fontSize: 20,
     alignSelf: 'center',
     width: '80%',

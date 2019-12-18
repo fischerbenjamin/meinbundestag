@@ -2,18 +2,18 @@ import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import PropTypes from 'prop-types';
-import { colorMain, colorLight } from './Colors';
+import { colorMain, colorLight, colorWhite } from './Colors';
 
 
-const ICON_SIZE = 24;
-
+const ICON_SIZE_NAV = 24;
+const ICON_SIZE_OVERVIEW = 48;
 
 const NavIconHome = (props) => {
   const { focused } = props;
   return (
     <MaterialIcons
       name="home"
-      size={ICON_SIZE}
+      size={ICON_SIZE_NAV}
       color={focused ? colorMain : colorLight}
     />
   );
@@ -28,7 +28,7 @@ const NavIconProfile = (props) => {
   return (
     <MaterialIcons
       name="person"
-      size={ICON_SIZE}
+      size={ICON_SIZE_NAV}
       color={focused ? colorMain : colorLight}
     />
   );
@@ -43,7 +43,7 @@ const NavIconPersonal = (props) => {
   return (
     <MaterialIcons
       name="info-outline"
-      size={ICON_SIZE}
+      size={ICON_SIZE_NAV}
       color={focused ? colorMain : colorLight}
     />
   );
@@ -58,7 +58,7 @@ const NavIconSpeech = (props) => {
   return (
     <MaterialIcons
       name="message"
-      size={ICON_SIZE}
+      size={ICON_SIZE_NAV}
       color={focused ? colorMain : colorLight}
     />
   );
@@ -68,7 +68,44 @@ NavIconSpeech.propTypes = {
 };
 
 
+const OverviewItemSidejobs = (
+  <MaterialIcons
+    name="attach-money"
+    size={ICON_SIZE_OVERVIEW}
+    color={colorWhite}
+  />
+);
+
+const OverviewItemSpeeches = (
+  <MaterialIcons
+    name="message"
+    size={ICON_SIZE_OVERVIEW}
+    color={colorWhite}
+  />
+);
+
+const OverviewItemVotes = (
+  <MaterialIcons
+    name="create"
+    size={ICON_SIZE_OVERVIEW}
+    color={colorWhite}
+  />
+);
+
+const OverviewItemQuestions = (
+  <MaterialIcons
+    name="question-answer"
+    size={ICON_SIZE_OVERVIEW}
+    color={colorWhite}
+  />
+);
+
+
 export {
+  OverviewItemSidejobs,
+  OverviewItemVotes,
+  OverviewItemSpeeches,
+  OverviewItemQuestions,
   NavIconHome,
   NavIconProfile,
   NavIconPersonal,

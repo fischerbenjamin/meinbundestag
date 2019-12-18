@@ -71,9 +71,9 @@ function renderSidejob(item, onPressItem) {
   return (
     <View>
       <TouchableOpacity onPress={() => onPressItem(item)}>
-        {job}
-        {category}
         {date}
+        {category}
+        {job}
         {organization}
       </TouchableOpacity>
     </View>
@@ -87,9 +87,9 @@ function renderVote(item, onPressItem) {
   return (
     <View>
       <TouchableOpacity onPress={() => onPressItem(item)}>
+        {date}
         {title}
         {vote}
-        {date}
       </TouchableOpacity>
     </View>
   );

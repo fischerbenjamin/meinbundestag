@@ -10,17 +10,20 @@ import storage from '../storage/Store';
 import BaseScreen from './BaseScreen';
 import Paragraph from '../components/Paragraph';
 import SpeechHeader from '../components/SpeechHeader';
+import { colorMain } from '../style/Colors';
 
 
 const style = StyleSheet.create({
 
   separator: {
-    borderBottomColor: '#4D5E72',
-    borderBottomWidth: 2,
+    borderRadius: 10,
+    borderBottomColor: colorMain,
+    borderBottomWidth: 3,
     width: '90%',
     marginLeft: '5%',
     marginRight: '5%',
     margin: 10,
+    marginBottom: 20,
   },
 
 });
@@ -43,11 +46,13 @@ export default class SpeechScreen extends React.Component {
       date, name, topic, party,
     } = meta;
     const { polarity, subjectivity } = analysis;
-    const renderedParagraphs = entries.map((entry) => {
+    const renderedParagraphs = entries.map((entry, index) => {
       const isSpeaker = entry.is_speaker;
       const { paragraphs, speaker } = entry;
+      const key = `${speaker} ${index}`;
       return (
         <Paragraph
+          key={key}
           isSpeaker={isSpeaker}
           paragraphs={paragraphs}
           speaker={speaker}
@@ -55,7 +60,9 @@ export default class SpeechScreen extends React.Component {
       );
     });
     return (
-      <ScrollView>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+      >
         <SpeechHeader
           date={date}
           name={name}

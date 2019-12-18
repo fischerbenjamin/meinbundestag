@@ -5,6 +5,8 @@ import {
   StyleSheet,
 } from 'react-native';
 import PropTypes from 'prop-types';
+import { colorBlack, colorGray } from '../style/Colors';
+
 
 const style = StyleSheet.create({
 
@@ -16,6 +18,9 @@ const style = StyleSheet.create({
   commentText: {
     fontStyle: 'italic',
     textAlign: 'center',
+    fontSize: 14,
+    margin: 10,
+    color: colorGray,
   },
 
   speechContainer: {
@@ -25,15 +30,19 @@ const style = StyleSheet.create({
 
   speechText: {
     textAlign: 'justify',
+    fontSize: 14,
+    margin: 10,
   },
 
   speakerIsSpeakerText: {
     fontWeight: '500',
+    color: colorBlack,
   },
 
   speakerIsNotSpeakerText: {
     fontWeight: '500',
     fontStyle: 'italic',
+    color: colorBlack,
   },
 
   speakerNameContainer: {
@@ -44,6 +53,14 @@ const style = StyleSheet.create({
 
 
 class Paragraph extends React.PureComponent {
+  static renderCommentEntry(text) {
+    return (
+      <View style={style.commentContainer}>
+        <Text style={style.commentText}>{text}</Text>
+      </View>
+    );
+  }
+
   static renderSpeechEntry(paragraphs, speaker, isSpeaker) {
     const paragraphText = paragraphs.map((para) => para.text).join(' ');
     const speakerIsSpeaker = (() => {
@@ -64,14 +81,6 @@ class Paragraph extends React.PureComponent {
         <View>
           <Text style={style.speechText}>{paragraphText}</Text>
         </View>
-      </View>
-    );
-  }
-
-  static renderCommentEntry(text) {
-    return (
-      <View style={style.commentContainer}>
-        <Text style={style.commentText}>{text}</Text>
       </View>
     );
   }

@@ -18,13 +18,18 @@ const colors = {
 };
 
 const colorMain = colors.nord12;
-const colorGray = colors.nord3;
+const colorGray = colors.nord2;
 const colorBlack = colors.nord0;
 const colorLight = colors.nord4;
+const colorWhite = '#fff';
+const colorBlackLight = colors.nord1;
+
 
 export {
   colorMain,
   colorGray,
   colorBlack,
   colorLight,
+  colorWhite,
+  colorBlackLight,
 };

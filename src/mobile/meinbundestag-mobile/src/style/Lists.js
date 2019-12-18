@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { colorGray, colorLight, colorMain } from './Colors';
+import { colorLight, colorBlackLight } from './Colors';
 
 const seperator = StyleSheet.create({
 
@@ -10,7 +10,7 @@ const seperator = StyleSheet.create({
     marginTop: 10,
     height: 2,
     width: '90%',
-    backgroundColor: colorMain,
+    backgroundColor: colorLight,
     marginLeft: '5%',
     marginRight: '5%',
   },
@@ -35,7 +35,8 @@ const listItem = StyleSheet.create({
   keyText: {
     flex: 1,
     textAlign: 'left',
-    fontWeight: 'bold',
+    fontWeight: '600',
+    color: colorBlackLight,
     paddingLeft: 20,
   },
 

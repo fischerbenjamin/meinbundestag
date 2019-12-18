@@ -5,7 +5,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import PropTypes from 'prop-types';
-
+import { colorBlackLight } from '../style/Colors';
 
 const style = StyleSheet.create({
 
@@ -15,13 +15,17 @@ const style = StyleSheet.create({
   },
 
   text: {
-    fontWeight: 500,
+    fontWeight: '500',
+    fontSize: 16,
     margin: 5,
+    padding: 2,
     textAlign: 'center',
+    color: colorBlackLight,
   },
 
   textTopic: {
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: '600',
   },
 
   analysisContainer: {
@@ -43,7 +47,7 @@ class SpeechHeader extends React.PureComponent {
       date, name, topic, party, subjectivity, polarity,
     } = this.props;
     const displayName = `${name} (${party})`;
-    const displayPolarity = `Polarität ${polarity}`;
+    const displayPolarity = `Stimmung ${polarity}`;
     const displaySubjectivity = `Objektivität ${subjectivity}`;
     return (
       <View style={style.container}>
