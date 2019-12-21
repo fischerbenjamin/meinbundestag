@@ -41,7 +41,11 @@ const utils = {
   },
 
   getDeputies: async function getDeputies() {
-    const deputies = await api.deputies();
+    let deputies = storage.getDeputies();
+    if (deputies.length !== 0) {
+      return deputies;
+    }
+    deputies = await api.deputies();
     storage.setDeputies(deputies);
     return deputies;
   },
