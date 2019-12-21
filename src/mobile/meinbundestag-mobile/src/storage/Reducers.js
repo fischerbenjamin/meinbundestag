@@ -19,6 +19,15 @@ function speech(state = {}, action) {
   }
 }
 
+function deputies(state = [], action) {
+  switch (action.type) {
+    case actionTypes.setDeputies:
+      return action.deputies;
+    default:
+      return state;
+  }
+}
+
 function cache(state = [], action) {
   const CACHE_SIZE = 10;
   switch (action.type) {
@@ -37,6 +46,7 @@ function cache(state = [], action) {
 const store = combineReducers({
   profile,
   speech,
+  deputies,
   cache,
 });
 

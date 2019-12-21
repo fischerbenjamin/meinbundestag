@@ -9,7 +9,7 @@ import Autocomplete from 'react-native-autocomplete-input';
 import style from '../style/Home';
 import storage from '../storage/Store';
 import { NavIconHome } from '../style/Icons';
-import api from '../resources/Api';
+import utils from '../resources/Utils';
 
 
 export default class HomeScreen extends React.Component {
@@ -22,7 +22,7 @@ export default class HomeScreen extends React.Component {
   }
 
   async componentDidMount() {
-    const allNames = await api.deputies();
+    const allNames = await utils.getDeputies();
     this.setState({ deputies: allNames });
   }
 
@@ -45,7 +45,7 @@ export default class HomeScreen extends React.Component {
 
   async updateProfile() {
     const { query } = this.state;
-    const profile = await api.profile(query);
+    const profile = await utils.getProfile(query);
     storage.setProfile(profile);
   }
 

@@ -6,6 +6,7 @@ import { actions } from './Actions';
 const initialState = {
   profile: {},
   speech: {},
+  deputies: [],
   cache: [],
 };
 
@@ -13,13 +14,19 @@ const appStore = createStore(store, initialState);
 
 const storage = {
 
-  setProfile: function setProfile(profile) {
+  setProfile: function setProfile(profile, cache) {
     appStore.dispatch(actions.setProfile(profile));
-    appStore.dispatch(actions.cacheProfile(profile));
+    if (cache) {
+      appStore.dispatch(actions.cacheProfile(profile));
+    }
   },
 
   setSpeech: function setSpeech(speech) {
     appStore.dispatch(actions.setSpeech(speech));
+  },
+
+  setDeputies: function setDeputies(deputies) {
+    appStore.dispatch(actions.setDeputies(deputies));
   },
 
   getProfile: function getProfile() {
@@ -30,6 +37,20 @@ const storage = {
   getSpeech: function getSpeech() {
     const { speech } = appStore.getState();
     return speech;
+  },
+
+  getDeputies: function getDeputies() {
+    const { deputies } = appStore.getState();
+    return deputies;
+  },
+
+  findProfileInCache: function findProfileInCache(id) {
+    const { cache } = appStore.getState();
+    const result = cache.find((profile) => profile.id === id);
+    if (result !== undefined) {
+      console.log('FOUND PROFILE IN CACHE');
+    }
+    return result;
   },
 
   subscribeToConsole: function subscribeToConsole() {

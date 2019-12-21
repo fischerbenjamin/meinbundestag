@@ -1,6 +1,7 @@
 const actionTypes = {
   setProfile: 'SET_PROFILE',
   setSpeech: 'SET_SPEECH',
+  setDeputies: 'SET_DEPUTIES',
   updateCache: 'UPDATE_CACHE',
 };
 
@@ -18,6 +19,14 @@ const actions = {
     const action = {
       type: actionTypes.setSpeech,
       speech,
+    };
+    return action;
+  },
+
+  setDeputies: function setDeputies(deputies) {
+    const action = {
+      type: actionTypes.setDeputies,
+      deputies,
     };
     return action;
   },
