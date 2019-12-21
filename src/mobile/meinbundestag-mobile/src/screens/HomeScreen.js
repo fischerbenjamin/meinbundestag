@@ -16,14 +16,13 @@ export default class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      deputies: [],
       query: '',
     };
+    this.deputies = [];
   }
 
   async componentDidMount() {
-    const allNames = await utils.getDeputies();
-    this.setState({ deputies: allNames });
+    this.deputies = await utils.getDeputies();
   }
 
   static navigationOptions = {
@@ -34,7 +33,7 @@ export default class HomeScreen extends React.Component {
     if (query === '') {
       return [];
     }
-    const { deputies } = this.state;
+    const { deputies } = this;
     const regex = new RegExp(`${query.trim()}`, 'i');
     const matches = deputies.filter((profile) => profile.search(regex) >= 0);
     const suggestions = matches.slice(0, 10).sort(
@@ -43,23 +42,20 @@ export default class HomeScreen extends React.Component {
     return suggestions;
   }
 
-  async updateProfile() {
+  async doSearch() {
     const { query } = this.state;
-    const profile = await utils.getProfile(query);
-    storage.setProfile(profile);
+    const { navigate } = this.props.navigation;
+    await utils.updateProfile(query);
+    storage.setSpeech({});
+    navigate('profile');
   }
 
   renderSearchButton() {
-    const { navigate } = this.props.navigation;
     return (
       <View style={style.buttonView}>
         <TouchableOpacity
           style={style.button}
-          onPress={async () => {
-            await this.updateProfile();
-            storage.setSpeech({});
-            navigate('profile');
-          }}
+          onPress={() => this.doSearch()}
         >
           <Text style={style.buttonText}>
             Suchen

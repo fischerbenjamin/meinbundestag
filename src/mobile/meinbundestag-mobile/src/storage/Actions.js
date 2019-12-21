@@ -3,9 +3,18 @@ const actionTypes = {
   setSpeech: 'SET_SPEECH',
   setDeputies: 'SET_DEPUTIES',
   updateCache: 'UPDATE_CACHE',
+  setPersonalContent: 'SET_PERSONAL_CONTENT',
 };
 
 const actions = {
+
+  setPersonalContent: function setPersonalContent(content) {
+    const action = {
+      type: actionTypes.setPersonalContent,
+      content,
+    };
+    return action;
+  },
 
   setProfile: function setProfile(profile) {
     const action = {

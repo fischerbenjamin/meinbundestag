@@ -1,6 +1,16 @@
 import { combineReducers } from 'redux';
 import { actionTypes } from './Actions';
 
+
+function personalContent(state = '', action) {
+  switch (action.type) {
+    case actionTypes.setPersonalContent:
+      return action.content;
+    default:
+      return state;
+  }
+}
+
 function profile(state = {}, action) {
   switch (action.type) {
     case actionTypes.setProfile:
@@ -48,6 +58,7 @@ const store = combineReducers({
   speech,
   deputies,
   cache,
+  personalContent,
 });
 
 export default store;

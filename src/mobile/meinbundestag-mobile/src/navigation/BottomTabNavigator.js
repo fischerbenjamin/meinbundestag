@@ -17,9 +17,10 @@ const ProfileScreenConnected = connect((state) => (
   { profile: state.profile }
 ))(ProfileScreen);
 
-const PersonalScreenConnected = connect((state) => (
-  { profile: state.profile }
-))(PersonalScreen);
+const PersonalScreenConnected = connect((state) => ({
+  profile: state.profile,
+  personalContent: state.personalContent,
+}))(PersonalScreen);
 
 const SpeechScreenConnected = connect((state) => (
   { profile: state.speech }

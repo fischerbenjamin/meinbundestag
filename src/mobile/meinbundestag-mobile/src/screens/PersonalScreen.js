@@ -27,6 +27,7 @@ const SIDEJOBS = 'sidejobs';
 const SPEECHES = 'speeches';
 const QUESTIONS = 'questions';
 const VOTES = 'votes';
+const OVERVIEW = '';
 
 
 const style = StyleSheet.create({
@@ -103,18 +104,7 @@ const style = StyleSheet.create({
 
 
 export default class PersonalScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showContent: false,
-    };
-  }
-
-  static navigationOptions = {
-    tabBarIcon: NavIconPersonal,
-  };
-
-  showOverview() {
+  static showOverview() {
     return (
       <View style={style.overviewContainer}>
         {this.renderOverviewItem(SPEECHES, 'Reden', OverviewItemSpeeches)}
@@ -125,14 +115,16 @@ export default class PersonalScreen extends React.Component {
     );
   }
 
-  renderOverviewItem(content, text, icon) {
+  static navigationOptions = {
+    tabBarIcon: NavIconPersonal,
+  };
+
+  static renderOverviewItem(content, text, icon) {
     return (
       <View style={style.overviewItemContainer}>
         <TouchableOpacity
           style={style.overviewTouchableContainer}
-          onPress={() => this.setState({
-            showContent: content,
-          })}
+          onPress={() => storage.setPersonalContent(content)}
         >
           <View style={{ flexDirection: 'row' }}>
             <View style={style.overviewSeparatorContainer} />
@@ -151,13 +143,13 @@ export default class PersonalScreen extends React.Component {
     );
   }
 
-  renderContent(data, renderListItem, onPressItem) {
+  static renderContent(data, renderListItem, onPressItem) {
     return (
       <ScrollView
         showsVerticalScrollIndicator={false}
       >
         <TouchableOpacity
-          onPress={() => this.setState({ showContent: false })}
+          onPress={() => storage.setPersonalContent(OVERVIEW)}
         >
           <View style={style.backToOverviewButton}>
             <Text style={style.backToOverviewText}>
@@ -182,19 +174,19 @@ export default class PersonalScreen extends React.Component {
         'Bitte wählen Sie zuerst ein Profil aus.',
       );
     }
+    const personalContent = storage.getPersonalContent();
     const {
       sidejobs, votes, questions, speeches,
     } = profile;
-    const { showContent } = this.state;
     const { navigate } = this.props.navigation;
-    switch (showContent) {
+    switch (personalContent) {
       case SIDEJOBS:
-        return this.renderContent(
+        return PersonalScreen.renderContent(
           sidejobs, renderSidejob,
           ((item) => Clipboard.setString(item.organization)),
         );
       case SPEECHES:
-        return this.renderContent(
+        return PersonalScreen.renderContent(
           speeches, renderSpeech,
           ((item) => {
             storage.setSpeech(item);
@@ -202,17 +194,17 @@ export default class PersonalScreen extends React.Component {
           }),
         );
       case VOTES:
-        return this.renderContent(
+        return PersonalScreen.renderContent(
           votes, renderVote,
           (item) => Clipboard.setString(item.url),
         );
       case QUESTIONS:
-        return this.renderContent(
+        return PersonalScreen.renderContent(
           questions, renderQuestion,
           ((item) => Clipboard.setString(item.url)),
         );
       default:
-        return this.showOverview();
+        return PersonalScreen.showOverview();
     }
   }
 }

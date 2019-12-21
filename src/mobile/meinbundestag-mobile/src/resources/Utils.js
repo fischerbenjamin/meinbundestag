@@ -28,9 +28,12 @@ function getUrlName(name) {
 
 const utils = {
 
-  getProfile: async function getProfile(name) {
+  updateProfile: async function getProfile(name) {
     const urlName = getUrlName(name);
     const cacheResult = storage.findProfileInCache(urlName);
+    // Clear other screens
+    storage.setPersonalContent('');
+    storage.setSpeech({});
     if (cacheResult !== undefined) {
       storage.setProfile(cacheResult, false);
       return cacheResult;

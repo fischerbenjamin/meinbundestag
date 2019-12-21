@@ -4,6 +4,7 @@ import { actions } from './Actions';
 
 
 const initialState = {
+  personalContent: '',
   profile: {},
   speech: {},
   deputies: [],
@@ -13,6 +14,15 @@ const initialState = {
 const appStore = createStore(store, initialState);
 
 const storage = {
+
+  setPersonalContent: function setPersonalContent(content) {
+    appStore.dispatch(actions.setPersonalContent(content));
+  },
+
+  getPersonalContent: function getPersonalContent() {
+    const { personalContent } = appStore.getState();
+    return personalContent;
+  },
 
   setProfile: function setProfile(profile, cache) {
     appStore.dispatch(actions.setProfile(profile));
