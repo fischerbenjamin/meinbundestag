@@ -15,6 +15,9 @@ const api = {
     const route = `${URL}/profile/${urlName}`;
     const response = await fetch(route);
     const profile = await response.json();
+    if (profile === null) {
+      return undefined;
+    }
     profile.id = urlName;
     return profile;
   },
@@ -39,6 +42,9 @@ const utils = {
       return cacheResult;
     }
     const profile = await api.profile(urlName);
+    if (profile === undefined) {
+      return undefined;
+    }
     storage.setProfile(profile, true);
     return profile;
   },
