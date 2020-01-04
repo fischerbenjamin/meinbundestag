@@ -9,9 +9,10 @@ const home = StyleSheet.create({
   },
 
   inputView: {
-    flex: 3,
-    alignItems: 'stretch',
-    paddingTop: '30%',
+    flex: 1,
+    margin: "10%",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   input: {
@@ -37,7 +38,6 @@ const home = StyleSheet.create({
 
   button: {
     alignSelf: 'center',
-    fontSize: 30,
     backgroundColor: colorMain,
     borderRadius: 30,
     borderWidth: 2,

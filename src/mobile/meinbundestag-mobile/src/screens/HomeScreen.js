@@ -2,14 +2,18 @@ import {
   View,
   Text,
   TouchableOpacity,
+  ActivityIndicator,
+  TextInput,
 } from 'react-native';
 import React from 'react';
-import Autocomplete from 'react-native-autocomplete-input';
+import Suggestions from '../components/Suggestions';
+
 
 import style from '../style/Home';
 import storage from '../storage/Store';
 import { NavIconHome } from '../style/Icons';
 import utils from '../resources/Utils';
+import { colorMain } from '../style/Colors';
 
 
 export default class HomeScreen extends React.Component {
@@ -17,6 +21,9 @@ export default class HomeScreen extends React.Component {
     super(props);
     this.state = {
       query: '',
+      isLoading: false,
+      errorMessage: '',
+      borderColor: 'red',
     };
     this.deputies = [];
   }
@@ -29,7 +36,7 @@ export default class HomeScreen extends React.Component {
     tabBarIcon: NavIconHome,
   };
 
-  findProfile(query) {
+  findSugggestions(query) {
     if (query === '') {
       return [];
     }
@@ -43,10 +50,24 @@ export default class HomeScreen extends React.Component {
   }
 
   async doSearch() {
-    const { query } = this.state;
+    const { query, selected } = this.state;
+    if (query === '' || !selected) {
+      return;
+    }
+    this.setState({ isLoading: true });
     const { navigate } = this.props.navigation;
-    await utils.updateProfile(query);
+    const profile = await utils.updateProfile(query);
+    if (profile === undefined) {
+      this.setState({
+        isLoading: false,
+        errorMessage: query,
+        query: '',
+        selected: true,
+      });
+      return;
+    }
     storage.setSpeech({});
+    this.setState({ isLoading: false });
     navigate('profile');
   }
 
@@ -65,39 +86,99 @@ export default class HomeScreen extends React.Component {
     );
   }
 
+  renderActivityIndicator() {
+    const { isLoading } = this.state;
+    if (!isLoading) return null;
+    return (
+      <View
+        style={{
+          margin: 10,
+          marginBottom: 30,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <ActivityIndicator size="large" color={colorMain} />
+      </View>
+    );
+  }
+
+  renderErrorMessage() {
+    const { errorMessage } = this.state;
+    if (errorMessage !== '') {
+      return (
+        <View
+          style={{
+            alignContent: 'center',
+            justifyContent: 'center',
+            alignItems: 'center',
+            margin: 10,
+            marginBottom: 30,
+          }}
+        >
+          <Text
+            style={{ color: 'red', fontStyle: 'italic' }}
+          >
+            Profil
+            &apos;
+            {errorMessage}
+            &apos;
+            konnte nicht gefunden werden.
+          </Text>
+        </View>
+      );
+    }
+    return null;
+  }
+
   render() {
-    const { query } = this.state;
-    const deputies = this.findProfile(query);
-    const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
+    const { query, selected } = this.state;
+    const deputies = selected ? [] : this.findSugggestions(query);
     return (
       <View style={style.container}>
         <View style={style.inputView}>
-          <Autocomplete
-            containerStyle={style.inputContainer}
-            inputContainerStyle={style.input}
-            value={query}
-            autoCapitalize="none"
+          <TextInput
+            style={{
+              padding: 10,
+              margin: 10,
+              fontSize: 18,
+              borderBottomWidth: 2,
+              textAlign: 'center',
+              outline: 'none',
+              borderColor: colorMain,
+              fontWeight: 500,
+              width: "90%",
+            }}
+            autoFocus
             autoCorrect={false}
-            placeholder="Name des Abgeordneten"
-            data={
-              deputies.length === 1
-              && comp(query, deputies[0]) ? [] : deputies
-            }
-            onChangeText={(text) => { this.setState({ query: text }); }}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={async () => {
-                  this.setState({ query: item });
-                }}
-              >
-                <Text style={style.inputSuggestionText}>
-                  {item}
-                </Text>
-              </TouchableOpacity>
-            )}
+            onChangeText={(text) => {
+              this.setState({
+                query: text,
+                errorMessage: '',
+                selected: false,
+              });
+            }}
+            value={query}
           />
         </View>
-        {this.renderSearchButton()}
+        <View
+          style={{
+            flex: 4,
+            alignItems: 'center',
+          }}
+        >
+          <Suggestions
+            suggestions={deputies}
+            itemCallback={(item) => this.setState({ query: item, selected: true })}
+          />
+        </View>
+        <View style={{ flex: 1 }}>
+          {this.renderSearchButton()}
+        </View>
+        <View style={{ flex: 1 }}>
+          {this.renderActivityIndicator()}
+          {this.renderErrorMessage()}
+        </View>
       </View>
     );
   }
