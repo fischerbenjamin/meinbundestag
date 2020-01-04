@@ -23,7 +23,6 @@ export default class HomeScreen extends React.Component {
       query: '',
       isLoading: false,
       errorMessage: '',
-      borderColor: 'red',
     };
     this.deputies = [];
   }
@@ -67,7 +66,7 @@ export default class HomeScreen extends React.Component {
       return;
     }
     storage.setSpeech({});
-    this.setState({ isLoading: false });
+    this.setState({ query: '', isLoading: false });
     navigate('profile');
   }
 
@@ -139,15 +138,16 @@ export default class HomeScreen extends React.Component {
         <View style={style.inputView}>
           <TextInput
             style={{
-              padding: 10,
+              padding: 15,
               margin: 10,
+              marginTop: 20,
               fontSize: 18,
-              borderBottomWidth: 2,
+              borderWidth: 2,
+              borderRadius: 20,
               textAlign: 'center',
               outline: 'none',
               borderColor: colorMain,
               fontWeight: 500,
-              width: "90%",
             }}
             autoFocus
             autoCorrect={false}
@@ -175,7 +175,7 @@ export default class HomeScreen extends React.Component {
         <View style={{ flex: 1 }}>
           {this.renderSearchButton()}
         </View>
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1 , marginTop: 20 }}>
           {this.renderActivityIndicator()}
           {this.renderErrorMessage()}
         </View>

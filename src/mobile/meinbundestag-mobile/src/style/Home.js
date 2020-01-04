@@ -10,7 +10,8 @@ const home = StyleSheet.create({
 
   inputView: {
     flex: 1,
-    margin: "10%",
+    margin: 20,
+    marginBottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },

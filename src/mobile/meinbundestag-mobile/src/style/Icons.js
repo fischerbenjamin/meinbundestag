@@ -7,6 +7,7 @@ import { colorMain, colorLight, colorWhite } from './Colors';
 
 const ICON_SIZE_NAV = 24;
 const ICON_SIZE_OVERVIEW = 48;
+const ICON_SIZE_HUGE = 72;
 
 const NavIconHome = (props) => {
   const { focused } = props;
@@ -100,6 +101,14 @@ const OverviewItemQuestions = (
   />
 );
 
+const NoConnection = (
+  <MaterialIcons
+    name="cloud-off"
+    size={ICON_SIZE_HUGE}
+    color={colorWhite}
+  />
+);
+
 
 export {
   OverviewItemSidejobs,
@@ -110,4 +119,5 @@ export {
   NavIconProfile,
   NavIconPersonal,
   NavIconSpeech,
+  NoConnection,
 };
