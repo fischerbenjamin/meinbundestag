@@ -1,20 +1,39 @@
-import React from 'react';
-import { registerRootComponent } from 'expo';
-import { Provider } from 'react-redux';
+/**
+ * @file Entry point of the application
+ * @author Benjamin Fischer
+ */
 
+import React from 'react';
+import { Provider } from 'react-redux';
+import { registerRootComponent } from 'expo';
+
+import utils from './resources/Utils';
 import storage from './storage/Store';
 import AppNavigator from './navigation/AppNavigator';
 import WelcomeScreen from './screens/Welcome/WelcomeScreen';
-import utils from './resources/Utils';
 
+
+// Types for the status of startup.
 const STATUS = {
   loading: 'loading',
   error: 'error',
   success: 'success',
 };
+// Timeout after the startup fails.
 const TIMEOUT = 30000;
 
+/**
+ * App
+ *  This class implements the application. It displas the WelcomeScreen until
+ *  all data is loaded and then switches to the HomeScreen. On failure, an
+ *  error message is displayed and the application has to be restarted.
+ */
 class App extends React.Component {
+  /**
+   * Initialize the App component
+   * @constructor
+   * @param {object} props - Properties of the component
+   */
   constructor(props) {
     storage.subscribeToConsole();
     super(props);
@@ -23,6 +42,10 @@ class App extends React.Component {
     };
   }
 
+  /**
+   * Load the external data (list of deputies) on startup before switching
+   * to the HomeScreen.
+   */
   async componentDidMount() {
     setTimeout(() => {
       const { status } = this.state;
@@ -37,6 +60,9 @@ class App extends React.Component {
     }
   }
 
+  /**
+   * Render the component.
+   */
   render() {
     const { status } = this.state;
     switch (status) {
