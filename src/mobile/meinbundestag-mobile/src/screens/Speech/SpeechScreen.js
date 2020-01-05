@@ -1,32 +1,17 @@
 import {
   View,
   ScrollView,
-  StyleSheet,
 } from 'react-native';
 import React from 'react';
 
-import { NavIconSpeech } from '../style/Icons';
-import storage from '../storage/Store';
-import BaseScreen from './BaseScreen';
-import Paragraph from '../components/Paragraph';
-import SpeechHeader from '../components/SpeechHeader';
-import { colorMain } from '../style/Colors';
+import storage from '../../storage/Store';
+import BaseScreen from '../Base/BaseScreen';
+import Paragraph from '../../components/Paragraph/Paragraph';
+import SpeechHeader from '../../components/SpeechHeader/SpeechHeader';
 
+import style from './SpeechScreenStyle';
+import { NavIconSpeech } from '../../style/Icons';
 
-const style = StyleSheet.create({
-
-  separator: {
-    borderRadius: 10,
-    borderBottomColor: colorMain,
-    borderBottomWidth: 3,
-    width: '90%',
-    marginLeft: '5%',
-    marginRight: '5%',
-    margin: 10,
-    marginBottom: 20,
-  },
-
-});
 
 export default class SpeechScreen extends React.Component {
   static navigationOptions = {
@@ -36,8 +21,10 @@ export default class SpeechScreen extends React.Component {
   render() {
     const speech = storage.getSpeech();
     if (Object.entries(speech).length === 0) {
-      return BaseScreen.renderDefault(
-        'Bitte wählen Sie zuerst eine Rede aus.',
+      return (
+        <BaseScreen
+          text="Bitte wählen Sie zuerst eine Rede aus."
+        />
       );
     }
     const { content, meta, analysis } = speech;

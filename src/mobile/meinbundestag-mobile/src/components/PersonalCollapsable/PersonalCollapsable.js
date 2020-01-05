@@ -4,7 +4,7 @@ import {
   FlatList,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import { seperator } from '../style/Lists';
+import { seperator } from '../../style/Lists';
 
 
 export default class PersonalCollapsable extends React.PureComponent {

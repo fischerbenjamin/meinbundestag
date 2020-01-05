@@ -2,54 +2,10 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import { colorBlack, colorGray } from '../style/Colors';
 
-
-const style = StyleSheet.create({
-
-  commentContainer: {
-    margin: 7,
-    alignItems: 'center',
-  },
-
-  commentText: {
-    fontStyle: 'italic',
-    textAlign: 'center',
-    fontSize: 14,
-    margin: 10,
-    color: colorGray,
-  },
-
-  speechContainer: {
-    margin: 5,
-    alignItems: 'center',
-  },
-
-  speechText: {
-    textAlign: 'justify',
-    fontSize: 14,
-    margin: 10,
-  },
-
-  speakerIsSpeakerText: {
-    fontWeight: '500',
-    color: colorBlack,
-  },
-
-  speakerIsNotSpeakerText: {
-    fontWeight: '500',
-    fontStyle: 'italic',
-    color: colorBlack,
-  },
-
-  speakerNameContainer: {
-    marginBottom: 5,
-  },
-
-});
+import style from './ParagraphStyle';
 
 
 class Paragraph extends React.PureComponent {
@@ -66,11 +22,15 @@ class Paragraph extends React.PureComponent {
     const speakerIsSpeaker = (() => {
       if (isSpeaker) {
         return (
-          <Text style={style.speakerIsSpeakerText}>{speaker}</Text>
+          <Text style={style.speakerIsSpeakerText}>
+            {speaker}
+          </Text>
         );
       }
       return (
-        <Text style={style.speakerIsNotSpeakerText}>{speaker}</Text>
+        <Text style={style.speakerIsNotSpeakerText}>
+          {speaker}
+        </Text>
       );
     })();
     return (
@@ -79,7 +39,9 @@ class Paragraph extends React.PureComponent {
           {speakerIsSpeaker}
         </View>
         <View>
-          <Text style={style.speechText}>{paragraphText}</Text>
+          <Text style={style.speechText}>
+            {paragraphText}
+          </Text>
         </View>
       </View>
     );

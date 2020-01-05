@@ -3,7 +3,7 @@ import {
   View,
   Text,
 } from 'react-native';
-import { entry } from '../style/Profile';
+import { entry } from '../../style/Profile';
 
 
 export default class SidejobEntry extends React.PureComponent {

@@ -4,7 +4,7 @@ import {
   Text,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import { entry } from '../style/Profile';
+import { entry } from '../../style/Profile';
 
 
 class ProfileEntry extends React.PureComponent {

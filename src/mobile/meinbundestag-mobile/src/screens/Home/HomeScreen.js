@@ -1,40 +1,64 @@
+import React from 'react';
 import {
   View,
   Text,
+  TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  TextInput,
 } from 'react-native';
-import React from 'react';
-import Suggestions from '../components/Suggestions';
+import PropTypes from 'prop-types';
+
+import storage from '../../storage/Store';
+import utils from '../../resources/Utils';
+import Suggestions from '../../components/Suggestions/Suggestions';
+
+import style from './HomeScreenStyle';
+import { colorMain } from '../../style/Colors';
+import { NavIconHome } from '../../style/Icons';
 
 
-import style from '../style/Home';
-import storage from '../storage/Store';
-import { NavIconHome } from '../style/Icons';
-import utils from '../resources/Utils';
-import { colorMain } from '../style/Colors';
-
-
+/**
+ * HomeScreen
+ *  This class represents the home screen that is displayed after external
+ *  data is loaded. It provides a simple search box that is used to search for
+ *  certain deputy.
+ * @extends React.Component
+ */
 export default class HomeScreen extends React.Component {
+  /**
+   * Initialize the HomeScreen component
+   * @constructor
+   * @param {object} props - Properties passed to the component
+   */
   constructor(props) {
     super(props);
     this.state = {
       query: '',
       isLoading: false,
-      errorMessage: '',
+      errorMessage: false,
     };
     this.deputies = [];
   }
 
+  /**
+   * Load data from the cache when component is rendered.
+   * @async
+   */
   async componentDidMount() {
     this.deputies = await utils.getDeputies();
   }
 
+  // Use the home icon for the screen.
   static navigationOptions = {
     tabBarIcon: NavIconHome,
   };
 
+  /**
+   * Find matching deputies for the inserted query. Returns the suggestions
+   * in sorted order and max. 10 items.
+   * @param {string} query - query of the user
+   * @return {array} array of suggestions matching the query
+   */
   findSugggestions(query) {
     if (query === '') {
       return [];
@@ -48,13 +72,19 @@ export default class HomeScreen extends React.Component {
     return suggestions;
   }
 
+  /**
+   * Execute the search and navigate to the profile screen.
+   * @async
+   */
   async doSearch() {
     const { query, selected } = this.state;
     if (query === '' || !selected) {
+      this.setState({ errorMessage: true });
       return;
     }
     this.setState({ isLoading: true });
-    const { navigate } = this.props.navigation;
+    const { navigation } = this.props;
+    const { navigate } = navigation;
     const profile = await utils.updateProfile(query);
     if (profile === undefined) {
       this.setState({
@@ -66,10 +96,16 @@ export default class HomeScreen extends React.Component {
       return;
     }
     storage.setSpeech({});
-    this.setState({ query: '', isLoading: false });
+    this.setState({
+      query: '',
+      isLoading: false,
+    });
     navigate('profile');
   }
 
+  /**
+   * Render the search button.
+   */
   renderSearchButton() {
     return (
       <View style={style.buttonView}>
@@ -85,44 +121,31 @@ export default class HomeScreen extends React.Component {
     );
   }
 
+  /**
+   * Render the activity indicator.
+   */
   renderActivityIndicator() {
     const { isLoading } = this.state;
-    if (!isLoading) return null;
+    if (!isLoading) {
+      return null;
+    }
     return (
-      <View
-        style={{
-          margin: 10,
-          marginBottom: 30,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
+      <View style={style.activityIndicatorView}>
         <ActivityIndicator size="large" color={colorMain} />
       </View>
     );
   }
 
+  /**
+   * Render the error message.
+   */
   renderErrorMessage() {
     const { errorMessage } = this.state;
-    if (errorMessage !== '') {
+    if (errorMessage) {
       return (
-        <View
-          style={{
-            alignContent: 'center',
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: 10,
-            marginBottom: 30,
-          }}
-        >
-          <Text
-            style={{ color: 'red', fontStyle: 'italic' }}
-          >
-            Profil
-            &apos;
-            {errorMessage}
-            &apos;
-            konnte nicht gefunden werden.
+        <View style={style.activityIndicatorView}>
+          <Text style={style.errorMessage}>
+            Bitte wählen Sie zuerst ein Profil aus.
           </Text>
         </View>
       );
@@ -130,6 +153,9 @@ export default class HomeScreen extends React.Component {
     return null;
   }
 
+  /**
+   * Render the component.
+   */
   render() {
     const { query, selected } = this.state;
     const deputies = selected ? [] : this.findSugggestions(query);
@@ -137,45 +163,35 @@ export default class HomeScreen extends React.Component {
       <View style={style.container}>
         <View style={style.inputView}>
           <TextInput
-            style={{
-              padding: 15,
-              margin: 10,
-              marginTop: 20,
-              fontSize: 18,
-              borderWidth: 2,
-              borderRadius: 20,
-              textAlign: 'center',
-              outline: 'none',
-              borderColor: colorMain,
-              fontWeight: 500,
-            }}
+            style={style.searchBox}
             autoFocus
             autoCorrect={false}
             onChangeText={(text) => {
               this.setState({
                 query: text,
-                errorMessage: '',
+                errorMessage: false,
                 selected: false,
               });
             }}
             value={query}
           />
         </View>
-        <View
-          style={{
-            flex: 4,
-            alignItems: 'center',
-          }}
-        >
+        <View style={style.suggestionsView}>
           <Suggestions
             suggestions={deputies}
-            itemCallback={(item) => this.setState({ query: item, selected: true })}
+            itemCallback={
+              (item) => this.setState({
+                query: item,
+                selected: true,
+                errorMessage: false,
+              })
+            }
           />
         </View>
-        <View style={{ flex: 1 }}>
+        <View style={style.container}>
           {this.renderSearchButton()}
         </View>
-        <View style={{ flex: 1 , marginTop: 20 }}>
+        <View style={style.container}>
           {this.renderActivityIndicator()}
           {this.renderErrorMessage()}
         </View>
@@ -183,3 +199,7 @@ export default class HomeScreen extends React.Component {
     );
   }
 }
+
+HomeScreen.propTypes = {
+  navigation: PropTypes.oneOfType([PropTypes.object]).isRequired,
+};

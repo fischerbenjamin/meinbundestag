@@ -1,10 +1,10 @@
 import { connect } from 'react-redux';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 
-import HomeScreen from '../screens/HomeScreen';
-import SpeechScreen from '../screens/SpeechScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import PersonalScreen from '../screens/PersonalScreen';
+import HomeScreen from '../screens/Home/HomeScreen';
+import SpeechScreen from '../screens/Speech/SpeechScreen';
+import ProfileScreen from '../screens/Profile/ProfileScreen';
+import PersonalScreen from '../screens/Personal/PersonalScreen';
 
 import { colorMain } from '../style/Colors';
 

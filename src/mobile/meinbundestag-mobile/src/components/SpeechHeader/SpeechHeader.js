@@ -2,43 +2,10 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import { colorBlackLight } from '../style/Colors';
 
-const style = StyleSheet.create({
-
-  container: {
-    marginTop: 10,
-    marginBottom: 10,
-  },
-
-  text: {
-    fontWeight: '500',
-    fontSize: 16,
-    margin: 5,
-    padding: 2,
-    textAlign: 'center',
-    color: colorBlackLight,
-  },
-
-  textTopic: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-
-  analysisContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-
-  analysisText: {
-    marginLeft: 20,
-    marginRight: 20,
-  },
-
-});
+import style from './SpeechHeaderStyle';
 
 
 class SpeechHeader extends React.PureComponent {

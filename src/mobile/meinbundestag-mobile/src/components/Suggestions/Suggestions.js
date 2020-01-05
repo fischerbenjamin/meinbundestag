@@ -7,16 +7,18 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
+import style from './SuggestionsStyle';
+
 
 class Suggestions extends React.PureComponent {
   static renderSuggestion(item, callback) {
     const name = item.item;
     return (
-      <View style={{ padding: 5 }}>
-        <TouchableOpacity
-          onPress={() => callback(name)}
-        >
-          <Text style={{ textAlign: 'center' }}>{name}</Text>
+      <View style={style.suggestionView}>
+        <TouchableOpacity onPress={() => callback(name)}>
+          <Text style={style.suggestionText}>
+            {name}
+          </Text>
         </TouchableOpacity>
       </View>
     );

@@ -4,7 +4,7 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import { listItem } from '../style/Lists';
+import { listItem } from '../../style/Lists';
 
 
 function renderEntry(key, value) {

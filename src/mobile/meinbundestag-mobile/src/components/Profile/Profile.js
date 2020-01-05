@@ -2,11 +2,12 @@ import React from 'react';
 import {
   View,
   Image,
-  Text,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import ProfileEntry from './ProfileEntry';
-import { profile } from '../style/Profile';
+
+import ProfileEntry from '../ProfileEntry/ProfileEntry';
+
+import { profile } from '../../style/Profile';
 
 
 class Profile extends React.PureComponent {
@@ -14,7 +15,7 @@ class Profile extends React.PureComponent {
     const { imageUrl } = this.props;
     let source = { uri: imageUrl };
     if (imageUrl === undefined) {
-      source = require('../../assets/icon.png'); // eslint-disable-line global-require
+      source = require('../../../assets/icon.png'); // eslint-disable-line global-require
     }
     return (
       <View style={profile.header}>
