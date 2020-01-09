@@ -6,7 +6,7 @@ echo "Checking lint (using eslint)"
 if [ $(command -v eslint) ]
 then
     echo "eslint is globally installed. using global version."
-    eslint --resolve-plugins-relative-to -c ../.eslintrc.json "../src/"
+    eslint --resolve-plugins-relative-to=$(npm root -g) -c ../.eslintrc.json "../src/"
 else
     echo "eslint is not globally installed. trying local version..."
     ../node_modules/eslint/bin/eslint.js -c ../.eslintrc.json "../src/"
