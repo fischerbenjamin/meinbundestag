@@ -6,7 +6,17 @@ import {
 } from 'react-native';
 import { listItem } from '../../style/Lists';
 
+/**
+ * @author Benjamin Fischer
+ * @description Implementation of the helper render functions
+ */
 
+/**
+ * @summary Render a single entry of a key/value list item
+ * @param {string} key - key of entry
+ * @param {string} value - value of entry
+ * @returns {Object} JSX rendered content
+ */
 function renderEntry(key, value) {
   return (
     <View style={listItem.container}>
@@ -24,6 +34,11 @@ function renderEntry(key, value) {
   );
 }
 
+/**
+ * @summary Render a speech overview
+ * @param {Object} item - speech item
+ * @param {function} onPressItem - callback function onPress
+ */
 function renderSpeech(item, onPressItem) {
   const date = renderEntry('Datum', item.meta.date);
   const topic = renderEntry('Thema', item.meta.topic);
@@ -37,6 +52,11 @@ function renderSpeech(item, onPressItem) {
   );
 }
 
+/**
+ * @summary Render a question overview
+ * @param {Object} item - question item
+ * @param {function} onPressItem - callback function onPress
+ */
 function renderQuestion(item, onPressItem) {
   const status = (() => {
     let answer = 'beantwortet';
@@ -56,6 +76,11 @@ function renderQuestion(item, onPressItem) {
   );
 }
 
+/**
+ * @summary Render a sidejob overview
+ * @param {Object} item - sidejob item
+ * @param {function} onPressItem - callback function onPress
+ */
 function renderSidejob(item, onPressItem) {
   const job = renderEntry('Tätigkeit', item.job);
   const category = renderEntry('Kategorie', item.job_category);
@@ -80,6 +105,11 @@ function renderSidejob(item, onPressItem) {
   );
 }
 
+/**
+ * @summary Render a vote overview
+ * @param {Object} item - vote item
+ * @param {function} onPressItem - callback function onPress
+ */
 function renderVote(item, onPressItem) {
   const date = renderEntry('Datum', item.date);
   const vote = renderEntry('Stimme', item.vote);
