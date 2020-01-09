@@ -7,8 +7,23 @@ import PropTypes from 'prop-types';
 
 import style from './ParagraphStyle';
 
+/**
+ * @author Benjamin Fischer
+ * @description Implementation of the Paragraph component
+ */
 
+/**
+ * @classdesc
+ * This class represents a single paragraph of a speech. A paragraph can either
+ * be the speaker's text, a comment or some other's speaker text.
+ * @extends React.PureComponent
+ */
 class Paragraph extends React.PureComponent {
+  /**
+   * @summary Render a comment that occured during the sspeech
+   * @param {string} text - text of the commmet
+   * @returns {Object} JSX rendered content
+   */
   static renderCommentEntry(text) {
     return (
       <View style={style.commentContainer}>
@@ -17,6 +32,15 @@ class Paragraph extends React.PureComponent {
     );
   }
 
+  /**
+   * @summary Render a speech entry
+   * @description
+   * The text can either be spoken by the speaker itself or some other deputy
+   * @param {array} paragraphs - paragraphs of this entry
+   * @param {string} speaker - name of the speaker
+   * @param {bool} isSpeaker - true if it is the speaker itself, false otherwise
+   * @returns {Object} JSX rendered content
+   */
   static renderSpeechEntry(paragraphs, speaker, isSpeaker) {
     const paragraphText = paragraphs.map((para) => para.text).join(' ');
     const speakerIsSpeaker = (() => {
@@ -47,6 +71,15 @@ class Paragraph extends React.PureComponent {
     );
   }
 
+  /**
+   * @summary Compose the content of the speech
+   * @description
+   * This method does the actual work ;)
+   * @param {array} paragraphs - paragraphs of this entry
+   * @param {string} speaker - name of the speaker
+   * @param {bool} isSpeaker - true if it is the speaker itself, false otherwise
+   * @returns {Object} JSX rendered content
+   */
   static composeContent(paragraphs, speaker, isSpeaker) {
     const result = [];
     let i;
@@ -75,6 +108,10 @@ class Paragraph extends React.PureComponent {
     return result;
   }
 
+  /**
+   * @summary Render the component
+   * @returns {Object} JSX rendered component
+   */
   render() {
     const { paragraphs, speaker, isSpeaker } = this.props;
     const content = Paragraph.composeContent(paragraphs, speaker, isSpeaker);
@@ -86,6 +123,12 @@ class Paragraph extends React.PureComponent {
   }
 }
 
+/**
+ * @description Properties of the component
+ * @property {array} paragraphs - list of paragraphs
+ * @property {string} speaker - name of the speaker
+ * @property {bool} isSpeaker - true if the paragraph is spoken by the speaker itself
+ */
 Paragraph.propTypes = {
   paragraphs: PropTypes.arrayOf(PropTypes.any).isRequired,
   speaker: PropTypes.string.isRequired,
