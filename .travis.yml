@@ -13,3 +13,8 @@ matrix:
       script:
         - python -m nltk.downloader punkt
         - make -C src backend-test-source
+    - language: node_js
+      install:
+        - npm install jsdoc
+      script:
+        - make -C src frontend-test-source
