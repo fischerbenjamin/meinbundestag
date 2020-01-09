@@ -1,8 +1,3 @@
-/**
- * @file Stylesheet for component ProfileScreen
- * @author Benjamin Fischer
- */
-
 import { StyleSheet } from 'react-native';
 
 

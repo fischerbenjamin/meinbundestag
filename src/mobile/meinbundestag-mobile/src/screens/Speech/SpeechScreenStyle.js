@@ -1,8 +1,3 @@
-/**
- * @file Stylesheet for component SpeechScreen
- * @author Benjamin Fischer
- */
-
 import { StyleSheet } from 'react-native';
 import { colorMain } from '../../style/Colors';
 
