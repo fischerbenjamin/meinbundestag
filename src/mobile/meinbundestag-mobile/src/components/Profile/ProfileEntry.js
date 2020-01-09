@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import style from './ProfileEntryStyle';
+import { listItem as style } from '../../style/Lists';
 
 /**
  * @author Benjamin Fischer
@@ -27,8 +27,8 @@ class ProfileEntry extends React.PureComponent {
     const { description, value } = this.props;
     return (
       <View style={style.container}>
-        <View style={style.descriptionView}>
-          <Text style={style.descriptionText}>
+        <View style={style.keyView}>
+          <Text style={style.keyText}>
             {description}
           </Text>
         </View>
