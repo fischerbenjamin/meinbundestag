@@ -98,7 +98,11 @@ def api_deputies_names() -> List[str]:
     """
     global ODS_WRAPPER
     names = [
-        schema.Name.from_profile(profile) for profile in ODS_WRAPPER.deputies()
+        dict(
+            name=schema.Name.from_profile(profile),
+            city=profile["personal"]["location"]["city"]
+        )
+        for profile in ODS_WRAPPER.deputies()
     ]
     return flask.jsonify(names)
 

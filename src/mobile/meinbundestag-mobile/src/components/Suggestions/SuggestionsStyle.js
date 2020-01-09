@@ -7,7 +7,15 @@ const style = StyleSheet.create({
   },
 
   suggestionText: {
-    textAlign: 'center',
+    textAlign: 'justify',
+  },
+
+  cityText: {
+    fontStyle: 'italic',
+  },
+
+  nameText: {
+    fontWeight: 'bold',
   },
 
 });

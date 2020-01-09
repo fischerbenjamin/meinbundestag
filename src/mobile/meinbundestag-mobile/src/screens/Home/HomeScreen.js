@@ -71,7 +71,11 @@ class HomeScreen extends React.Component {
     }
     const { deputies } = this;
     const regex = new RegExp(`${query.trim()}`, 'i');
-    const matches = deputies.filter((profile) => profile.search(regex) >= 0);
+    const matches = deputies.filter((profile) => {
+      const { name, city } = profile;
+      const searchString = `${name}${city}`;
+      return searchString.search(regex) >= 0;
+    });
     const suggestions = matches.slice(0, 10).sort(
       (a, b) => (a.length - b.length),
     );

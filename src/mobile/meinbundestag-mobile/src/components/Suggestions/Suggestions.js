@@ -27,12 +27,20 @@ class Suggestions extends React.PureComponent {
    * @param {func} callback - function to call when the user clicks on the item
    */
   static renderSuggestion(item, callback) {
-    const name = item.item;
+    const { name, city } = item.item;
     return (
       <View style={style.suggestionView}>
         <TouchableOpacity onPress={() => callback(name)}>
           <Text style={style.suggestionText}>
-            {name}
+            <Text style={style.nameText}>{name}</Text>
+            {
+              city.length !== 0 && (
+                <Text style={style.cityText}>
+                  {', '}
+                  {city.replace(/,/g, '/')}
+                </Text>
+              )
+            }
           </Text>
         </TouchableOpacity>
       </View>
@@ -64,7 +72,7 @@ class Suggestions extends React.PureComponent {
  * @property {func} itemCallback - callback function for each suggestion
  */
 Suggestions.propTypes = {
-  suggestions: PropTypes.arrayOf(PropTypes.string).isRequired,
+  suggestions: PropTypes.arrayOf(PropTypes.any).isRequired,
   itemCallback: PropTypes.func.isRequired,
 };
 
