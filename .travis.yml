@@ -21,4 +21,4 @@ matrix:
       install:
         - npm install --only=dev
       script:
-        - make -C src frontend-test
+        - ./scripts/lint
