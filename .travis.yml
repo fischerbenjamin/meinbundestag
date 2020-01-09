@@ -17,4 +17,4 @@ matrix:
       install:
         - npm install jsdoc
       script:
-        - make -C src frontend-test-source
+        - make -C src frontend-test
