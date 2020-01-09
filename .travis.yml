@@ -1,20 +1,21 @@
 matrix:
   include:
-    - language: minimal
-      service:
-        - docker
-      script:
-        - make -C src backend-test-docker
-    - language: python
-      python: 3.8
-      install:
-        - pip install -r src/backend/python/requirements/base.txt
-        - pip install -r src/backend/python/requirements/test.txt
-      script:
-        - python -m nltk.downloader punkt
-        - make -C src backend-test-source
+    #- language: minimal
+    #  service:
+    #    - docker
+    #  script:
+    #    - make -C src backend-test-docker
+    #- language: python
+    #  python: 3.8
+    #  install:
+    #    - pip install -r src/backend/python/requirements/base.txt
+    #    - pip install -r src/backend/python/requirements/test.txt
+    #  script:
+    #    - python -m nltk.downloader punkt
+    #    - make -C src backend-test-source
     - language: node_js
       install:
         - npm install jsdoc
+        - npm install eslint
       script:
         - make -C src frontend-test
