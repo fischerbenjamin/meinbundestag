@@ -7,8 +7,22 @@ import PropTypes from 'prop-types';
 
 import style from './SpeechHeaderStyle';
 
+/**
+ * @author Benjamin Fischer
+ * @description Implementation of the SpeechHeaderComponent
+ */
 
+/**
+ * @classdesc
+ * This class represents the header of a speech. The header is used to display
+ * the title and other general information about the speech.
+ * @extends React.PureComponent
+ */
 class SpeechHeader extends React.PureComponent {
+  /**
+   * @summary Render the component
+   * @returns {Object} JSX rendered component
+   */
   render() {
     const {
       date, name, topic, party, subjectivity, polarity,
@@ -44,6 +58,15 @@ class SpeechHeader extends React.PureComponent {
   }
 }
 
+/**
+ * @description Properties of the component
+ * @property {string} date - date of the speech
+ * @property {string} name - name of the speaker
+ * @property {string} topic - title of the speechz
+ * @property {string} party - party of the speaker
+ * @property {number} polarity - measurement of the mood of the speech
+ * @property {number} subjectivity - measurement of the subjectivity of the speech
+ */
 SpeechHeader.propTypes = {
   date: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
