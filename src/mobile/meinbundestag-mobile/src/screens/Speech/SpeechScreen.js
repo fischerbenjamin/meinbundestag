@@ -6,8 +6,8 @@ import React from 'react';
 
 import storage from '../../storage/Store';
 import BaseScreen from '../Base/BaseScreen';
-import Paragraph from '../../components/Paragraph/Paragraph';
-import SpeechHeader from '../../components/SpeechHeader/SpeechHeader';
+import Paragraph from '../../components/Speech/Paragraph';
+import SpeechHeader from '../../components/Speech/SpeechHeader';
 
 import style from './SpeechScreenStyle';
 import { NavIconSpeech } from '../../style/Icons';
