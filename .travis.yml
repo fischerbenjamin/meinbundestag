@@ -15,7 +15,7 @@ matrix:
     #    - make -C src backend-test-source
     - language: node_js
       install:
-        - npm install jsdoc
-        - npm install eslint
+        - npm install -g jsdoc
+        - npm install -g eslint
       script:
         - make -C src frontend-test
