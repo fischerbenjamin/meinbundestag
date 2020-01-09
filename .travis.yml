@@ -21,4 +21,4 @@ matrix:
       install:
         - npm install --only=dev
       script:
-        - ./scripts/lint
+        - (cd scripts && ./lint)
