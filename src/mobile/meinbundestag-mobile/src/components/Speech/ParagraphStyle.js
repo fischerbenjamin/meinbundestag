@@ -7,7 +7,7 @@ const style = StyleSheet.create({
     margin: 7,
     alignItems: 'center',
   },
-// 
+
   commentText: {
     fontStyle: 'italic',
     textAlign: 'center',
