@@ -17,6 +17,12 @@ const colors = {
   nord15: '#b48ead',
 };
 
+const indicator0 = '#4EC04E';
+const indicator1 = '#A6C34C';
+const indicator2 = '#FFC84A';
+const indicator3 = '#F48847';
+const indicator4 = '#EB4841';
+
 const colorMain = colors.nord12;
 const colorGray = colors.nord2;
 const colorBlack = colors.nord0;
@@ -32,4 +38,9 @@ export {
   colorLight,
   colorWhite,
   colorBlackLight,
+  indicator0,
+  indicator1,
+  indicator2,
+  indicator3,
+  indicator4,
 };

@@ -6,6 +6,7 @@ import {
 import PropTypes from 'prop-types';
 
 import style from './SpeechHeaderStyle';
+import { moodIcon } from '../../style/Icons';
 
 /**
  * @author Benjamin Fischer
@@ -27,9 +28,23 @@ class SpeechHeader extends React.PureComponent {
     const {
       date, name, topic, party, subjectivity, polarity,
     } = this.props;
+    const subjectivityMood = (() => {
+      if (subjectivity <= 0.20) return 4;
+      if (subjectivity <= 0.40) return 3;
+      if (subjectivity <= 0.60) return 2;
+      if (subjectivity <= 0.80) return 1;
+      return 0;
+    })();
+    const polarityMood = (() => {
+      if (polarity <= -0.6) return 4;
+      if (polarity <= -0.2) return 3;
+      if (polarity <= 0.2) return 2;
+      if (polarity <= 0.6) return 1;
+      return 0;
+    })();
     const displayName = `${name} (${party})`;
-    const displayPolarity = `Stimmung ${polarity}`;
-    const displaySubjectivity = `Objektivität ${subjectivity}`;
+    const displayPolarity = 'Stimmung  ';
+    const displaySubjectivity = 'Objektivität  ';
     return (
       <View style={style.container}>
         <View>
@@ -46,12 +61,10 @@ class SpeechHeader extends React.PureComponent {
           </Text>
         </View>
         <View style={style.analysisContainer}>
-          <Text style={[style.text, style.analysisText]}>
-            {displayPolarity}
-          </Text>
-          <Text style={[style.text, style.analysisText]}>
-            {displaySubjectivity}
-          </Text>
+          <Text style={style.moodIcon}>{moodIcon(polarityMood, 24)}</Text>
+          <Text style={style.text}>{displayPolarity}</Text>
+          <Text style={style.text}>{displaySubjectivity}</Text>
+          <Text style={style.moodIcon}>{moodIcon(subjectivityMood, 24)}</Text>
         </View>
       </View>
     );

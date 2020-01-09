@@ -2,7 +2,16 @@ import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import PropTypes from 'prop-types';
-import { colorMain, colorLight, colorWhite } from './Colors';
+import {
+  colorMain,
+  colorLight,
+  colorWhite,
+  indicator0,
+  indicator1,
+  indicator2,
+  indicator3,
+  indicator4,
+} from './Colors';
 
 
 const ICON_SIZE_NAV = 24;
@@ -109,6 +118,28 @@ const NoConnection = (
   />
 );
 
+/**
+ * @summary Create mood icons for the SpeechHeader component
+ * @param {number} mood - indicating good/bad (values are {0,1,2,3,4})
+ * @param {number} size - font size
+ * @returns {Object} JSX rendered component
+ */
+function moodIcon(mood, size) {
+  switch (mood) {
+    case 0:
+      return (<MaterialIcons name="thumb-up" size={size} color={indicator0} />);
+    case 1:
+      return (<MaterialIcons name="thumb-up" size={size} color={indicator1} />);
+    case 2:
+      return (<MaterialIcons name="thumb-up" size={size} color={indicator2} />);
+    case 3:
+      return (<MaterialIcons name="thumb-down" size={size} color={indicator3} />);
+    case 4:
+      return (<MaterialIcons name="thumb-down" size={size} color={indicator4} />);
+    default:
+      return (<MaterialIcons name="thumb-up" size={size} />);
+  }
+}
 
 export {
   OverviewItemSidejobs,
@@ -120,4 +151,5 @@ export {
   NavIconPersonal,
   NavIconSpeech,
   NoConnection,
+  moodIcon,
 };

@@ -25,11 +25,19 @@ const style = StyleSheet.create({
   analysisContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
   },
 
   analysisText: {
     marginLeft: 20,
     marginRight: 20,
+  },
+
+  moodIcon: {
+    fontSize: 24,
+    margin: 10,
+    fontWeight: 'bold',
   },
 
 });
