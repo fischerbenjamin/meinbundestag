@@ -21,12 +21,17 @@ import style from './ParagraphStyle';
 class Paragraph extends React.PureComponent {
   /**
    * @summary Render a comment that occured during the sspeech
-   * @param {string} text - text of the commmet
+   * @param {string} text - text of the commment
+   * @param {number} index - index in paragraphs array (used for keyExtractor)
    * @returns {Object} JSX rendered content
    */
-  static renderCommentEntry(text) {
+  static renderCommentEntry(text, index) {
+    const key = `comment ${index}`;
     return (
-      <View style={style.commentContainer}>
+      <View
+        key={key}
+        style={style.commentContainer}
+      >
         <Text style={style.commentText}>{text}</Text>
       </View>
     );
@@ -39,9 +44,11 @@ class Paragraph extends React.PureComponent {
    * @param {array} paragraphs - paragraphs of this entry
    * @param {string} speaker - name of the speaker
    * @param {bool} isSpeaker - true if it is the speaker itself, false otherwise
+   * @param {number} index - index in paragraphs array (used for keyExtractor)
    * @returns {Object} JSX rendered content
    */
-  static renderSpeechEntry(paragraphs, speaker, isSpeaker) {
+  static renderSpeechEntry(paragraphs, speaker, isSpeaker, index) {
+    const key = `speech ${index}`;
     const paragraphText = paragraphs.map((para) => para.text).join(' ');
     const speakerIsSpeaker = (() => {
       if (isSpeaker) {
@@ -58,7 +65,10 @@ class Paragraph extends React.PureComponent {
       );
     })();
     return (
-      <View style={style.speechContainer}>
+      <View
+        key={key}
+        style={style.speechContainer}
+      >
         <View style={style.speakerNameContainer}>
           {speakerIsSpeaker}
         </View>
@@ -89,10 +99,10 @@ class Paragraph extends React.PureComponent {
       if (type === 'comment') {
         const componentParagraphs = paragraphs.slice(indexFirstText, i);
         const component = Paragraph.renderSpeechEntry(
-          componentParagraphs, speaker, isSpeaker,
+          componentParagraphs, speaker, isSpeaker, i,
         );
         indexFirstText = i + 1;
-        const comment = Paragraph.renderCommentEntry(paragraphs[i].text);
+        const comment = Paragraph.renderCommentEntry(paragraphs[i].text, i);
         result.push(component);
         result.push(comment);
       }
@@ -102,7 +112,7 @@ class Paragraph extends React.PureComponent {
       indexFirstText, paragraphs.length,
     );
     const component = Paragraph.renderSpeechEntry(
-      componentParagraphs, speaker, isSpeaker,
+      componentParagraphs, speaker, isSpeaker, paragraphs.length,
     );
     result.push(component);
     return result;

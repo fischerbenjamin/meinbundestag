@@ -29,7 +29,7 @@ export default class PersonalCollapsable extends React.PureComponent {
           data={data}
           numColumns={1}
           renderItem={({ item }) => renderListItem(item, onPressItem)}
-          keyExtractor={(item, index) => index}
+          keyExtractor={(item, index) => index.toString()}
           ItemSeparatorComponent={() => (
             <View style={seperator.default} />
           )}

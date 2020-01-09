@@ -50,6 +50,7 @@ class Suggestions extends React.PureComponent {
         <FlatList
           data={suggestions}
           renderItem={(suggestion) => Suggestions.renderSuggestion(suggestion, itemCallback)}
+          keyExtractor={(item, index) => index.toString()}
         />
       </View>
     );

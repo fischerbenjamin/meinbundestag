@@ -40,10 +40,9 @@ class SpeechScreen extends React.Component {
     const renderedParagraphs = entries.map((entry, index) => {
       const isSpeaker = entry.is_speaker;
       const { paragraphs, speaker } = entry;
-      const key = `${speaker} ${index}`;
       return (
         <Paragraph
-          key={key}
+          key={index.toString()}
           isSpeaker={isSpeaker}
           paragraphs={paragraphs}
           speaker={speaker}
