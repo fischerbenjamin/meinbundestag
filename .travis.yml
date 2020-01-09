@@ -19,5 +19,6 @@ matrix:
       install:
         - npm install -g jsdoc
         - npm install -g eslint
+        - npm install eslint-plugin-react@latest
       script:
         - make -C src frontend-test
