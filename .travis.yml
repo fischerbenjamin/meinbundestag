@@ -20,7 +20,7 @@ matrix:
         - npm install -g jsdoc
         - npm install -g eslint
         - npm install -g eslint-plugin-react@latest
-        - npm install -g eslint-config-airbnb-base
+        - npm install -g eslint-config-airbnb
         - npm install -g eslint-plugin-import
       script:
         - make -C src frontend-test
