@@ -1,8 +1,3 @@
-/**
- * @file Entry point of the application
- * @author Benjamin Fischer
- */
-
 import React from 'react';
 import { Provider } from 'react-redux';
 import { registerRootComponent } from 'expo';
@@ -13,27 +8,36 @@ import AppNavigator from './navigation/AppNavigator';
 import WelcomeScreen from './screens/Welcome/WelcomeScreen';
 
 
-// Types for the status of startup.
+/**
+ * @file Entry point of the application
+ * @author Benjamin Fischer
+ * @module App
+ */
+
+
+/**
+ * Types of status the app startup can be in
+ * @type {Object.<string, string>}
+ */
 const STATUS = {
   loading: 'loading',
   error: 'error',
   success: 'success',
 };
-// Timeout after the startup fails.
+
+/**
+ * Predefined timeout after the startup fails
+ * @type {number}
+ */
 const TIMEOUT = 30000;
 
 /**
- * App
- *  This class implements the application. It displas the WelcomeScreen until
- *  all data is loaded and then switches to the HomeScreen. On failure, an
- *  error message is displayed and the application has to be restarted.
+ * @classdesc
+ * This class represents the Application. It renders the welcome screen until
+ * the data is either fetched successfully or the timeout is passed. On success,
+ * the actual application is started by switching to the home screen.
  */
 class App extends React.Component {
-  /**
-   * Initialize the App component
-   * @constructor
-   * @param {object} props - Properties of the component
-   */
   constructor(props) {
     storage.subscribeToConsole();
     super(props);
@@ -43,8 +47,14 @@ class App extends React.Component {
   }
 
   /**
-   * Load the external data (list of deputies) on startup before switching
-   * to the HomeScreen.
+   * @method
+   * @async
+   * @summary Load external data when the application is launched
+   * @description
+   * The list of deputies is fetched when the application is launched. This
+   * is required because the suggestions in the home screen are based on this
+   * data. If the data is not fetched after the default timeout, the status
+   * switches to 'error' and the application will show an error message.
    */
   async componentDidMount() {
     setTimeout(() => {
@@ -61,7 +71,12 @@ class App extends React.Component {
   }
 
   /**
-   * Render the component.
+   * @method
+   * @summary Render the component
+   * @description
+   * Render the application. Show the welcome screen until the data is fetched.
+   * Afterwards, show the home screen.
+   * @returns {Object} JSX rendered component
    */
   render() {
     const { status } = this.state;

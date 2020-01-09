@@ -1,23 +1,22 @@
-/**
- * @file Helper functions for the application
- * @author Benjamin Fischer
- *
- * Helper functions for api calls with/without checking the cache.
- */
-
 import storage from '../storage/Store';
+
+/**
+ * @author Benjamin Fischer
+ * @description Helper functions for the application
+ * @module Utils
+ */
 
 
 // FIXME: constant url of the server
 const URL = 'http://localhost:3000';
 
-// API calls to the server
+/**
+ * @namespace api
+ */
 const api = {
 
   /**
-   * Fetches the names of all deputies from the server.
-   * @function
-   * @async
+   * @summary Fetch the names of all deputies from the server.
    * @return {array} list of deputies
    */
   deputies: async function fetchDeputies() {
@@ -28,11 +27,9 @@ const api = {
   },
 
   /**
-   * Fetches the profile of given deputy from the server
-   * @function
-   * @async
+   * @summary Fetch the profile of given deputy from the server
    * @param {string} urlName - url name of the deputy
-   * @return {object} profile
+   * @return {Object} profile
    */
   profile: async function fetchProfile(urlName) {
     const route = `${URL}/profile/${urlName}`;
@@ -47,32 +44,43 @@ const api = {
 
 };
 
-/**
- * Compute the url name for a given full name of a deputy
- * @param {string} name - full name of the deputy
- * @return {string} url name that can be used for api calls
- */
-function getUrlName(name) {
-  const urlName = name.replace(/ /g, '-').toLowerCase();
-  return urlName;
-}
 
-// Helper functions
+/**
+ * @namespace helper
+ */
+const helper = {
+
+  /**
+   * @summary Compute the url name for a given full name of a deputy
+   * @param {string} name - full name of the deputy
+   * @return {string} url name that can be used for api calls
+   */
+  getUrlName: function getUrlName(name) {
+    const urlName = name.replace(/ /g, '-').toLowerCase();
+    return urlName;
+  },
+
+};
+
+
+/**
+ * @namespace utils
+ */
 const utils = {
 
   /**
+   * @summary Get profile data from the server
+   * @description
    * Returns the profile for the given name. It checks if the profile is
    * already present in the cache and fetches it from the server if not.
    * Furthermore, the profile is cached if it wasn't present in the cache
    * before. Most importantly, it updates the redux store accordingly to the
    * changes as well.
-   * @function
-   * @async
    * @param {string} name - url name of the deputy
-   * @return {object} profile
+   * @return {Object} profile
    */
   updateProfile: async function getProfile(name) {
-    const urlName = getUrlName(name);
+    const urlName = helper.getUrlName(name);
     const cacheResult = storage.findProfileInCache(urlName);
     // Clear other screens
     storage.setPersonalContent('');
@@ -90,9 +98,11 @@ const utils = {
   },
 
   /**
-   * Returns the list of deputies either from the cache or the server.
-   * @function
-   * @async
+   * @summary Return the list of deputies
+   * @description
+   * First, check if the list of deputies is already present in the cache.
+   * If this is the case, return this list. Otherwise, fetch the data from
+   * the server.
    * @return {array} deputies
    */
   getDeputies: async function getDeputies() {

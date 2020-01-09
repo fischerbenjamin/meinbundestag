@@ -18,18 +18,19 @@ import { NavIconHome } from '../../style/Icons';
 
 
 /**
- * HomeScreen
- *  This class represents the home screen that is displayed after external
- *  data is loaded. It provides a simple search box that is used to search for
- *  certain deputy.
+ * @author Benjamin Fischer
+ * @description Implementation of the HomeScreen component
+ */
+
+
+/**
+ * @classdesc
+ * This class represents the home screen that is displayed after external
+ * data is loaded. It provides a simple search box that is used to search for
+ * certain deputy.
  * @extends React.Component
  */
-export default class HomeScreen extends React.Component {
-  /**
-   * Initialize the HomeScreen component
-   * @constructor
-   * @param {object} props - Properties passed to the component
-   */
+class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -41,8 +42,11 @@ export default class HomeScreen extends React.Component {
   }
 
   /**
-   * Load data from the cache when component is rendered.
-   * @async
+   * @method
+   * @summary Get the list of all deputies
+   * @description
+   * Uses the utility method to initialize the deputies. The data should already
+   * have been fetched from the server at this point.
    */
   async componentDidMount() {
     this.deputies = await utils.getDeputies();
@@ -54,8 +58,10 @@ export default class HomeScreen extends React.Component {
   };
 
   /**
-   * Find matching deputies for the inserted query. Returns the suggestions
-   * in sorted order and max. 10 items.
+   * @method
+   * @summary Find matching deputies for the inserted query
+   * @description
+   * Returns the suggestions in sorted order and at max. 10 items.
    * @param {string} query - query of the user
    * @return {array} array of suggestions matching the query
    */
@@ -73,8 +79,11 @@ export default class HomeScreen extends React.Component {
   }
 
   /**
-   * Execute the search and navigate to the profile screen.
-   * @async
+   * @method
+   * @summary Execute the search and navigate to the profile screen
+   * @description
+   * This method executes the actual search. Therefore, it updates the state
+   * accodring to the changes (failure) and stores the new data in the app store.
    */
   async doSearch() {
     const { query, selected } = this.state;
@@ -104,7 +113,9 @@ export default class HomeScreen extends React.Component {
   }
 
   /**
-   * Render the search button.
+   * @method
+   * @summary Render the search button
+   * @returns {Object} JSX rendered component
    */
   renderSearchButton() {
     return (
@@ -122,7 +133,9 @@ export default class HomeScreen extends React.Component {
   }
 
   /**
-   * Render the activity indicator.
+   * @method
+   * @summary Render the activity indicator when data is loading
+   * @returns {Object} JSX rendered component
    */
   renderActivityIndicator() {
     const { isLoading } = this.state;
@@ -137,7 +150,9 @@ export default class HomeScreen extends React.Component {
   }
 
   /**
-   * Render the error message.
+   * @method
+   * @summary Render the error message when no profile was seleceted
+   * @returns {Object} JSX rendered component
    */
   renderErrorMessage() {
     const { errorMessage } = this.state;
@@ -154,7 +169,9 @@ export default class HomeScreen extends React.Component {
   }
 
   /**
-   * Render the component.
+   * @method
+   * @summary Render the component
+   * @returns {Object} JSX rendered component
    */
   render() {
     const { query, selected } = this.state;
@@ -203,3 +220,5 @@ export default class HomeScreen extends React.Component {
 HomeScreen.propTypes = {
   navigation: PropTypes.oneOfType([PropTypes.object]).isRequired,
 };
+
+export default HomeScreen;

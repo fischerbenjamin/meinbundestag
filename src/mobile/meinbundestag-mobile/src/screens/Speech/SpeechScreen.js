@@ -13,11 +13,51 @@ import style from './SpeechScreenStyle';
 import { NavIconSpeech } from '../../style/Icons';
 
 
-export default class SpeechScreen extends React.Component {
+/**
+ * @author Benjamin Fischer
+ * @description Implementation of the SpeechScreen component
+ */
+
+/**
+ * @classdesc
+ * This class represents the screen that is responsible for displaying
+ * the selected speech.
+ * @extends React.Component
+ */
+class SpeechScreen extends React.Component {
+  // Use the speech icon for this screen
   static navigationOptions = {
     tabBarIcon: NavIconSpeech,
   };
 
+  /**
+   * @method
+   * @summary Render the entries of the speech to JSX components.
+   * @param {array} entries - entries of the speech
+   * @return {Object} JSX rendered component
+   */
+  static renderParagraphs(entries) {
+    const renderedParagraphs = entries.map((entry, index) => {
+      const isSpeaker = entry.is_speaker;
+      const { paragraphs, speaker } = entry;
+      const key = `${speaker} ${index}`;
+      return (
+        <Paragraph
+          key={key}
+          isSpeaker={isSpeaker}
+          paragraphs={paragraphs}
+          speaker={speaker}
+        />
+      );
+    });
+    return renderedParagraphs;
+  }
+
+  /**
+   * @method
+   * @summary Render the component
+   * @return {Object} JSX rendered component
+   */
   render() {
     const speech = storage.getSpeech();
     if (Object.entries(speech).length === 0) {
@@ -33,19 +73,7 @@ export default class SpeechScreen extends React.Component {
       date, name, topic, party,
     } = meta;
     const { polarity, subjectivity } = analysis;
-    const renderedParagraphs = entries.map((entry, index) => {
-      const isSpeaker = entry.is_speaker;
-      const { paragraphs, speaker } = entry;
-      const key = `${speaker} ${index}`;
-      return (
-        <Paragraph
-          key={key}
-          isSpeaker={isSpeaker}
-          paragraphs={paragraphs}
-          speaker={speaker}
-        />
-      );
-    });
+    const renderedParagraphs = SpeechScreen.renderParagraphs(entries);
     return (
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -66,3 +94,5 @@ export default class SpeechScreen extends React.Component {
     );
   }
 }
+
+export default SpeechScreen;

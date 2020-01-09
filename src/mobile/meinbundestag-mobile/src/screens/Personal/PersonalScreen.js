@@ -6,6 +6,7 @@ import {
   ScrollView,
   Clipboard,
 } from 'react-native';
+import PropTypes from 'prop-types';
 
 import {
   NavIconPersonal,
@@ -29,8 +30,27 @@ const VOTES = 'votes';
 const OVERVIEW = '';
 
 
-export default class PersonalScreen extends React.Component {
-  static showOverview() {
+/**
+ * @author Benjamin Fischer
+ * @description Implementation of the PersonalScreen component
+ */
+
+/**
+ * @classdesc
+ * This screen displays personal information about the deputy. The user
+ * can list the speeches, questions, votes and sidejobs of the selected deputy.
+ * @extends React.Component
+ */
+class PersonalScreen extends React.Component {
+  /**
+   * @method
+   * @summary Render the overview view of the screen
+   * @description
+   * Creates four buttons for each category the user can click. The component
+   * re-renders and displays the selected data.
+   * @returns {Object} JSX rendered component
+   */
+  static renderOverview() {
     return (
       <View style={style.overviewContainer}>
         {this.renderOverviewItem(SPEECHES, 'Reden', OverviewItemSpeeches)}
@@ -41,10 +61,19 @@ export default class PersonalScreen extends React.Component {
     );
   }
 
+  // Use the personal icon for this screen
   static navigationOptions = {
     tabBarIcon: NavIconPersonal,
   };
 
+  /**
+   * @method
+   * @summary Render a single overview button
+   * @param {string} content - the type of content (speeches, questions, etc.)
+   * @param {string} text - the text to display next to the icon
+   * @param {Object} icon - the icon to show
+   * @returns {Object} JSX rendered component
+   */
   static renderOverviewItem(content, text, icon) {
     return (
       <View style={style.overviewItemContainer}>
@@ -93,6 +122,11 @@ export default class PersonalScreen extends React.Component {
     );
   }
 
+  /**
+   * @method
+   * @summary Render the component
+   * @returns {Object} JSX rendered component
+   */
   render() {
     const { profile } = storage.getProfile();
     if (profile === undefined) {
@@ -106,7 +140,8 @@ export default class PersonalScreen extends React.Component {
     const {
       sidejobs, votes, questions, speeches,
     } = profile;
-    const { navigate } = this.props.navigation;
+    const { navigation } = this.props;
+    const { navigate } = navigation;
     switch (personalContent) {
       case SIDEJOBS:
         return PersonalScreen.renderContent(
@@ -132,8 +167,14 @@ export default class PersonalScreen extends React.Component {
           ((item) => Clipboard.setString(item.url)),
         );
       default:
-        return PersonalScreen.showOverview();
+        return PersonalScreen.renderOverview();
     }
   }
 }
 
+
+PersonalScreen.propTypes = {
+  navigation: PropTypes.oneOfType([PropTypes.object]).isRequired,
+};
+
+export default PersonalScreen;

@@ -12,16 +12,20 @@ import { NavIconProfile } from '../../style/Icons';
 
 
 /**
- * ProfileScreen
- *  This class represents the profile screen that displays personal
- *  information about the selected deputy.
+ * @author Benjamin Fischer
+ * @description Implementation of the ProfileScreen component
+ */
+
+/**
+ * @classdesc
+ * This class represents the profile screen that displays personal
+ * information about the selected deputy.
  * @extends React.Component
  */
-export default class ProfileScreen extends React.Component {
+class ProfileScreen extends React.Component {
   /**
-   * Process the name of the profile and return its string representation.
-   * @func
-   * @static
+   * @method
+   * @summary Process the name of the profile and return its string representation
    * @param {object} personal - Personal information of the profile
    * @return {string} String representation of the full name
    */
@@ -31,9 +35,8 @@ export default class ProfileScreen extends React.Component {
   }
 
   /**
-   * Process the gender of the profile and return its string representation.
-   * @func
-   * @static
+   * @method
+   * @summary Process the gender of the profile and return its string representation
    * @param {object} personal - Personal information of the profile
    * @return {string} String representation of the gender in German
    */
@@ -50,9 +53,8 @@ export default class ProfileScreen extends React.Component {
   }
 
   /**
-   * Process the speeches of the profile and return the total number.
-   * @func
-   * @static
+   * @method
+   * @summary Process the speeches of the profile and return the total number
    * @param {array} speeches - Speeches array
    * @return {number} Total number of speeches
    */
@@ -61,9 +63,8 @@ export default class ProfileScreen extends React.Component {
   }
 
   /**
-   * Process the committees of the profile and return the total number.
-   * @func
-   * @static
+   * @method
+   * @summary Process the committees of the profile and return the total number
    * @param {array} committees - Committees array
    * @return {number} Total number of committees participations
    */
@@ -72,9 +73,8 @@ export default class ProfileScreen extends React.Component {
   }
 
   /**
-   * Process the questions of the profile and return the string to be displayed.
-   * @func
-   * @static
+   * @method
+   * @summary Process the questions of the profile and return the string to be displayed
    * @param {array} questions - Array containing the questions
    * @return {string} How many questions have been answered
    */
@@ -89,9 +89,8 @@ export default class ProfileScreen extends React.Component {
   }
 
   /**
-   * Process the profile.
-   * @func
-   * @static
+   * @method
+   * @summary Process the whole profile
    * @param {object} profile - Profile object
    * @return {object} String representations for all required keys
    */
@@ -119,7 +118,9 @@ export default class ProfileScreen extends React.Component {
   };
 
   /**
-   * Renders the component.
+   * @method
+   * @summary Render the component
+   * @returns {Object} JSX rendered component
    */
   render() {
     const { profile } = storage.getProfile();
@@ -150,3 +151,5 @@ export default class ProfileScreen extends React.Component {
     );
   }
 }
+
+export default ProfileScreen;

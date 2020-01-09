@@ -8,14 +8,24 @@ import PropTypes from 'prop-types';
 import style from './BaseScreenStyle';
 
 /**
- * BaseScreen
- *  This class represents a base screen that is rendered when no profile is
- *  selected.
- * @extends React.PureComponent
+ * @author Benjamin Fischer
+ * @description Implementation of the BaseScreen component.
  */
-export default class BaseScreen extends React.PureComponent {
+
+
+/**
+ * @classdesc
+ * This class represents a base screen that is rendered when no data is
+ * selected yet. It basically renders a simple message to the user that he
+ * must select a profile/speech first in order to proceed.
+ * @extends React.PureComponent
+ * @property {string} text - the text that is displayed
+ */
+class BaseScreen extends React.PureComponent {
   /**
-   * Render the component.
+   * @method
+   * @summary Render the component
+   * @returns {Object} JSX rendered component
    */
   render() {
     const { text } = this.props;
@@ -32,3 +42,5 @@ export default class BaseScreen extends React.PureComponent {
 BaseScreen.propTypes = {
   text: PropTypes.string.isRequired,
 };
+
+export default BaseScreen;

@@ -1,17 +1,18 @@
-/**
- * @file Reducers of the redux store
- * @author Benjamin Fischer
- */
-
 import { combineReducers } from 'redux';
 import { actionTypes } from './Actions';
 
 /**
+ * @file Reducers of the app store
+ * @author Benjamin Fischer
+ * @module Reducers
+ */
+
+
+/**
  * Reducer for setting the personal content type of the application.
- * @function
- * @param {string} state - current state (default: '')
- * @param {object} action - action object
- * @return {string} new state
+ * @param {string} [state=''] - current content type
+ * @param {Object} action - action to perform
+ * @return {string} updated content type
  */
 function personalContent(state = '', action) {
   switch (action.type) {
@@ -24,10 +25,9 @@ function personalContent(state = '', action) {
 
 /**
  * Reducer for setting the profile of the application.
- * @function
- * @param {object} state - current state (default: {})
- * @param {object} action - action object
- * @return {object} new state
+ * @param {Object} [state={}] - current profile
+ * @param {Object} action - action to perform
+ * @return {Object} updated profile
  */
 function profile(state = {}, action) {
   switch (action.type) {
@@ -40,10 +40,9 @@ function profile(state = {}, action) {
 
 /**
  * Reducer for setting the speech of the application.
- * @function
- * @param {object} state - current state (default: {})
- * @param {object} action - action object
- * @return {object} new state
+ * @param {Object} [state={}] - current speech
+ * @param {Object} action - action to perform
+ * @return {Object} updated speech
  */
 function speech(state = {}, action) {
   switch (action.type) {
@@ -56,10 +55,9 @@ function speech(state = {}, action) {
 
 /**
  * Reducer for setting the list of deputies of the application.
- * @function
- * @param {array} state - current state (default: [])
- * @param {object} action - action object
- * @return {array} new state
+ * @param {array} [state=[]] - current deputies
+ * @param {Object} action - action to perform
+ * @return {array} updated deputies
  */
 function deputies(state = [], action) {
   switch (action.type) {
@@ -72,10 +70,9 @@ function deputies(state = [], action) {
 
 /**
  * Reducer for handling the cache of the application.
- * @function
- * @param {array} state - current state (default: {})
- * @param {object} action - action object
- * @return {array} new state
+ * @param {array} [state=[]] - current cache
+ * @param {object} action - action to perform
+ * @return {array} updated cache
  */
 function cache(state = [], action) {
   const CACHE_SIZE = 10;
@@ -92,7 +89,7 @@ function cache(state = [], action) {
   }
 }
 
-// Combine all reducers.
+// Combine all reducers
 const store = combineReducers({
   profile,
   speech,

@@ -9,16 +9,23 @@ import PropTypes from 'prop-types';
 import style from './WelcomeScreenStyle';
 import { NoConnection } from '../../style/Icons';
 
+/**
+ * @author Benjamin Fischer
+ * @description Implementation of the WelcomeScreen component
+ */
+
 
 /**
- * WelcomeScreen
- *  This class represents the Welcome screen that is shown on the startup while
- *  external data is loaded.
+ * @classdesc
+ * This class represents the Welcome screen that is shown on the startup while
+ * external data is loaded.
  * @extends React.PureComponent
  */
-export default class WelcomeScreen extends React.PureComponent {
+class WelcomeScreen extends React.PureComponent {
   /**
-   * Render component when the application is still loading external data.
+   * @method
+   * @summary Render component when the application is still loading external data.
+   * @returns {Object} JSX rendered component
    */
   static renderLoading() {
     return (
@@ -44,7 +51,9 @@ export default class WelcomeScreen extends React.PureComponent {
   }
 
   /**
-   * Render component when loading external data failed.
+   * @method
+   * @summary Render component when loading external data failed
+   * @return {Object} JSX component for failure
    */
   static renderFailure() {
     return (
@@ -64,7 +73,9 @@ export default class WelcomeScreen extends React.PureComponent {
   }
 
   /**
-   * Render the component.
+   * @method
+   * @summary Render the component
+   * @return {Object} JSX rendered component
    */
   render() {
     const { isLoading } = this.props;
@@ -78,3 +89,5 @@ export default class WelcomeScreen extends React.PureComponent {
 WelcomeScreen.propTypes = {
   isLoading: PropTypes.bool.isRequired,
 };
+
+export default WelcomeScreen;

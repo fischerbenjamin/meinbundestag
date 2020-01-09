@@ -1,15 +1,22 @@
-/**
- * @file Implementation of the storage object
- * @author Benjamin Fischer
- */
-
 import { createStore } from 'redux';
 
 import store from './Reducers';
 import { actions } from './Actions';
 
+/**
+ * @file Implementation of the app store
+ * @author Benjamin Fischer
+ * @module Store
+ */
 
-// Inital state of the store.
+
+/**
+ * Initial state of the store
+ * @property {string} personalContent - type of personal content to display
+ * @property {Object} profile - profile to display
+ * @property {Object} speech - speech to display
+ * @property {array} profile - profile to display
+ */
 const initialState = {
   personalContent: '',
   profile: {},
