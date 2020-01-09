@@ -19,6 +19,6 @@ matrix:
       before_install:
         - cd src/mobile/meinbundestag-mobile
       install:
-        - yarn install --only=dev
+        - yarn install
       script:
         - (cd scripts && ./lint)
