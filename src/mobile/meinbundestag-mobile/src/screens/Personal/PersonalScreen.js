@@ -20,7 +20,7 @@ import BaseScreen from '../Base/BaseScreen';
 import PersonalCollapsable from '../../components/PersonalCollapsable/PersonalCollapsable';
 import {
   renderSpeech, renderQuestion, renderSidejob, renderVote,
-} from '../../components/PersonalEntries/PersonalEntries';
+} from '../../components/PersonalCollapsable/PersonalEntries';
 import style from './PersonalScreenStyle';
 
 const SIDEJOBS = 'sidejobs';

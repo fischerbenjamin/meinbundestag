@@ -95,6 +95,7 @@ function renderVote(item, onPressItem) {
   );
 }
 
+
 export {
   renderSpeech,
   renderQuestion,
