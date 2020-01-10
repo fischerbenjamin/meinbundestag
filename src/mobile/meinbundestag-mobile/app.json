@@ -1,5 +1,8 @@
 {
   "expo": {
+    "androidStatusBar": {
+      "backgroundColor": "#D08770"
+    },
     "name": "meinbundestag-mobile",
     "slug": "meinbundestag-mobile",
     "privacy": "public",
