@@ -25,7 +25,6 @@ const style = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 20,
     textAlign: 'center',
-    outlineColor: 'white',
     borderColor: colorMain,
     fontWeight: '500',
   },
@@ -33,6 +32,7 @@ const style = StyleSheet.create({
   suggestionsView: {
     flex: 4,
     alignItems: 'center',
+    marginBottom: 20,
   },
 
   container: {

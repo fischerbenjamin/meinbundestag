@@ -26,7 +26,6 @@ const style = StyleSheet.create({
     color: colorWhite,
     fontSize: 32,
     textAlign: 'center',
-    fontFamily: 'San Francisco',
     fontStyle: 'italic',
     fontWeight: 'bold',
   },
