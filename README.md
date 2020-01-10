@@ -5,20 +5,20 @@
 *MeinBundestag* is an application about the German parliament.
 It provides information about the deputies of the current election period and allows the user to read the speeches held in the parliament.
 
-The goal of this application is to make these kind of information easily accessible by providing and mobile application and therefore increase the political interest of its users.
+The goal of this application is to make these kind of information easily accessible by providing a mobile application and therefore increase the political interest of its users.
 
 The application is still under development, so there is no installable version of it in the Google/Apple app store. If you're already interested, you can either run the app on your local machine or contact me.
 
 ## Table of contents
 
-1. [Open data](open-data)
+1. [Open data](#open-data)
 
-1. [Technology](technology)
-    * [Backend](backend)
-    * [Frontend](frontend)
-1. [Usage](usage)
-1. [Preview](preview)
-1. [Contact](contact)
+1. [Technology](#technology)
+    * [Backend](#backend)
+    * [Frontend](#frontend)
+1. [Usage](#usage)
+1. [Preview](#preview)
+1. [Contact](#contact)
 
 ## Open data
 
