@@ -31,7 +31,7 @@ ODS_WRAPPER = None
 API_AUTHOR, API_VERSION, API_CONTACT = (None, None, None)
 
 APP = flask.Flask(__name__, template_folder="/usr/data")
-cors = CORS(APP)
+CORS_ENABLED = CORS(APP)
 APP.config['CORS_HEADERS'] = 'Content-Type'
 
 
