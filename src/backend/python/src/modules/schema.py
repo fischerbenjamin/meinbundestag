@@ -514,7 +514,7 @@ class EnvVars(JSONSerializable):
     def __init__(
             self,
             database_config: Tuple[str, int, bool],
-            api_config: Tuple[str, int],
+            api_config: Tuple[str, int, bool],
             scraper_config: Tuple[int, int],
             protocol_config: Tuple[str, str],
             ods_config: Tuple[str, str, str, str],
@@ -524,7 +524,8 @@ class EnvVars(JSONSerializable):
 
         Args:
             database_config (Tuple[str, int, bool]): (host, port, clear)
-            api_config (Tuple[str, int]): (host, port)
+            api_config (Tuple[str, int, str, str, str]):
+                (host, port, author, version, contact)
             scraper_config (Tuple[int, int]): (timeout, interval)
             protocol_config (Tuple[str, str]): (dtd file, destination)
             ods_config (Tuple[str, str]):

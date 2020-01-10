@@ -14,7 +14,7 @@ services:
     depends_on:
       - database
     ports:
-      - 127.0.0.1:3000:3000
+      - 3000:3000
     networks:
       - meinbundestag-backend
 

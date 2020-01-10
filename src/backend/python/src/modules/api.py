@@ -17,7 +17,7 @@ from typing import List, Dict, Any, Tuple
 
 # 3rd party modules
 import flask
-
+from flask_cors import CORS
 
 # Local imports
 import src.modules.schema as schema
@@ -28,8 +28,11 @@ import src.modules.ods_wrapper as ods_wrapper
 # Global variables
 DATABASE = None
 ODS_WRAPPER = None
-APP = flask.Flask(__name__, template_folder="/usr/data")
 API_AUTHOR, API_VERSION, API_CONTACT = (None, None, None)
+
+APP = flask.Flask(__name__, template_folder="/usr/data")
+cors = CORS(APP)
+APP.config['CORS_HEADERS'] = 'Content-Type'
 
 
 @APP.route("/")
@@ -142,7 +145,8 @@ def api_profile(name: str) -> Dict[str, Any]:
 
 
 def start(
-        api_config: Tuple[str, int], ods_config: Tuple[str, str],
+        api_config: Tuple[str, int, str, str, str],
+        ods_config: Tuple[str, str],
         db_client: database.Database
 ) -> None:
     """Start the flask application.
@@ -150,7 +154,8 @@ def start(
     This function starts the flask application and is supposed to never return.
 
     Args:
-        api_config (Tuple[str, int]): (host, port)
+        api_config (Tuple[str, int, str, str, str]):
+            (host, port, author, version, contact)
         ods_config (Tuple[str, str]): (host, pipeline, fallback, profile)
         db_client (database.Database): database client
 
