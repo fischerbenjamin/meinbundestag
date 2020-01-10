@@ -180,7 +180,7 @@ class HomeScreen extends React.Component {
   render() {
     const { query, selected } = this.state;
     const deputies = selected ? [] : this.findSugggestions(query);
-    const { isLoading, errorMessage } = this.state; 
+    const { isLoading, errorMessage } = this.state;
     return (
       <View style={style.container}>
         <View style={style.inputView}>
