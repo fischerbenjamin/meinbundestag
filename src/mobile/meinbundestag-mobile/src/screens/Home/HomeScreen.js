@@ -180,6 +180,7 @@ class HomeScreen extends React.Component {
   render() {
     const { query, selected } = this.state;
     const deputies = selected ? [] : this.findSugggestions(query);
+    const { isLoading, errorMessage } = this.state; 
     return (
       <View style={style.container}>
         <View style={style.inputView}>
@@ -212,10 +213,14 @@ class HomeScreen extends React.Component {
         <View style={style.container}>
           {this.renderSearchButton()}
         </View>
-        <View style={style.container}>
-          {this.renderActivityIndicator()}
-          {this.renderErrorMessage()}
-        </View>
+        {
+          (isLoading || errorMessage) && (
+            <View style={style.container}>
+              {this.renderActivityIndicator()}
+              {this.renderErrorMessage()}
+            </View>
+          )
+        }
       </View>
     );
   }
