@@ -43,7 +43,6 @@ Here is a general overview which technology is used in particular:
 * Backend ([Python](https://www.python.org/)): [Docker](https://www.docker.com/), [Docker-Compose](https://docs.docker.com/compose/)
 * Frontend (Javascript/[Node](https://nodejs.org/)): [React Native](https://facebook.github.io/react-native/), [Expo](https://expo.io/)
 
-
 ### Backend
 
 The backend itself consists of three services:
@@ -83,7 +82,7 @@ It also provides targets for the frontend, but these targets require additional 
 
 You must provide a valid *.env* file in the *src/* folder that sets the following environment variables:
 
-```
+```bash
 ### DATABASE ###
 
 DB_HOST=database
@@ -122,10 +121,9 @@ Of course, you can change these values according to your settings.
 You'll probably have to create a user/password in the database container when specifying it here.
 The general procedure in order to run the application on your local machine then looks like this:
 
-
-```
+```bash
 # clone the repository
-git clone https://github.com/fischerbenjamin/meinbundestag.git 
+git clone https://github.com/fischerbenjamin/meinbundestag.git
 
 # run the backend
 (cd meinbundestag/src && make backend)
@@ -134,11 +132,6 @@ git clone https://github.com/fischerbenjamin/meinbundestag.git
 (cd meinbundestag/src/mobile/meinbundestag-mobile && yarn install && expo web)
 
 ```
-
-
-
-
-
 
 ## Preview
 
