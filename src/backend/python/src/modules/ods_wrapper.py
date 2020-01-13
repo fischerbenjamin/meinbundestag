@@ -48,7 +48,7 @@ class ODS:
             # pylint: disable=no-member
             if res.status_code == requests.codes.ok:
                 try:
-                    return res.json()["profiles"]
+                    return res.json()[0]["data"]["profiles"]
                 except TypeError:
                     logging.error(
                         "ODS pipeline not existing/correctly configured"
