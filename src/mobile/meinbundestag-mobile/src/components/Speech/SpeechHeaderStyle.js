@@ -9,8 +9,8 @@ const style = StyleSheet.create({
   },
 
   text: {
-    fontWeight: '500',
-    fontSize: 16,
+    fontWeight: 'bold',
+    fontSize: 15,
     margin: 5,
     padding: 2,
     textAlign: 'center',
@@ -19,7 +19,7 @@ const style = StyleSheet.create({
 
   textTopic: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
 
   analysisContainer: {

@@ -186,7 +186,6 @@ class HomeScreen extends React.Component {
         <View style={style.inputView}>
           <TextInput
             style={style.searchBox}
-            autoFocus
             autoCorrect={false}
             onChangeText={(text) => {
               this.setState({

@@ -35,7 +35,7 @@ const listItem = StyleSheet.create({
   keyText: {
     flex: 1,
     textAlign: 'left',
-    fontWeight: '600',
+    fontWeight: 'bold',
     color: colorBlackLight,
     paddingLeft: 20,
   },

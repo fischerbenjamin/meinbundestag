@@ -28,12 +28,12 @@ const style = StyleSheet.create({
   },
 
   speakerIsSpeakerText: {
-    fontWeight: '500',
+    fontWeight: 'bold',
     color: colorBlack,
   },
 
   speakerIsNotSpeakerText: {
-    fontWeight: '500',
+    fontWeight: 'bold',
     fontStyle: 'italic',
     color: colorBlack,
   },

@@ -100,9 +100,7 @@ class PersonalScreen extends React.Component {
 
   static renderContent(data, renderListItem, onPressItem) {
     return (
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-      >
+      <View>
         <TouchableOpacity
           onPress={() => storage.setPersonalContent(OVERVIEW)}
         >
@@ -118,7 +116,7 @@ class PersonalScreen extends React.Component {
           renderListItem={renderListItem}
           onPressItem={onPressItem}
         />
-      </ScrollView>
+      </View>
     );
   }
 
