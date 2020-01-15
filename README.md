@@ -7,7 +7,8 @@ It provides information about the deputies of the current election period and al
 
 The goal of this application is to make these kind of information easily accessible by providing a mobile application and therefore increase the political interest of its users.
 
-The application is still under development, so there is no installable version of it in the Google/Apple app store. If you're already interested, you can either run the app on your local machine or contact me.
+The application is still under development, so there is no installable version of it in one of the app stores.
+If you're already interested, you can run the application yourself following the instructions described [here](#usage).
 
 ## Table of contents
 
@@ -49,35 +50,41 @@ The backend itself consists of three services:
 
 * MongoDB database
 
-    The database persists the processed protocols and is connected
-    to the backend network.
+    The database persists the processed protocols and is connected to the backend network.
+    The source code contains a module *database* that implements the communication with the database.
 
-* Python Backend
+* Flask webserver
 
     The python backend provides a simple REST API using Flask for the frontend to interact with. Furthermore, it is running a web-scraper that is constantly looking for new protocols based on the selenium package.
     The speeches are analyzed with the textblob package that is used for the sentiment analysis.
+    This feature is rather experimental and does not produce fully
+    reliable results yet.
     Of course, it is interacting with the database and the ODS via the backend network.
+    Currently, the Flask application enables *CORS* headers for an easier development using the expo client.
+    Due to security issues, disable this feature when running the backend in production.
 
 * ODS
 
-    The ODS is experimentally used for providing the list of all deputies of the parliament. The pipeline is configured once manually and afterwards set in an environment file. Without specifying the pipeline in this file, the Python backend uses a fallback implementation to fetch the data directly
+    The ODS is experimentally used for providing the list of all deputies of the parliament.
+    The pipeline is configured once manually and afterwards set in an environment file.
+    Without specifying the pipeline in this file, the Python backend uses a fallback implementation to fetch the data directly from *abgeordnetenwatch*.
 
 ### Frontend
 
 The frontend is a minimalistic React Native application that only uses native elements.
 Expo is used for an easier development phase using the webview.
-The frontend has only been tested using the Expo app for android on a native device, but without building an apk and installing it.  
+The frontend has only been tested using the Expo app for android on a native device without building an apk and installing it.  
 
 ## Usage
 
-You have to install
+You have to install the following list of software before running the application:
 
 * [docker](https://www.docker.com/)
 * [docker-compose](https://docs.docker.com/compose/)
 * [node](https://nodejs.org)
 * [yarn](https://yarnpkg.comz)
 
-in order to run the application. There is a Makefile in the *src/* directory that provides a target for building the backend.
+There is a Makefile in the *src/* directory that provides a target for building the backend.
 It also provides targets for the frontend, but these targets require additional software to be installed, so it may be easier to run the expo client directly.
 
 You must provide a valid *.env* file in the *src/* folder that sets the following environment variables:
@@ -114,7 +121,6 @@ ODS_HOST={}
 ODS_PIPELINE_DEPUTIES={}
 ODS_FALLBACK_DEPUTIES=https://www.abgeordnetenwatch.de/api/parliament/bundestag/deputies.json
 ODS_PROFILE_URL={}
-
 ```
 
 Of course, you can change these values according to your settings.
@@ -129,9 +135,10 @@ git clone https://github.com/fischerbenjamin/meinbundestag.git
 (cd meinbundestag/src && make backend)
 
 # run the frontend
-(cd meinbundestag/src/mobile/meinbundestag-mobile && yarn install && expo web)
-
+(cd meinbundestag/src/mobile/meinbundestag-mobile && yarn install && yarn web)
 ```
+
+Running the application on the expo client on your device requires you to configure the IP address of the host providing the backend in the file *src/mobile/meinbundestag-mobile/config.js*.
 
 ## Preview
 
