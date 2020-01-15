@@ -1,7 +1,7 @@
 src/mobile/meinbundestag-mobile/node_modules/
 src/mobile/meinbundestag-mobile/.expo/
 src/mobile/meinbundestag-mobile/.expo-shared/
-src/mobile/meinbundestag-mobile/assets/
+src/mobile/meinbundestag-mobile/out
 **/__pycache__
 .vscode/
 **/build

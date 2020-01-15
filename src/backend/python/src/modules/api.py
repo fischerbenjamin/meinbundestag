@@ -17,7 +17,7 @@ from typing import List, Dict, Any, Tuple
 
 # 3rd party modules
 import flask
-
+from flask_cors import CORS
 
 # Local imports
 import src.modules.schema as schema
@@ -28,8 +28,11 @@ import src.modules.ods_wrapper as ods_wrapper
 # Global variables
 DATABASE = None
 ODS_WRAPPER = None
-APP = flask.Flask(__name__, template_folder="/usr/data")
 API_AUTHOR, API_VERSION, API_CONTACT = (None, None, None)
+
+APP = flask.Flask(__name__, template_folder="/usr/data")
+CORS_ENABLED = CORS(APP)
+APP.config['CORS_HEADERS'] = 'Content-Type'
 
 
 @APP.route("/")
@@ -98,7 +101,11 @@ def api_deputies_names() -> List[str]:
     """
     global ODS_WRAPPER
     names = [
-        schema.Name.from_profile(profile) for profile in ODS_WRAPPER.deputies()
+        dict(
+            name=schema.Name.from_profile(profile),
+            city=profile["personal"]["location"]["city"]
+        )
+        for profile in ODS_WRAPPER.deputies()
     ]
     return flask.jsonify(names)
 
@@ -129,6 +136,8 @@ def api_profile(name: str) -> Dict[str, Any]:
         if regex.match(str(tmp_name)):
             profile = ODS_WRAPPER.get_full_profile(tmp)
             break
+    if profile is None:
+        return flask.jsonify(None)
     profile["profile"]["speeches"] = DATABASE.speech_get_speeches_for_name(
         regex
     )
@@ -136,7 +145,8 @@ def api_profile(name: str) -> Dict[str, Any]:
 
 
 def start(
-        api_config: Tuple[str, int], ods_config: Tuple[str, str],
+        api_config: Tuple[str, int, str, str, str],
+        ods_config: Tuple[str, str],
         db_client: database.Database
 ) -> None:
     """Start the flask application.
@@ -144,7 +154,8 @@ def start(
     This function starts the flask application and is supposed to never return.
 
     Args:
-        api_config (Tuple[str, int]): (host, port)
+        api_config (Tuple[str, int, str, str, str]):
+            (host, port, author, version, contact)
         ods_config (Tuple[str, str]): (host, pipeline, fallback, profile)
         db_client (database.Database): database client
 

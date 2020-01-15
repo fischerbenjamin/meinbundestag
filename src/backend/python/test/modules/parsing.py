@@ -14,7 +14,7 @@ class TestClass(unittest.TestCase):
 
     DTD_FILE = "data/protocol.dtd"
     PROTOCOL = "data/protocol.xml"
-    PROTOCOL_NUMBER_OF_SPEECHES = 93
+    PROTOCOL_NUMBER_OF_SPEECHES = 91
 
     def test_get_speeches_filepath_none(self):
         """Test function with None as protocol file.

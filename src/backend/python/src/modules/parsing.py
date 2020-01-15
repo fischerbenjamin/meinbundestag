@@ -53,7 +53,8 @@ def get_speeches(filepath: str, dtd_file: str) -> List[schema.Speech]:
                     "Skipping speech in %s. Invalid content", filepath
                 )
             else:
-                speeches.append(speech)
+                if speech.assert_is_relevant():
+                    speeches.append(speech)
     except Exception as exception:
         raise myexceptions.SpeechParsingException from exception
     return speeches

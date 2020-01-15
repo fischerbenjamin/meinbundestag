@@ -6,3 +6,4 @@ textblob_de
 wget
 nltk
 requests
+flask-cors

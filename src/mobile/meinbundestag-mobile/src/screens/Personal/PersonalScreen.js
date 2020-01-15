@@ -3,118 +3,53 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
   Clipboard,
-  StyleSheet,
 } from 'react-native';
+import PropTypes from 'prop-types';
+
 import {
   NavIconPersonal,
   OverviewItemSidejobs,
   OverviewItemSpeeches,
   OverviewItemVotes,
   OverviewItemQuestions,
-} from '../style/Icons';
-import storage from '../storage/Store';
-import BaseScreen from './BaseScreen';
-import PersonalCollapsable from '../components/PersonalCollapsable';
+} from '../../style/Icons';
+import storage from '../../storage/Store';
+import BaseScreen from '../Base/BaseScreen';
+import PersonalCollapsable from '../../components/PersonalCollapsable/PersonalCollapsable';
 import {
   renderSpeech, renderQuestion, renderSidejob, renderVote,
-} from '../components/PersonalEntries';
-import { colorMain, colorWhite } from '../style/Colors';
-
+} from '../../components/PersonalCollapsable/PersonalEntries';
+import style from './PersonalScreenStyle';
 
 const SIDEJOBS = 'sidejobs';
 const SPEECHES = 'speeches';
 const QUESTIONS = 'questions';
 const VOTES = 'votes';
+const OVERVIEW = '';
 
 
-const style = StyleSheet.create({
+/**
+ * @author Benjamin Fischer
+ * @description Implementation of the PersonalScreen component
+ */
 
-  overviewContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    justifyContent: 'space-around',
-  },
-
-  overviewItemContainer: {
-    flex: 1,
-    backgroundColor: colorMain,
-    borderRadius: 30,
-    margin: 25,
-  },
-
-  overviewItemText: {
-    fontWeight: 'bold',
-    fontSize: 22,
-    color: colorWhite,
-  },
-
-  overviewItemTextContainer: {
-    flex: 8,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-  },
-
-  overviewSeparatorContainer: {
-    flex: 1,
-  },
-
-  overviewIconContainer: {
-    flex: 2,
-    alignSelf: 'center',
-    justifyContent: 'center',
-  },
-
-  overviewTouchableContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'stretch',
-  },
-
-  backToOverviewButton: {
-    alignSelf: 'center',
-    alignItems: 'center',
-    padding: 10,
-    backgroundColor: colorMain,
-    borderRadius: 20,
-    margin: 10,
-    marginTop: 20,
-    width: '50%',
-  },
-
-  backToOverviewText: {
-    color: colorWhite,
-    fontWeight: '700',
-  },
-
-  backToOverviewSep: {
-    borderRadius: 10,
-    borderBottomColor: colorMain,
-    borderBottomWidth: 3,
-    width: '90%',
-    marginLeft: '5%',
-    marginRight: '5%',
-    margin: 10,
-  },
-
-});
-
-
-export default class PersonalScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showContent: false,
-    };
-  }
-
-  static navigationOptions = {
-    tabBarIcon: NavIconPersonal,
-  };
-
-  showOverview() {
+/**
+ * @classdesc
+ * This screen displays personal information about the deputy. The user
+ * can list the speeches, questions, votes and sidejobs of the selected deputy.
+ * @extends React.Component
+ */
+class PersonalScreen extends React.Component {
+  /**
+   * @method
+   * @summary Render the overview view of the screen
+   * @description
+   * Creates four buttons for each category the user can click. The component
+   * re-renders and displays the selected data.
+   * @returns {Object} JSX rendered component
+   */
+  static renderOverview() {
     return (
       <View style={style.overviewContainer}>
         {this.renderOverviewItem(SPEECHES, 'Reden', OverviewItemSpeeches)}
@@ -125,14 +60,25 @@ export default class PersonalScreen extends React.Component {
     );
   }
 
-  renderOverviewItem(content, text, icon) {
+  // Use the personal icon for this screen
+  static navigationOptions = {
+    tabBarIcon: NavIconPersonal,
+  };
+
+  /**
+   * @method
+   * @summary Render a single overview button
+   * @param {string} content - the type of content (speeches, questions, etc.)
+   * @param {string} text - the text to display next to the icon
+   * @param {Object} icon - the icon to show
+   * @returns {Object} JSX rendered component
+   */
+  static renderOverviewItem(content, text, icon) {
     return (
       <View style={style.overviewItemContainer}>
         <TouchableOpacity
           style={style.overviewTouchableContainer}
-          onPress={() => this.setState({
-            showContent: content,
-          })}
+          onPress={() => storage.setPersonalContent(content)}
         >
           <View style={{ flexDirection: 'row' }}>
             <View style={style.overviewSeparatorContainer} />
@@ -151,13 +97,11 @@ export default class PersonalScreen extends React.Component {
     );
   }
 
-  renderContent(data, renderListItem, onPressItem) {
+  static renderContent(data, renderListItem, onPressItem) {
     return (
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-      >
+      <View style={{ flex: 1 }}>
         <TouchableOpacity
-          onPress={() => this.setState({ showContent: false })}
+          onPress={() => storage.setPersonalContent(OVERVIEW)}
         >
           <View style={style.backToOverviewButton}>
             <Text style={style.backToOverviewText}>
@@ -171,30 +115,38 @@ export default class PersonalScreen extends React.Component {
           renderListItem={renderListItem}
           onPressItem={onPressItem}
         />
-      </ScrollView>
+      </View>
     );
   }
 
+  /**
+   * @method
+   * @summary Render the component
+   * @returns {Object} JSX rendered component
+   */
   render() {
     const { profile } = storage.getProfile();
     if (profile === undefined) {
-      return BaseScreen.renderDefault(
-        'Bitte wählen Sie zuerst ein Profil aus.',
+      return (
+        <BaseScreen
+          text="Bitte wählen Sie zuerst ein Profil aus"
+        />
       );
     }
+    const personalContent = storage.getPersonalContent();
     const {
       sidejobs, votes, questions, speeches,
     } = profile;
-    const { showContent } = this.state;
-    const { navigate } = this.props.navigation;
-    switch (showContent) {
+    const { navigation } = this.props;
+    const { navigate } = navigation;
+    switch (personalContent) {
       case SIDEJOBS:
-        return this.renderContent(
+        return PersonalScreen.renderContent(
           sidejobs, renderSidejob,
           ((item) => Clipboard.setString(item.organization)),
         );
       case SPEECHES:
-        return this.renderContent(
+        return PersonalScreen.renderContent(
           speeches, renderSpeech,
           ((item) => {
             storage.setSpeech(item);
@@ -202,17 +154,24 @@ export default class PersonalScreen extends React.Component {
           }),
         );
       case VOTES:
-        return this.renderContent(
+        return PersonalScreen.renderContent(
           votes, renderVote,
           (item) => Clipboard.setString(item.url),
         );
       case QUESTIONS:
-        return this.renderContent(
+        return PersonalScreen.renderContent(
           questions, renderQuestion,
           ((item) => Clipboard.setString(item.url)),
         );
       default:
-        return this.showOverview();
+        return PersonalScreen.renderOverview();
     }
   }
 }
+
+
+PersonalScreen.propTypes = {
+  navigation: PropTypes.oneOfType([PropTypes.object]).isRequired,
+};
+
+export default PersonalScreen;

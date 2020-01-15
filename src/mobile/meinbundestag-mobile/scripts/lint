@@ -2,4 +2,4 @@
 
 
 echo "Checking lint (using eslint)"
-../node_modules/eslint/bin/eslint.js "./../src/**"
+../node_modules/eslint/bin/eslint.js "../src/"

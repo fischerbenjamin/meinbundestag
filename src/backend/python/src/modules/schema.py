@@ -137,6 +137,8 @@ class SpeechParagraph(JSONSerializable):
 class Speech(JSONSerializable):
     """Structure of a single speech."""
 
+    LENGTH_THRESHOLD = 1000
+
     def __init__(
             self, meta: Dict[str, str],
             content: "SpeechContent", speaker_id: str, speech_id: str
@@ -188,6 +190,20 @@ class Speech(JSONSerializable):
             speaker_id=obj["speaker_id"],
             speech_id=obj["speech_id"]
         )
+
+    def assert_is_relevant(self) -> bool:
+        """Assert that the speech is relevant enough.
+
+        This method is used for filtering 'speeches' that are too short. It
+        often appears that questions/etc. that are considerably shorter than
+        a actual speech are tagged as speeches in the protocol files.
+
+        Returns:
+            bool: true if considered a relevant speech, false otherwise
+
+        """
+        text = self.content.get_speakers_text()
+        return len(text) >= Speech.LENGTH_THRESHOLD
 
 
 class SpeechAnalysis(JSONSerializable):
@@ -514,7 +530,7 @@ class EnvVars(JSONSerializable):
     def __init__(
             self,
             database_config: Tuple[str, int, bool],
-            api_config: Tuple[str, int],
+            api_config: Tuple[str, int, bool],
             scraper_config: Tuple[int, int],
             protocol_config: Tuple[str, str],
             ods_config: Tuple[str, str, str, str],
@@ -524,7 +540,8 @@ class EnvVars(JSONSerializable):
 
         Args:
             database_config (Tuple[str, int, bool]): (host, port, clear)
-            api_config (Tuple[str, int]): (host, port)
+            api_config (Tuple[str, int, str, str, str]):
+                (host, port, author, version, contact)
             scraper_config (Tuple[int, int]): (timeout, interval)
             protocol_config (Tuple[str, str]): (dtd file, destination)
             ods_config (Tuple[str, str]):

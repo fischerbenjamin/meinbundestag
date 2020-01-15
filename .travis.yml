@@ -13,3 +13,12 @@ matrix:
       script:
         - python -m nltk.downloader punkt
         - make -C src backend-test-source
+    - language: node_js
+      node_js:
+        - node
+      before_install:
+        - cd src/mobile/meinbundestag-mobile
+      install:
+        - yarn install
+      script:
+        - (cd scripts && ./lint)
