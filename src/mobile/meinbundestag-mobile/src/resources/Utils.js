@@ -1,4 +1,6 @@
 import storage from '../storage/Store';
+import API_URL from '../../config';
+
 
 /**
  * @author Benjamin Fischer
@@ -7,8 +9,8 @@ import storage from '../storage/Store';
  */
 
 
-// FIXME: constant url of the server
-const URL = 'http://localhost:3000';
+// URL of the backend
+const URL = API_URL;
 
 /**
  * @namespace api
