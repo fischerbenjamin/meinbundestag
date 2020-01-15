@@ -144,11 +144,12 @@ Running the application on the expo client on your device requires you to config
 
 The screenshots were taken on a mobile device running the expo client:
 
-<img src="./doc/pictures/screenshot_homescreen.jpg" width="19%" height="20%"/>
-<img src="./doc/pictures/screenshot_homescreen_search.jpg" width="19%" height="20%"/>
-<img src="./doc/pictures/screenshot_personalscreen_overview.jpg" width="19%" height="20%"/>
-<img src="./doc/pictures/screenshot_personalscreen_content.jpg" width="19%" height="20%"/>
-<img src="./doc/pictures/screenshot_speechscreen.jpg" width="19%" height="20%"/>
+<img align="left" src="./doc/pictures/screenshot_homescreen.jpg" width="15%" height="20%"/>
+<img align="left" src="./doc/pictures/screenshot_homescreen_search.jpg" width="15%" height="20%"/>
+<img align="left" src="./doc/pictures/screenshot_personalscreen_overview.jpg" width="15%" height="20%"/>
+<img align="left" src="./doc/pictures/screenshot_personalscreen_content.jpg" width="15%" height="20%"/>
+<img src="./doc/pictures/screenshot_speechscreen.jpg" width="15%" height="20%"/>
+
 
 ## Contact
 
