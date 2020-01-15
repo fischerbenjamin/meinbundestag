@@ -3,6 +3,7 @@ import {
   View,
   Text,
   TouchableOpacity,
+  SafeAreaView,
   Clipboard,
 } from 'react-native';
 import PropTypes from 'prop-types';
@@ -99,7 +100,7 @@ class PersonalScreen extends React.Component {
 
   static renderContent(data, renderListItem, onPressItem) {
     return (
-      <View>
+      <View style={{ flex: 1 }}>
         <TouchableOpacity
           onPress={() => storage.setPersonalContent(OVERVIEW)}
         >

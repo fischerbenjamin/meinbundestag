@@ -24,8 +24,9 @@ export default class PersonalCollapsable extends React.PureComponent {
   render() {
     const { data, renderListItem, onPressItem } = this.props;
     return (
-      <View>
+      <View style={{ flex: 1 }}>
         <FlatList
+          showsVerticalScrollIndicator={false}
           data={data}
           numColumns={1}
           renderItem={({ item }) => renderListItem(item, onPressItem)}
