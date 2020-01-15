@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  SafeAreaView,
   Clipboard,
 } from 'react-native';
 import PropTypes from 'prop-types';
