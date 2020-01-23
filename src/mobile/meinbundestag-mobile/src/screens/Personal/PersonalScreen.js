@@ -3,7 +3,7 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Clipboard,
+  Linking,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -20,6 +20,7 @@ import PersonalCollapsable from '../../components/PersonalCollapsable/PersonalCo
 import {
   renderSpeech, renderQuestion, renderSidejob, renderVote,
 } from '../../components/PersonalCollapsable/PersonalEntries';
+import utils from '../../resources/Utils';
 import style from './PersonalScreenStyle';
 
 const SIDEJOBS = 'sidejobs';
@@ -97,6 +98,13 @@ class PersonalScreen extends React.Component {
     );
   }
 
+  /**
+   * @summary Render the selected content
+   * @param {array} data - array containing the selected data
+   * @param {function} renderListItem - how to render a single entry
+   * @param {function} onPressItem - callback when entry is pressed
+   * @returns {Object} JSX rendered component
+   */
   static renderContent(data, renderListItem, onPressItem) {
     return (
       <View style={{ flex: 1 }}>
@@ -143,7 +151,10 @@ class PersonalScreen extends React.Component {
       case SIDEJOBS:
         return PersonalScreen.renderContent(
           sidejobs, renderSidejob,
-          ((item) => Clipboard.setString(item.organization)),
+          ((item) => {
+            const searchURL = utils.getGoogleSearchUrl(item.organization);
+            Linking.openURL(searchURL);
+          }),
         );
       case SPEECHES:
         return PersonalScreen.renderContent(
@@ -156,12 +167,12 @@ class PersonalScreen extends React.Component {
       case VOTES:
         return PersonalScreen.renderContent(
           votes, renderVote,
-          (item) => Clipboard.setString(item.url),
+          ((item) => Linking.openURL(item.url)),
         );
       case QUESTIONS:
         return PersonalScreen.renderContent(
           questions, renderQuestion,
-          ((item) => Clipboard.setString(item.url)),
+          ((item) => Linking.openURL(item.url)),
         );
       default:
         return PersonalScreen.renderOverview();
