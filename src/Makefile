@@ -41,7 +41,11 @@ frontend-test:
 .PHONY: backend
 backend:
 	docker-compose up --build api api database
-	# docker-compose -f backend/ods/amse-ws1920-ods-app/docker-compose.yml up -d
+
+.PHONY: backend-ods
+backend-ods:
+	docker-compose up --build api api database
+	docker-compose -f backend/ods/amse-ws1920-ods-app/docker-compose.yml up -d
 
 .PHONY: backend-test-docker
 backend-test-docker:
