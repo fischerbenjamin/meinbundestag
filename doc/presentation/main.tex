@@ -10,6 +10,7 @@
   linkbordercolor={white}
 }
 \usepackage{bookmark}
+\usepackage{url}
 \usetheme{metropolis}           
 
 \title{AMSE - \textit{MeinBundestag}}
@@ -75,7 +76,7 @@
     \textbf{\faExclamationTriangle}\quad\textbf{Problems}
     \begin{itemize}
       \item Only the latest five protocols are included in the table
-      \item Loading other protocols requires the user clicking on buttons
+      \item Loading other protocols requires user interaction
     \end{itemize}  
   \end{frame}
 
@@ -84,8 +85,8 @@
     \begin{itemize}
       \item Information about each deputy of the parliament
       \item Votings, secondary activities, etc.
-      \item List of all deputies: /deputies.json
-      \item Profile of a single deputy: profile/\textit{\{deputy\}}/profile.json
+      \item List of all deputies: \path{/deputies.json} 
+      \item A deputy's profile: \path{profile/<deputy>/profile.json}
     \end{itemize}
   \end{frame}
 
@@ -113,38 +114,45 @@
       \stepcounter{index}
       \item MongoDB\textsuperscript{\hyperlink{link-mongodb}{\arabic{index}}} database persists processed protocol data
       \stepcounter{index}
-      \item Database and API are running in seperate Docker\textsuperscript{\hyperlink{link-docker}{\arabic{index}}} container
+      \item Database and API are running in seperate Docker\textsuperscript{\hyperlink{link-docker}{\arabic{index}}} containers
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}[plain]{Future Work}
+    \begin{itemize}
+      \item[\footnotesize{\faWarning}]\enspace{}Run the backend on a public server
+      \item[\footnotesize{\faWarning}]\enspace{}Check responsive layout, fix some layout bugs
+      \item[\footnotesize{\faStar}]\enspace{}Improve the speech analysis
+      \item[\footnotesize{\faStar}]\enspace{}Add text-to-speech functionality for speeches
+      \item[\footnotesize{\faStar}]\enspace{}Add some animations for better user experience
+      \item[\footnotesize{\faStar}]\enspace{}Expand search by parties, support more parliaments, etc. 
     \end{itemize}
   \end{frame}
 
   \section{ODS}
   \begin{frame}[plain]{ODS}
-    \textbf{Specific}
+    \,\textbf{\faUser}\quad\textbf{Specific}
     \begin{itemize}
       \item The ODS is used for providing the list of all deputies
       \item Not applicable for protocol data (obviously)
       \item Providing profile data would require supporting placeholders
+      \item Easy to setup, my experience from Linux system
     \end{itemize}
-    \textbf{General}
+    \textbf{\faUsers}\quad\textbf{General}
     \begin{itemize}
-      \item Idea is cool, especially when working in multiple small projects
-      \item Easy to setup, at least for Linux systems
-      \item TODO: naming storage links and duration of storage
-      \item Supporting query parameters and placeholders would be great! 
+      \item Innovative idea, especially for multiple small projects
+      \item Beneficial for applications with timeline views / historical data 
     \end{itemize} 
   \end{frame}
 
-  \begin{frame}[plain]{Links}
+  \begin{frame}[plain]{ODS}
+    \textbf{\faThumbsUp}\quad\textbf{Suggestions}
     \begin{itemize}
-      \item[] \label{link-react-native}\href{https://facebook.github.io/react-native}{\texttt{https://facebook.github.io/react-native}}
-      \item[] \label{link-expo}\href{https://expo.io/}{\texttt{https://expo.io/}}
-      \item[] \label{link-flask}\href{https://www.fullstackpython.com/flask.html}{\texttt{https://www.fullstackpython.com/flask.html}}
-      \item[] \label{link-selenium}\href{https://selenium-python.readthedocs.io/}{\texttt{https://selenium-python.readthedocs.io/}}
-      \item[] \label{link-mongodb}\href{https://www.mongodb.com/}{\texttt{https://www.mongodb.com/}}
-      \item[] \label{link-mongodb}\href{https://www.docker.com/}{\texttt{https://www.docker.com/}}
-    \end{itemize}
+      \item Custom names for storage links of pipelines
+      \item Adaptable amount of time how long data is persisted
+      \item Supporting query parameters and placeholders in API url 
+    \end{itemize} 
   \end{frame}
-
 
 
   \begin{frame}[plain]{}
@@ -154,6 +162,17 @@
     \Large \textbf{Questions?}
   \end{frame}
 
+
+  \begin{frame}[plain]{Links}
+    \begin{itemize}
+      \item[\textsuperscript{1}] \label{link-react-native}\href{https://facebook.github.io/react-native}{\texttt{https://facebook.github.io/react-native}}
+      \item[\textsuperscript{2}] \label{link-expo}\href{https://expo.io/}{\texttt{https://expo.io/}}
+      \item[\textsuperscript{3}] \label{link-flask}\href{https://www.fullstackpython.com/flask.html}{\texttt{https://www.fullstackpython.com/flask.html}}
+      \item[\textsuperscript{4}] \label{link-selenium}\href{https://selenium-python.readthedocs.io/}{\texttt{https://selenium-python.readthedocs.io/}}
+      \item[\textsuperscript{5}] \label{link-mongodb}\href{https://www.mongodb.com/}{\texttt{https://www.mongodb.com/}}
+      \item[\textsuperscript{6}] \label{link-mongodb}\href{https://www.docker.com/}{\texttt{https://www.docker.com/}}
+    \end{itemize}
+  \end{frame}
 
 
 \end{document}
