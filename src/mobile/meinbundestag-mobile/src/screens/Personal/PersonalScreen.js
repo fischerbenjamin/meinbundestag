@@ -147,6 +147,7 @@ class PersonalScreen extends React.Component {
     } = profile;
     const { navigation } = this.props;
     const { navigate } = navigation;
+    // Sort the data by its date (sidejobs do not always provide a date)
     switch (personalContent) {
       case SIDEJOBS:
         return PersonalScreen.renderContent(
@@ -157,6 +158,7 @@ class PersonalScreen extends React.Component {
           }),
         );
       case SPEECHES:
+        speeches.sort((a, b) => b.meta.date.localeCompare(a.meta.date));
         return PersonalScreen.renderContent(
           speeches, renderSpeech,
           ((item) => {
@@ -165,11 +167,13 @@ class PersonalScreen extends React.Component {
           }),
         );
       case VOTES:
+        votes.sort((a, b) => b.date.localeCompare(a.date));
         return PersonalScreen.renderContent(
           votes, renderVote,
           ((item) => Linking.openURL(item.url)),
         );
       case QUESTIONS:
+        questions.sort((a, b) => b.date.localeCompare(a.date));
         return PersonalScreen.renderContent(
           questions, renderQuestion,
           ((item) => Linking.openURL(item.url)),
