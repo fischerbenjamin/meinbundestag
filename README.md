@@ -31,10 +31,9 @@ The application basically uses two open data sources provided by:
 * [bundestag](https://www.bundestag.de/services/opendata)
 
 The data provided by *abgeordnetenwatch* contains personal information about each deputy of the German parliament as well as information about their votings and subsidiary activities.
-These information are published via their website and [API](https://www.abgeordnetenwatch.de/api) and are pretty straightforward to use.
+The [API](https://www.abgeordnetenwatch.de/api) is based on a database using the ODbL 1.0 license is fairly straightforward to use.
 
-The protocols of the German parliament are published on its website.
-They are formatted as .xml files and free to use.
+The protocols of the German parliament are published as .xml files without any specific license (public domain) on its website.
 There is also a DTD for the protocols of the current election period for easier automated usage.
 
 ## Technology
@@ -132,7 +131,7 @@ The general procedure in order to run the application on your local machine then
 # clone the repository
 git clone https://github.com/fischerbenjamin/meinbundestag.git
 
-# run the backend
+# run the backend (replace 'make backend' with 'make backend-ods' for using the ODS)
 (cd meinbundestag/src && make backend)
 
 # run the frontend
