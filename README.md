@@ -1,6 +1,7 @@
 # meinbundestag
 
 [![Build Status](https://travis-ci.com/fischerbenjamin/meinbundestag.svg?branch=master)](https://travis-ci.com/fischerbenjamin/meinbundestag)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 *MeinBundestag* is an application about the German parliament.
 It provides information about the deputies of the current election period and allows the user to read the speeches held in the parliament.
