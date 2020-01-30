@@ -90,7 +90,7 @@ function renderSidejob(item, onPressItem) {
       const value = `${start} bis ${end}`;
       return renderEntry('Zeitraum', value);
     }
-    return null;
+    return renderEntry('Zeitraum', 'nicht angegeben');
   })();
   const organization = renderEntry('Organisation', item.organization);
   return (

@@ -117,6 +117,18 @@ const utils = {
     return deputies;
   },
 
+  /**
+   * @summary Return the url for google search of given search string
+   * @description
+   * Encode the search string and append it to the google search url.
+   * @return {string} url of google search
+   */
+  getGoogleSearchUrl: function getGoogleSearchUrl(string) {
+    const searchURI = encodeURI(string);
+    const googleURL = 'http://www.google.com/search?q=';
+    return `${googleURL}${searchURI}`;
+  },
+
 };
 
 export default utils;

@@ -3,7 +3,7 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Clipboard,
+  Linking,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -20,6 +20,7 @@ import PersonalCollapsable from '../../components/PersonalCollapsable/PersonalCo
 import {
   renderSpeech, renderQuestion, renderSidejob, renderVote,
 } from '../../components/PersonalCollapsable/PersonalEntries';
+import utils from '../../resources/Utils';
 import style from './PersonalScreenStyle';
 
 const SIDEJOBS = 'sidejobs';
@@ -97,6 +98,13 @@ class PersonalScreen extends React.Component {
     );
   }
 
+  /**
+   * @summary Render the selected content
+   * @param {array} data - array containing the selected data
+   * @param {function} renderListItem - how to render a single entry
+   * @param {function} onPressItem - callback when entry is pressed
+   * @returns {Object} JSX rendered component
+   */
   static renderContent(data, renderListItem, onPressItem) {
     return (
       <View style={{ flex: 1 }}>
@@ -139,13 +147,18 @@ class PersonalScreen extends React.Component {
     } = profile;
     const { navigation } = this.props;
     const { navigate } = navigation;
+    // Sort the data by its date (sidejobs do not always provide a date)
     switch (personalContent) {
       case SIDEJOBS:
         return PersonalScreen.renderContent(
           sidejobs, renderSidejob,
-          ((item) => Clipboard.setString(item.organization)),
+          ((item) => {
+            const searchURL = utils.getGoogleSearchUrl(item.organization);
+            Linking.openURL(searchURL);
+          }),
         );
       case SPEECHES:
+        speeches.sort((a, b) => b.meta.date.localeCompare(a.meta.date));
         return PersonalScreen.renderContent(
           speeches, renderSpeech,
           ((item) => {
@@ -154,14 +167,16 @@ class PersonalScreen extends React.Component {
           }),
         );
       case VOTES:
+        votes.sort((a, b) => b.date.localeCompare(a.date));
         return PersonalScreen.renderContent(
           votes, renderVote,
-          (item) => Clipboard.setString(item.url),
+          ((item) => Linking.openURL(item.url)),
         );
       case QUESTIONS:
+        questions.sort((a, b) => b.date.localeCompare(a.date));
         return PersonalScreen.renderContent(
           questions, renderQuestion,
-          ((item) => Clipboard.setString(item.url)),
+          ((item) => Linking.openURL(item.url)),
         );
       default:
         return PersonalScreen.renderOverview();
